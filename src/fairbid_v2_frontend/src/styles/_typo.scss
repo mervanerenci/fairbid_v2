@@ -1,0 +1,61 @@
+// --- typography ---
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+    font-family: var(--heading-font);
+    color: var(--text-light);
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+h1, .h1 {
+    font-size: 36px;
+}
+
+h2, .h2 {
+    font-size: 30px;
+}
+
+h3, .h3 {
+    font-size: 26px;
+}
+
+h4, .h4 {
+    font-size: 21px;
+}
+
+h5, .h5 {
+    font-size: 19px;
+    line-height: 1.4;
+}
+
+h6, .h6 {
+    font-size: 17px;
+    line-height: 1.4;
+}
+
+@media screen and (min-width: 768px) {
+    h1, .h1 {
+        font-size: 55px;
+    }
+
+    h2, .h2 {
+        font-size: 45px;
+    }
+
+    h3, .h3 {
+        font-size: 38px;
+    }
+
+    h4, .h4 {
+        font-size: 24px;
+    }
+
+    h5, .h5 {
+        font-size: 21px;
+    }
+
+    h6, .h6 {
+        font-size: 19px;
+    }
+}

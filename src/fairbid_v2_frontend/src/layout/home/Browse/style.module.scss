@@ -1,0 +1,32 @@
+.wrapper {
+    max-width: 100%;
+}
+
+.slide {
+    padding: 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    &_grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+
+        img {
+            height: 100%;
+
+            &:first-child {
+                grid-area: 1 / 1 / 3 / 2;
+            }
+        }
+    }
+}
+
+@media screen and (min-width: 1600px) {
+    .wrapper {
+        max-width: unset !important;
+        padding: 0 !important;
+    }
+}

@@ -1,0 +1,107 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+
+    @media screen and (min-width: 568px) {
+        gap: 60px;
+    }
+
+    @media screen and (min-width: 768px) {
+        gap: 80px;
+    }
+}
+
+.section {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.comment {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    will-change: transform;
+
+    &[data-reply] {
+        margin-left: 20px;
+    }
+
+    &_wrapper {
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--divider);
+
+        &:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+    }
+
+    &_media {
+        width: 40px;
+    }
+
+    &_main {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        .date {
+            color: var(--meta);
+        }
+
+        .divider {
+            width: 1px;
+            height: auto;
+            background: var(--divider);
+        }
+
+        .reply {
+            color: var(--accent);
+            transition: color var(--transition);
+
+            &:hover, &:focus {
+                color: var(--text-light);
+            }
+        }
+    }
+
+    @media screen and (min-width: 568px) {
+        flex-direction: row;
+        gap: 20px;
+        align-items: flex-start;
+
+        &[data-reply] {
+            margin-left: 100px;
+        }
+
+        &_media {
+            width: 100px;
+        }
+
+        &_main {
+            flex: 1;
+        }
+    }
+}
+
+.btn {
+    margin-top: 10px;
+}
+
+.group {
+    display: grid;
+    gap: 20px;
+}
+
+@media screen and (min-width: 768px) {
+    .group {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .btn {
+        margin-top: 20px;
+    }
+}

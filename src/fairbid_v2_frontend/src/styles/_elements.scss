@@ -1,0 +1,503 @@
+// --- UI elements ---
+
+.checkbox {
+    input {
+        display: none;
+
+        &:checked + label {
+            background-color: var(--accent);
+            border-color: var(--accent);
+
+            .icon {
+                transform: scale(1);
+            }
+        }
+    }
+
+    label {
+        width: 20px;
+        height: 20px;
+        font-size: 14px;
+        line-height: 1;
+        border: 1px solid var(--text);
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all var(--transition);
+        color: var(--bg-primary);
+
+        &:hover, &:focus {
+            border-color: var(--accent);
+        }
+
+        .icon {
+            transform: scale(0);
+            will-change: transform;
+            transition: transform var(--transition);
+        }
+    }
+}
+
+.navigator {
+    aspect-ratio: 1 / 1;
+    height: var(--elements-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid var(--divider);
+    background-color: var(--bg-primary);
+    transition: border-color var(--transition);
+
+    &:hover, &:focus {
+        border-color: var(--accent);
+
+        .icon {
+            color: var(--accent);
+        }
+    }
+
+    .icon {
+        transition: color var(--transition);
+    }
+}
+
+.label-tag {
+    margin-left: auto;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    border-radius: 5px;
+    padding: 0 15px;
+    font-weight: 500;
+    font-size: var(--text-sm);
+    color: var(--text-light);
+    background: var(--bg-tertiary);
+    text-transform: capitalize;
+
+    &.accent {
+        background: var(--gradient);
+    }
+}
+
+.field {
+    padding: 0 20px;
+    min-height: var(--elements-height);
+    border-radius: 10px;
+    border: 1px solid transparent;
+    font-size: var(--text-sm);
+    color: var(--text-light);
+    display: flex;
+    align-items: center;
+
+    &--outline {
+        border-color: var(--divider);
+        transition: border-color var(--transition);
+
+        &:hover, &:focus {
+            border-color: var(--accent);
+        }
+    }
+
+    &--error {
+        border-color: var(--error) !important;
+    }
+}
+
+.sidebar {
+    max-width: 460px;
+    color: var(--text);
+
+    &_wrapper {
+        gap: 30px;
+    }
+
+    &_block {
+        gap: 20px;
+
+        .MuiAccordionSummary-root {
+            margin: 20px 0 30px;
+        }
+
+        &:not(:last-child) {
+            padding-bottom: 30px;
+            border-bottom: 1px solid var(--divider);
+        }
+
+        &:first-child .MuiAccordionSummary-root {
+            margin-top: 0;
+        }
+
+        .calendar-nav {
+            font-family: var(--heading-font);
+            font-size: var(--text-sm);
+            font-weight: 600;
+            transition: color var(--transition);
+
+            i {
+                font-size: var(--text-xs);
+                transition: all var(--transition);
+            }
+
+            &:hover, &:focus {
+                color: var(--text-light);
+
+                i {
+                    color: var(--accent);
+                }
+            }
+
+            &[data-direction="prev"] {
+                &:hover, &:focus {
+                    i {
+                        margin-right: 5px;
+                    }
+                }
+            }
+
+            &[data-direction="next"] {
+                &:hover, &:focus {
+                    i {
+                        margin-left: 5px;
+                    }
+                }
+            }
+        }
+
+    }
+
+    &_list {
+        gap: 15px;
+
+        &-item {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            height: var(--elements-height);
+            border-radius: 10px;
+            padding: 0 20px;
+            border: 1px solid var(--divider);
+            color: var(--text-light);
+            font-weight: 500;
+            transition: border-color var(--transition);
+            cursor: pointer;
+
+            &--post {
+                .media {
+                    width: 130px;
+                    height: 90px;
+                    position: relative;
+
+                    img {
+                        height: 100%;
+                    }
+                }
+
+                .main {
+                    width: calc(100% - 130px);
+                }
+            }
+
+            &:hover, &:focus, &.active {
+                border-color: var(--accent);
+            }
+
+            .count {
+                font-weight: 400;
+                color: var(--text);
+            }
+        }
+    }
+
+    &_block, &_wrapper, &_list {
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+.tile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: var(--elements-height);
+    min-width: var(--elements-height);
+    border-radius: 10px;
+    line-height: 1;
+    transition: all var(--transition);
+
+    &--filled {
+        background-color: var(--bg-tertiary);
+        color: var(--text-light);
+    }
+
+    &--outlined {
+        border: 1px solid var(--divider);
+    }
+
+    &:hover, &:focus {
+        background-color: var(--accent);
+        color: var(--bg-primary);
+        border-color: var(--accent);
+    }
+
+    .icon {
+        font-size: 20px;
+    }
+}
+
+.btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: var(--elements-height);
+    padding: 0 35px;
+    border-radius: 10px;
+    font-family: var(--heading-font);
+    color: var(--text-light);
+    font-weight: 600;
+    font-size: var(--text-sm);
+    cursor: pointer;
+
+    &[disabled] {
+        pointer-events: none;
+    }
+
+    &--gradient {
+        background: var(--gradient);
+    }
+
+    &--outline {
+        background-color: transparent;
+        border: 1px solid var(--divider);
+        transition: all var(--transition);
+
+        &-white {
+            border-color: var(--text-light);
+        }
+
+        &-dark {
+            background-color: var(--bg-secondary);
+        }
+
+        &[data-pagination] {
+            &.active,
+            &:hover, &:focus {
+                font-weight: 500;
+            }
+        }
+
+        &.active,
+        &:hover, &:focus {
+            border-color: var(--accent);
+            background-color: var(--accent);
+            color: var(--bg-primary) !important;
+        }
+    }
+
+    &--icon {
+        min-width: var(--elements-height);
+        height: var(--elements-height);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--bg-tertiary);
+        border-radius: 10px;
+        font-size: 20px;
+        padding: 0;
+
+        i {
+            transition: color var(--transition);
+        }
+
+        &:hover, &:focus {
+            i {
+                color: var(--text-light);
+            }
+        }
+
+        &-sm {
+            min-width: 40px;
+            height: 40px;
+            font-size: 16px;
+        }
+    }
+
+    &--play {
+        aspect-ratio: 1 / 1;
+        border-radius: 50%;
+        padding: 0;
+
+        @media screen and (min-width: 768px) {
+            height: 110px;
+            font-size: 26px;
+        }
+    }
+}
+
+.tags-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px 10px;
+
+    .tag {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        height: var(--elements-height);
+        gap: 10px;
+        padding: 0 20px;
+        border: 1px solid var(--divider);
+        border-radius: 50px;
+        font-size: var(--text-sm);
+        font-weight: 500;
+        color: var(--text-light);
+        background-color: transparent;
+        transition: all var(--transition);
+
+        &--sm {
+            height: 40px;
+            color: var(--meta);
+        }
+
+        .icon {
+            color: var(--accent);
+            transition: color var(--transition);
+        }
+
+        &.active, &:hover {
+            border-color: var(--accent);
+            background-color: var(--accent);
+            color: var(--bg-primary);
+
+            .icon {
+                color: var(--bg-primary);
+            }
+        }
+
+        &:focus {
+            border-color: var(--accent);
+        }
+    }
+}
+
+.avatar-wrapper {
+    position: relative;
+    width: fit-content;
+
+    .avatar {
+        border-radius: 50%;
+        aspect-ratio: 1/1;
+        height: auto;
+    }
+
+    .verified {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        height: auto;
+    }
+
+    &.xs {
+        .avatar {
+            width: 30px;
+        }
+
+        .verified {
+            width: 12px;
+        }
+    }
+
+    &.sm {
+        .avatar {
+            width: 50px;
+        }
+
+        .verified {
+            width: 15px;
+        }
+    }
+
+    &.md {
+        .avatar {
+            width: 120px;
+        }
+    }
+}
+
+.like-button {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: var(--text-xs);
+    font-family: var(--body-font) !important;
+
+    &:hover, &:focus {
+        .icon-heart-o {
+            color: var(--accent);
+        }
+    }
+
+    .wrapper {
+        position: relative;
+
+        i {
+            font-size: 11px;
+        }
+
+        .icon-heart {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            opacity: 0;
+            transition: opacity var(--transition);
+            color: var(--accent);
+
+            &.visible {
+                opacity: 1;
+            }
+
+            &-o {
+                transition: color var(--transition);
+            }
+        }
+    }
+}
+
+.link-arrow {
+    font-family: var(--heading-font);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    transition: color var(--transition);
+
+    &:hover, &:focus {
+        color: var(--text-light);
+
+        .icon {
+            margin-left: 15px;
+        }
+    }
+
+    .icon {
+        margin-left: 10px;
+        transition: margin-left var(--transition);
+    }
+}
+
+.logo {
+    &_img {
+        width: 38px;
+        height: 38px;
+    }
+}
+
+.lazy-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+
+    img {
+        height: 100%;
+    }
+}

@@ -1,0 +1,155 @@
+// --- global template styles ---
+
+* {
+    scrollbar-width: none;
+    scrollbar-color: var(--accent) var(--bg-secondary);
+
+    &::-webkit-scrollbar {
+        width: var(--scroll-width);
+    }
+
+    &::-webkit-scrollbar-track {
+        background: var(--bg-secondary);
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: var(--accent);
+        border-radius: 0;
+        border: none;
+    }
+}
+
+html, body {
+    scroll-padding-top: calc(var(--header-height) + 30px);
+}
+
+html {
+    overscroll-behavior-y: none;
+
+    &.no-scroll {
+        overflow: hidden;
+        padding-right: 0;
+
+        @media screen and (min-width: 1280px) {
+            padding-right: var(--scroll-width);
+
+            .headroom {
+                width: calc(100% - var(--scroll-width));
+            }
+        }
+    }
+}
+
+body {
+    background-color: var(--bg-primary);
+    color: var(--text);
+    font-weight: 400;
+    font-family: var(--body-font);
+    font-size: 17px;
+    line-height: 1.4;
+}
+
+section, .section {
+    margin: var(--spacer) 0;
+}
+
+.container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 20px;
+    width: 100%;
+}
+
+.loading-screen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--bg-primary);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1000000;
+
+    .lottie {
+        width: 400px;
+    }
+
+    @media screen and (min-width: 768px) {
+        .lottie {
+            width: 800px;
+        }
+    }
+}
+
+textarea {
+    padding: 20px !important;
+    height: 200px;
+}
+
+.post-section {
+    max-width: 940px;
+    margin: 0 auto;
+    background-color: var(--bg-secondary);
+    padding: 20px;
+    border-radius: 10px;
+
+    @media screen and (min-width: 414px) {
+        padding: 30px;
+    }
+
+    @media screen and (min-width: 576px) {
+        padding: 40px;
+    }
+
+    @media screen and (min-width: 768px) {
+        padding: 60px;
+    }
+
+    @media screen and (min-width: 1024px) {
+        padding: 80px;
+    }
+}
+
+// --- toastify styles ---
+
+.Toastify__toast-container {
+    z-index: 99999 !important;
+    padding: 20px;
+}
+
+.Toastify__toast {
+    border-radius: 10px;
+    border: 1px solid var(--divider);
+
+    &-theme--dark {
+        background: var(--bg-secondary) !important;
+    }
+}
+
+// --- swiper styles ---
+
+.swiper-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px 20px;
+
+    &-bullet {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: var(--divider);
+        border: 1px solid transparent;
+        transition: all var(--transition);
+        cursor: pointer;
+
+        &-active,
+        &:hover, &:focus {
+            border-color: var(--accent);
+            background-color: var(--bg-primary);
+        }
+    }
+}

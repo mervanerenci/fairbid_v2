@@ -1,0 +1,29 @@
+.wrapper {
+    padding: 20px;
+
+    @media screen and (min-width: 414px) {
+        padding: 40px;
+    }
+}
+
+.content {
+    gap: 40px;
+
+    &_avatar {
+        position: relative;
+
+        .container {
+            width: 100%;
+        }
+    }
+
+    @media screen and (min-width: 768px) {
+        width: 380px;
+        margin: 0 auto;
+    }
+}
+
+.content, .content_avatar {
+    display: flex;
+    flex-direction: column;
+}

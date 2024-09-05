@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkfairbid_v2_frontend=self.webpackChunkfairbid_v2_frontend||[]).push([[6645],{58263:(e,i,s)=>{s.r(i),s.d(i,{default:()=>a});var n=s(59499),t=s(58243),r=s(64932),c=s(79473),d=s(1490),l=s(80812);const a=()=>(0,l.jsxs)(l.Fragment,{children:[(0,l.jsx)(n.A,{title:"Live Auctions"}),(0,l.jsx)(t.A,{title:"Live Auctions"}),(0,l.jsx)("main",{children:(0,l.jsx)(c.R2,{children:(0,l.jsx)(d.Gv,{children:(0,l.jsx)(r.A,{})})})})]})}}]);
+//# sourceMappingURL=6645.fc23bb20.chunk.js.map

@@ -1,0 +1,124 @@
+.footer {
+    background: var(--bg-primary);
+    border-top: 1px solid var(--divider);
+
+    .main {
+        display: flex;
+        padding: var(--spacer) 0;
+        flex-direction: column-reverse;
+        gap: 30px;
+
+        &_block, &_about, &_nav, &_nav_item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        &_block {
+            gap: 30px;
+        }
+
+        &_about {
+            gap: 20px;
+
+            .text {
+                max-width: 500px;
+            }
+        }
+
+        &_nav {
+            gap: 30px;
+
+            &_item {
+                gap: 15px;
+
+                a {
+                    transition: color var(--transition);
+
+                    &.active,
+                    &:hover, &:focus {
+                        color: var(--accent);
+                    }
+                }
+            }
+        }
+    }
+
+    .secondary {
+        padding: 25px 0;
+        border-top: 1px solid var(--divider);
+        text-align: center;
+        display: flex;
+        align-items: center;
+        flex-direction: column-reverse;
+        gap: 10px;
+
+        .copyright a {
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        a {
+            transition: color var(--transition);
+
+            &:hover, &:focus {
+                color: var(--text-light);
+            }
+        }
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .footer {
+        .main {
+            gap: 50px;
+
+            &_block {
+                gap: 50px;
+            }
+
+            &_nav {
+                flex-direction: row;
+                gap: 100px;
+            }
+        }
+
+        .secondary {
+            flex-direction: row;
+            justify-content: space-between;
+        }
+    }
+}
+
+@media screen and (min-width: 1024px) {
+    .footer .main_block:first-of-type {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media screen and (min-width: 1170px) {
+    .footer .main {
+        flex-direction: column;
+        gap: 70px;
+
+        &_block {
+            &:first-of-type {
+                gap: 60px;
+            }
+
+            &:last-of-type {
+                flex-direction: row;
+                align-items: flex-start;
+                gap: 110px;
+            }
+        }
+
+        &_nav {
+            flex-grow: 1;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 5px;
+        }
+    }
+}

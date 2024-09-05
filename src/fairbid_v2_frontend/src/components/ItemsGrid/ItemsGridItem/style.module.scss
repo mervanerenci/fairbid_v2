@@ -1,0 +1,21 @@
+.wrapper {
+    padding: 10px 20px 20px;
+}
+
+.media {
+    margin: 10px 0 20px;
+    position: relative;
+}
+
+.main {
+    &_price {
+        margin: 7px 0 10px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    &_btn {
+        font-family: var(--heading-font);
+        font-weight: 600;
+    }
+}

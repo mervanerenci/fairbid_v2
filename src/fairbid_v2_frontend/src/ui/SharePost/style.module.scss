@@ -1,0 +1,15 @@
+.button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--meta);
+    transition: color var(--transition);
+
+    &:hover, &:focus {
+        color: var(--text-light);
+    }
+
+    .icon {
+        transform: scaleX(-1);
+    }
+}

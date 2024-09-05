@@ -1,0 +1,11 @@
+.header {
+    margin: 40px 0;
+
+    &_title {
+        line-height: 1;
+    }
+
+    @media screen and (min-width: 768px) {
+        margin: 70px 0;
+    }
+}

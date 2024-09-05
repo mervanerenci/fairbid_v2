@@ -1,0 +1,29 @@
+.container {
+    height: 240px;
+    background-color: #252525;
+    position: relative;
+
+    .img, .img img {
+        height: 100%;
+        width: 100%;
+    }
+
+    button {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    @media screen and (min-width: 768px) {
+        height: 360px;
+    }
+
+    @media screen and (min-width: 1024px) {
+        height: 480px;
+    }
+
+    @media screen and (min-width: 1280px) {
+        height: 600px;
+    }
+}

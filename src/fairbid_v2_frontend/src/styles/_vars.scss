@@ -1,0 +1,32 @@
+// --- variables ---
+
+:root {
+    --text: #969696;
+    --text-light: #fff;
+    --meta: #bbb;
+    --bg-primary: #111;
+    --bg-secondary: #161616;
+    --bg-tertiary: #1b1b1b;
+    --divider: #424242;
+    --accent: #00eff5;
+    --error: #ff0000;
+    --gradient: linear-gradient(98.49deg, #00eff5 -11.31%, #008f13 76.26%);
+    --shadow: linear-gradient(180deg, rgba(17, 17, 17, 0) 38.5%, rgba(17, 17, 17, 0.6) 75.96%, #111111 110.42%);
+    --body-font: 'Roboto', sans-serif;
+    --heading-font: 'Sora', sans-serif;
+    --text-sm: 15px;
+    --text-xs: 13px;
+    --transition: .3s ease-in-out;
+    --header-height: 60px;
+    --spacer: 60px;
+    --elements-height: 50px;
+    --scroll-width: 6px;
+
+    @media screen and (min-width: 768px) {
+        --spacer: 80px;
+    }
+
+    @media screen and (min-width: 1170px) {
+        --spacer: 110px;
+    }
+}

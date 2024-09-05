@@ -1,0 +1,164 @@
+.wrapper {
+    background: url("../../assets/cta/bg.webp") no-repeat center center / cover;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+}
+
+.main {
+    .emojis {
+        display: none;
+    }
+
+    &_text {
+        margin: 15px 0 35px;
+    }
+
+    &_btn {
+        width: 100%;
+    }
+}
+
+.media {
+    display: block;
+
+    .square, 
+    .rectangle, 
+    .big,
+    .big.big1,
+    .big.big2 {
+        display: none;
+    }
+}
+
+@media screen and (min-width: 414px) {
+    .main .emojis {
+        display: block;
+        margin: 0 0 20px -5px;
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .wrapper {
+        padding: 60px;
+        gap: 40px;
+    }
+
+    .main {
+        text-align: center;
+
+        .emojis {
+            margin: 0 0 20px 0;
+        }
+
+        &_btn {
+            width: fit-content;
+            margin: 0 auto;
+        }
+    }
+
+    .media {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-gap: 20px;
+        width: 608px;
+        margin: 0 auto;
+
+        img {
+            height: auto !important;
+        }
+
+        .square,
+        .rectangle,
+        .big,
+        .big.big1,
+        .big.big2 {
+            display: block;
+        }
+
+        .square {
+            order: -1;
+            width: 156px;
+            margin-left: auto;
+        }
+
+        .rectangle {
+            aspect-ratio: 390 / 156;
+        }
+
+        .big {
+            width: 85%;
+
+            &.big2 {
+                margin-top: -140px;
+                margin-left: auto;
+            }
+        }
+    }
+}
+
+@media screen and (min-width: 1024px) {
+    .wrapper {
+        flex-direction: row;
+        align-items: center;
+        gap: 80px;
+    }
+
+    .main {
+        text-align: left;
+        max-width: 640px;
+
+        .emojis {
+            margin-left: -10px;
+        }
+
+        &_btn {
+            margin: 0;
+        }
+    }
+
+    .media {
+        flex-grow: 1;
+
+        .square {
+            width: 50%;
+        }
+
+        .big.big2 {
+            margin-top: -52%;
+        }
+    }
+}
+
+@media screen and (min-width: 1600px) {
+    .wrapper {
+        gap: 100px;
+        padding: 0 60px;
+        overflow: visible;
+    }
+
+    .media {
+        margin: -20px -120px 0 -20px;
+
+        .square {
+            width: 156px;
+        }
+
+        .rectangle {
+            width: 390px;
+            margin-bottom: -20px;
+        }
+
+        .big {
+            width: 270px;
+
+            &.big1 {
+                margin-top: 80px;
+            }
+
+            &.big2 {
+                margin-top: -240px;
+            }
+        }
+    }
+}

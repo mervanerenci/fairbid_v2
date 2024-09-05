@@ -1,0 +1,13 @@
+.container {
+    background-repeat: no-repeat;
+    background-size: 150% 150%;
+
+    &:hover .img {
+        opacity: 0;
+    }
+
+    .img {
+        pointer-events: none;
+        transition: opacity var(--transition);
+    }
+}

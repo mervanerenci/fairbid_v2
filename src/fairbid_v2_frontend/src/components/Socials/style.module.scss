@@ -1,0 +1,14 @@
+.link {
+    color: var(--text-light);
+    line-height: 1;
+    font-size: 20px;
+    transition: color var(--transition);
+
+    &:hover, &:focus {
+        color: var(--accent);
+    }
+
+    .facebook {
+        font-size: 19px;
+    }
+}

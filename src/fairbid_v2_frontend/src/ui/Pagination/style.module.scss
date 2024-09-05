@@ -1,0 +1,19 @@
+.wrapper {
+    margin-top: 40px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    @media screen and (min-width: 768px) {
+        margin-top: 60px;
+    }
+}
+
+.btn {
+    color: var(--text);
+    font-family: var(--body-font);
+    font-weight: 400;
+    padding: 0 20px;
+}

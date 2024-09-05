@@ -1,0 +1,53 @@
+.wrapper {
+    position: relative;
+    height: 340px;
+
+    @media screen and (min-width: 768px) {
+        height: 420px;
+    }
+
+    @media screen and (min-width: 1440px) {
+        height: 600px;
+    }
+
+    &:hover {
+        .media {
+            transform: scale(1.1);
+        }
+    }
+}
+
+.media {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-secondary);
+    will-change: transform;
+    transition: transform var(--transition);
+
+    &_img, &_img img {
+        height: 100%;
+        width: 100%;
+    }
+}
+
+.main {
+    position: relative;
+    z-index: 1;
+    padding: 20px 20px 30px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    &_title {
+        max-width: 400px;
+        transition: color var(--transition);
+
+        &:hover, &:focus {
+            color: var(--accent);
+        }
+    }
+}

@@ -1,0 +1,8 @@
+.container {
+    display: grid;
+
+    @media screen and (min-width: 768px) {
+        grid-template-columns: 320px minmax(0, calc(100% - 320px));
+        gap: 40px;
+    }
+}

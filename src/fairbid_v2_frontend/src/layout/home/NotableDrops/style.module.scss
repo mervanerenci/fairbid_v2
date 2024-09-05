@@ -1,0 +1,54 @@
+.drops {
+    position: relative;
+    z-index: 2;
+
+    .slider {
+        margin: 0 -1px;
+
+        &_pagination {
+            margin-top: 30px;
+        }
+    }
+
+    &_item {
+        padding: 20px;
+        cursor: pointer;
+        position: relative;
+
+        .media {
+            aspect-ratio: 420 / 560;
+            position: relative;
+            z-index: 1;
+
+            &:after {
+                background: rgba(0, 0, 0, .6);
+
+                @media screen and (min-width: 768px) {
+                    background: var(--shadow);
+                }
+            }
+
+            img {
+                height: 100%;
+            }
+        }
+
+        .main {
+            padding: 40px;
+            position: absolute;
+            z-index: 2;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+
+            &_text {
+                color: var(--meta);
+                margin: 5px 0 20px;
+            }
+        }
+    }
+}

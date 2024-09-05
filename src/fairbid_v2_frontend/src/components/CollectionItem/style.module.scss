@@ -1,0 +1,45 @@
+.wrapper {
+    padding: 20px;
+    position: relative;
+
+    &_content {
+        position: absolute;
+        z-index: 2;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        padding: 40px;
+
+        .qty {
+            margin: 5px 0 15px;
+        }
+    }
+}
+
+.media {
+    &:after {
+        z-index: 1;
+        transform: scaleY(-1);
+    }
+
+    &_cover {
+        aspect-ratio: 420 / 580;
+
+        img {
+            height: 100%;
+        }
+    }
+
+    &_thumbs {
+        position: absolute;
+        width: calc(100% - 80px);
+        bottom: 40px;
+        left: 40px;
+        z-index: 2;
+
+        .slide {
+            cursor: pointer;
+        }
+    }
+}

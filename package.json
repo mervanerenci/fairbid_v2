@@ -1,0 +1,36 @@
+{
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=7.0.0"
+  },
+  "name": "fairbid_v2",
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "prebuild": "npm run prebuild --workspaces --if-present",
+    "pretest": "npm run prebuild --workspaces --if-present",
+    "start": "npm start --workspaces --if-present",
+    "test": "npm test --workspaces --if-present"
+  },
+  "type": "module",
+  "workspaces": [
+    "src/fairbid_v2_frontend"
+  ],
+  "dependencies": {
+    "@dfinity/agent": "^1.2.1",
+    "@dfinity/auth-client": "^1.2.1",
+    "@dfinity/identity": "^1.2.1",
+    "@dfinity/principal": "^1.2.1",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@fontsource/roboto": "^5.0.13",
+    "@mui/icons-material": "^5.15.16",
+    "@mui/material": "^5.15.16",
+    "@mui/styled-engine-sc": "^6.0.0-alpha.18",
+    "react-router-dom": "^6.23.0",
+    "styled-components": "^6.1.9"
+  },
+  "devDependencies": {
+    "@craco/craco": "^7.1.0",
+    "react-refresh": "^0.14.2"
+  }
+}

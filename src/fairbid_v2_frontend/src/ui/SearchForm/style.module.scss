@@ -1,0 +1,31 @@
+.form {
+    max-width: 620px;
+    width: 100%;
+    gap: 20px;
+    position: relative;
+
+    input {
+        flex: 1;
+    }
+
+    button {
+        color: var(--text);
+        font-size: 18px;
+        transition: all var(--transition);
+        line-height: 1;
+
+        &:hover, &:focus {
+            color: var(--accent);
+        }
+
+        &[type="reset"] {
+            visibility: hidden;
+            opacity: 0;
+
+            &.visible {
+                visibility: visible;
+                opacity: 1;
+            }
+        }
+    }
+}

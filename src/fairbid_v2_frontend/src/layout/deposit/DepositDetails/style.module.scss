@@ -1,0 +1,69 @@
+.wrapper {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    background: var(--bg-secondary);
+
+    @media screen and (min-width: 414px) {
+        padding: 40px;
+    }
+}
+
+.cover {
+    height: 200px;
+    position: relative;
+
+    &:hover .cover_overlay {
+        opacity: 1;
+    }
+
+    &_bg, &_overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+    }
+
+    &_overlay {
+        z-index: 2;
+        opacity: 0;
+        transition: opacity var(--transition);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+    }
+}
+
+.textarea {
+    height: 200px;
+    padding: 20px 15px;
+}
+
+.group {
+    display: grid;
+    gap: 20px;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+@media screen and (min-width: 768px) {
+    .cover {
+        height: 300px;
+    }
+
+    .buttons {
+        flex-direction: row;
+    }
+
+    .group {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}

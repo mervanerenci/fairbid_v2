@@ -1,0 +1,15 @@
+.button {
+    font-weight: 700;
+    transition: all var(--transition);
+    opacity: 0;
+    visibility: hidden;
+
+    &.visible {
+        opacity: 1;
+        visibility: visible;
+
+        &:hover, &:focus {
+            color: var(--accent);
+        }
+    }
+}

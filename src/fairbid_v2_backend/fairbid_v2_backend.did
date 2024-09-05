@@ -1,0 +1,244 @@
+type Item = record {
+    title: text;
+    description: text;
+};
+
+type Bid = record {
+    price: nat64;
+    time: nat64;
+    originator: principal;
+};
+
+type Auction = record {
+    id: nat64;
+    item: Item;
+    bid_history: vec nat64;
+    end_time: nat64;
+    remaining_time: nat64;
+    starting_price: opt nat64;
+    originator: principal;
+    contact: text;
+    location: text;
+    whitelist: bool;
+    
+    list_on_site: bool;
+};
+
+type DutchAuction = record {
+    id: nat64;
+    item: Item;
+    bid_history: vec nat64;
+    end_time: nat64;
+    remaining_time: nat64;
+    starting_price: opt nat64;
+    originator: principal;
+    contact: text;
+    location: text;
+    winner: opt principal;
+    whitelist: bool;
+    list_on_site: bool;
+};
+
+type SbAuction = record {
+    id: nat64;
+    item: Item;
+    bid_history: vec nat64;
+    end_time: nat64;
+    remaining_time: nat64;
+    starting_price: opt nat64;
+    originator: principal;
+    contact: text;
+    location: text;
+    winner: opt principal;
+    whitelist: bool;
+    list_on_site: bool;
+};
+
+type AuctionDetails = record {
+    item: Item;
+    bid_history: vec Bid;
+    end_time: nat64;
+    starting_price: opt nat64;
+    originator: principal;
+    contact: text;
+    location: text;
+};
+
+type SbAuctionDetails = record {
+    item: Item;
+    bid_history: vec Bid;
+    end_time: nat64;
+    starting_price: opt nat64;
+    originator: principal;
+    contact: text;
+    location: text;
+    winner: opt principal;
+};
+
+
+type AuctionId = nat64;
+
+type AuctionOverview = record {
+    id: AuctionId;
+    item: Item;
+};
+
+type ItemDetails = record {
+    item: Item;
+    image: vec nat8;
+};
+
+type Conversation = record {
+    question: text;
+    answer: text;
+    is_private: bool;
+    originator: principal;
+};
+
+// TODO
+
+
+// post and pre upgrade functions and new storage types(refcell) -> " 1 sesh"
+// type reformatting for each auction type
+
+
+
+service : {
+    ///// English Auction /////
+
+    //C
+    new_auction: (item: Item, price: nat64, duration: nat64, contact: text, location: text, image: vec nat8, whitelist:bool, list_on_site:bool ) -> ();
+    make_bid: (id: AuctionId, price: nat64) -> (result: variant { Ok: null; Err: text });
+    schedule_new_auction: (item: Item, price: nat64, duration: nat64, contact: text, location: text, image: vec nat8, whitelist:bool, list_on_site:bool, time: nat64 ) -> ();
+    new_auction_s: (item: Item, price: nat64, duration: nat64, contact: text, location: text, image: vec nat8, whitelist:bool, list_on_site:bool, id: nat64) -> ();
+    
+    
+    //U
+    end_auction: (nat64) -> (result: variant { Ok: null; Err: text });
+
+    //R
+    get_auction: (id: nat64) -> (opt Auction) query;
+    get_auction_details: (id: AuctionId) -> (opt AuctionDetails) query; // remove
+    get_active_auctions: () -> (vec AuctionOverview) query;
+    get_ended_auctions: () -> (vec AuctionOverview) query;
+    get_all_auctions: () -> (vec AuctionOverview) query;
+    get_all_bids: (id: AuctionId) -> (vec Bid) query;
+    get_highest_bidder: (id: AuctionId) -> (opt principal) query;
+    get_highest_bid_details: (id: AuctionId) -> (opt Bid) query;
+    get_remaining_time: (id: AuctionId) -> (opt nat64) query;
+    get_qr_code: (string: text) -> (vec nat8);
+    get_auction_originator: (id: AuctionId) -> (opt principal) query;
+    get_all_auctions_by_originator: () -> (vec AuctionOverview) query;
+    get_item_image: (id: AuctionId) -> ( vec nat8) query;
+
+    get_scheduled_auction: (id: AuctionId) -> (opt Auction) query;
+    get_all_scheduled_auctions: () -> (vec AuctionOverview) query;
+    
+    is_listed_eng: (id: AuctionId) -> (bool) query;
+
+
+
+
+    ///// Dutch Auction /////
+
+    //C
+    new_dutch_auction: (item: Item, price: nat64, duration: nat64, contact: text, location: text, image: vec nat8,whitelist:bool, list_on_site:bool) -> ();
+    accept_price: (id: AuctionId) -> (result: variant { Ok: null; Err: text });
+    schedule_new_dutch_auction: (item: Item, price: nat64, duration: nat64, contact: text, location: text, image: vec nat8, whitelist:bool, list_on_site:bool, time: nat64 ) -> ();
+    new_dutch_auction_s: (item: Item, price: nat64, duration: nat64, contact: text, location: text, image: vec nat8, whitelist:bool, list_on_site:bool, id: nat64) -> ();
+    
+    //U
+    lower_price: (id: AuctionId, price: nat64) -> (result: variant { Ok: null; Err: text });
+    end_dutch_auction: (id: AuctionId) -> (result: variant { Ok: null; Err: text });
+
+    //R
+    get_dutch_auction_details: (id: AuctionId) -> (opt AuctionDetails) query;
+    get_active_dutch_auctions: () -> (vec AuctionOverview) query;
+    get_dutch_auction: (id: AuctionId) -> (opt DutchAuction) query;
+    get_all_bids_by_dutch_auction_id: (id: AuctionId) -> (vec Bid) query;
+    get_ended_dutch_auctions: () -> (vec AuctionOverview) query;
+    get_dutch_overview_list: () -> (vec AuctionOverview) query;
+    get_dutch_auction_originator: (id: AuctionId) -> (opt principal) query;
+    get_all_dutch_auctions_by_originator: () -> (vec AuctionOverview) query;
+    get_remaining_time_dutch: (id: AuctionId) -> (opt nat64) query;
+    get_all_dutch_bids_by_auction_id: (id: AuctionId) -> (vec Bid) query;
+    get_dutch_winner_by_auction_id: (id: AuctionId) -> (opt principal) query;
+
+    get_scheduled_dutch_auction: (id: AuctionId) -> (opt DutchAuction) query;
+    get_all_scheduled_dutch_auctions: () -> (vec AuctionOverview) query;
+
+    is_listed_dutch: (id: AuctionId) -> (bool) query;
+
+
+
+
+
+    ///// Sealed Bid Auction /////
+
+    //C
+    new_sb_auction: (item: Item, price: nat64, duration: nat64, contact: text, location: text, image: vec nat8,whitelist:bool, list_on_site:bool) -> ();
+    make_bid_sb: (id: AuctionId, price: nat64) -> (result: variant { Ok: null; Err: text });
+    schedule_new_sb_auction: (item: Item, price: nat64, duration: nat64, contact: text, location: text, image: vec nat8, whitelist:bool, time: nat64 ) -> ();
+    new_sb_auction_s: (item: Item, price: nat64, duration: nat64, contact: text, location: text, image: vec nat8, whitelist:bool, id: nat64) -> ();
+
+    //U
+    end_sb_auction: (nat64) -> (result: variant { Ok: null; Err: text });
+    quick_end_auction: (id: AuctionId) -> ();  //for testing purposes
+
+    //R
+    get_sb_auction: (id: nat64) -> (opt SbAuction) query;
+    get_sb_auction_details: (id: AuctionId) -> (opt SbAuctionDetails) query;
+    get_sb_auction_originator: (id: AuctionId) -> (opt principal) query;
+    get_all_sb_auctions_by_originator: () -> (vec AuctionOverview) query;
+    get_active_sb_auctions: () -> (vec AuctionOverview) query;
+    get_all_bid_values_by_sb_auction_id: (id: AuctionId) -> (vec nat64) query;
+    get_all_sb_bids_by_auction_id: (id: AuctionId) -> (vec Bid) query;
+    get_sb_winner_by_auction_id: (id: AuctionId) -> (opt principal) query;
+    get_remaining_time_sb: (id: AuctionId) -> (opt nat64) query;
+    get_sb_overview_list: () -> (vec AuctionOverview) query;
+    // get_active_auctions: () -> (vec AuctionOverview) query;
+
+    get_scheduled_sb_auction: (id: AuctionId) -> (opt SbAuction) query;
+    get_all_scheduled_sb_auctions: () -> (vec AuctionOverview) query;
+
+    is_listed_sb: (id: AuctionId) -> (bool) query;
+
+
+
+
+
+    ///// Q&A SECTION /////
+    ask_question: (id: AuctionId, question: text) -> ();
+    answer_question: (id: AuctionId, answer: text) -> ();
+    answer_question_private: (id: AuctionId, answer: text) -> ();
+    delete_question: (id: AuctionId) -> ();
+    get_questions: (id: AuctionId) -> (vec Conversation) query;
+    get_question: (id: AuctionId) -> (opt Conversation) query;
+    get_question_ids_by_auction_id: (id: AuctionId) -> (vec AuctionId) query;
+    get_questions_by_ids: (ids: vec AuctionId) -> (vec Conversation) query;
+
+
+    ///// Whitelist /////
+    add_to_whitelist:(id: AuctionId, user: principal) -> ();
+    remove_from_whitelist:(id: AuctionId, user: principal) -> ();
+    get_whitelist:(id: AuctionId) -> (vec principal) query;
+    is_whitelisted:(id: AuctionId, user: principal) -> (bool) query;
+
+
+    ///// Randoms and Codes /////
+    random_number: () -> (nat64);
+    assign_buy_code: (id: AuctionId) -> ();
+    get_buy_code: (id: AuctionId) -> (nat64) query;
+
+    
+    ///// Usernames /////
+    set_username: (username: text) -> ();
+    get_username: () -> ( text) query;
+    get_username_by_principal: (principal) -> ( text) query;
+    get_principal_by_username: (username: text) -> ( principal) query;
+    get_all_usernames: () -> (vec text) query;
+    
+    
+    who_am_i: () -> (principal) query;
+};
+

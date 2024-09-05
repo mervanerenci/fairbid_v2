@@ -1,0 +1,103 @@
+.hero {
+    margin-top: 30px;
+
+    &_container {
+        max-width: unset;
+        position: relative;
+    }
+
+    &_pagination {
+        margin-top: 20px;
+    }
+
+    &_nav,
+    &_nav .prev,
+    &_nav .next {
+        display: none;
+    }
+
+    @media screen and (min-width: 768px) {
+        margin-top: 40px;
+
+        &_pagination {
+            margin-top: 30px;
+        }
+    }
+
+    @media screen and (min-width: 1024px) {
+        margin: 40px 40px 0;
+
+        &_container {
+            padding: 0;
+        }
+
+        &_nav {
+            display: flex;
+            justify-content: space-between;
+            position: absolute;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            z-index: 1;
+            width: 100%;
+
+            .prev, .next {
+                display: block;
+            }
+
+            .prev {
+                margin-left: -25px;
+            }
+
+            .next {
+                margin-right: -25px;
+            }
+        }
+
+        &_pagination {
+            display: none;
+        }
+    }
+}
+
+.slide {
+    padding: 20px;
+
+    &_media {
+        height: 300px;
+        position: relative;
+
+        img {
+            height: 100%;
+        }
+
+        &::after {
+            transform: scaleY(-1);
+        }
+
+        @media screen and (min-width: 1024px) {
+            height: 400px;
+        }
+
+        @media screen and (min-width: 1280px) {
+            height: unset;
+            aspect-ratio: 1 / 1;
+        }
+    }
+
+    &_main {
+        padding: 40px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+
+        a {
+            width: fit-content;
+        }
+    }
+}

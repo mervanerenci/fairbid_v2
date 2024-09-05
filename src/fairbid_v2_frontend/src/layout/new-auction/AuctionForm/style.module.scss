@@ -1,0 +1,91 @@
+.container {
+    margin-bottom: 30px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+
+    @media screen and (min-width: 568px) {
+        padding: 40px;
+    }
+
+    @media screen and (min-width: 1024px) {
+        padding: 80px;
+    }
+}
+
+.main {
+    &_form {
+        margin-top: 30px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+
+        .group {
+            display: grid;
+            gap: 20px;
+        }
+
+        .btn {
+            margin-top: 10px;
+        }
+    }
+}
+
+.map {
+    height: 300px;
+
+    .img {
+        width: 100%;
+
+        img {
+            height: 100%;
+        }
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .container {
+        margin-bottom: 40px;
+        gap: 60px;
+    }
+
+    .map {
+        height: 400px;
+    }
+
+    .main {
+        .group {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .btn {
+            width: fit-content;
+            margin-top: 20px;
+        }
+    }
+}
+
+@media screen and (min-width: 1280px) {
+    .container {
+        flex-direction: row;
+        padding: 0;
+        gap: 0;
+    }
+
+    .main {
+        padding: 80px;
+        flex-grow: 1;
+    }
+
+    .map {
+        padding: 40px 40px 40px 0;
+        width: 590px;
+        flex-grow: 1;
+        height: auto;
+
+        .img {
+            height: 100%;
+        }
+    }
+}

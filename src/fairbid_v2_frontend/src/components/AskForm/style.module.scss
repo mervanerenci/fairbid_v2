@@ -1,0 +1,20 @@
+.form {
+    position: relative;
+
+    input {
+        width: 100%;
+    }
+
+    button {
+        position: absolute;
+        top: 50%;
+        right: 20px;
+        transform: translateY(-50%);
+        transition: all var(--transition);
+
+        &:hover, &:focus {
+            color: var(--accent);
+            right: 15px;
+        }
+    }
+}

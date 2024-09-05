@@ -1,0 +1,116 @@
+// --- base styles ---
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    outline: none;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -webkit-font-smoothing: antialiased;
+    backface-visibility: hidden;
+}
+
+html, body {
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+ul, ol {
+    list-style: none;
+}
+
+a {
+    text-decoration: none;
+}
+
+a, input, button, textarea {
+    background: none;
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    border: none;
+    cursor: pointer;
+}
+
+// iOS fix
+button[type="submit"] {
+    font-weight: 400 !important;
+}
+
+input, textarea {
+    &[readonly] {
+        cursor: default;
+    }
+
+    &::placeholder {
+        transition: opacity var(--transition);
+    }
+
+    &:focus {
+        &::placeholder {
+            opacity: 0;
+        }
+    }
+}
+
+textarea {
+    resize: none;
+}
+
+fieldset {
+    border: none;
+}
+
+label {
+    cursor: pointer;
+}
+
+img {
+    display: block;
+    width: 100%;
+    object-fit: cover;
+    height: auto;
+}
+
+iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+}
+
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration {
+    -webkit-appearance: none;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+// google maps
+
+a[href^="http://maps.google.com/maps"] {
+    display: none !important
+}
+
+a[href^="https://maps.google.com/maps"] {
+    display: none !important
+}
+
+.gmnoprint a, .gmnoprint span, .gm-style-cc {
+    display: none;
+}
+
+.gmnoprint div {
+    background: none !important;
+}
