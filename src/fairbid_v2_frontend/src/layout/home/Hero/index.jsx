@@ -9,6 +9,7 @@ import GradientBtn from '@ui/GradientBtn';
 import Avatar from '@ui/Avatar';
 import AnimatedText from 'react-animated-text-content';
 import Spring from '@components/Spring';
+import Deposito from '@components/Deposito';
 
 // assets
 import video from '@assets/home/hero/particles.mp4';
@@ -95,7 +96,9 @@ const Hero = () => {
                         </Spring>
                     </div>
                 </div>
+                <Deposito />
             </div>
+            
         </section>
     )
 }

@@ -2,9 +2,12 @@
   "name": "fairbid_v2_frontend",
   "version": "1.0.2",
   "private": true,
-
   "dependencies": {
     "@craco/craco": "^7.0.0",
+    "@dfinity/agent": "^1.2.1",
+    "@dfinity/auth-client": "^1.2.1",
+    "@dfinity/identity": "^1.2.1",
+    "@dfinity/principal": "^1.2.1",
     "@emotion/styled": "^11.10.5",
     "@loadable/component": "^5.15.3",
     "@mui/base": "^5.0.0-beta.36",
@@ -13,8 +16,10 @@
     "@mui/x-data-grid": "^5.17.24",
     "@react-google-maps/api": "^2.18.1",
     "@react-spring/web": "^9.6.1",
+    "@tanstack/react-query": "^5.59.15",
     "classnames": "^2.3.2",
     "dayjs": "^1.11.7",
+    "ethers": "^6.13.4",
     "lottie-react": "^2.4.0",
     "prop-types": "^15.8.1",
     "react": "^18.0.1",
@@ -45,7 +50,9 @@
     "reactjs-social-login": "^2.6.2",
     "sass": "^1.58.3",
     "styled-components": "^5.3.6",
-    "swiper": "^9.0.5"
+    "swiper": "^9.0.5",
+    "viem": "^2.21.32",
+    "wagmi": "^2.12.21"
   },
   "scripts": {
     "setup": "npm i && dfx canister create fairbid_v2_backend && dfx generate fairbid_v2_backend && dfx deploy",

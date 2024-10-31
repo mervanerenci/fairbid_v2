@@ -15,7 +15,12 @@ use std::collections::{BTreeMap, BTreeSet};
 mod eng_auction;
 mod dutch_auction;
 mod sb_auction;
+mod payment;
 
+mod get_balance;
+mod get_eth;
+mod get_alchemy;
+// mod evm_rpc;
 // TYPES START //
 
 type Memory = VirtualMemory<DefaultMemoryImpl>;

@@ -5,10 +5,12 @@ import {NavLink} from 'react-router-dom';
 import {memo} from 'react';
 import PropTypes from 'prop-types';
 
+import { FaArrowRight } from 'react-icons/fa';
+
 const LinkWithArrow = ({href, text}) => {
     return (
         <NavLink className="link-arrow" to={href}>
-            {text} <i className="icon icon-arrow-right text-accent"/>
+            {text} <FaArrowRight className="text-accent" />
         </NavLink>
     )
 }

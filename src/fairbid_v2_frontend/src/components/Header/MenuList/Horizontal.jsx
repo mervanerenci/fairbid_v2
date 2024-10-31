@@ -15,6 +15,74 @@ import {useState, useEffect} from 'react';
 import classNames from 'classnames';
 import {memo} from 'react';
 
+import React from 'react';
+import { FaBars, FaSearch, FaWallet, FaSignOutAlt } from 'react-icons/fa';
+
+
+// auth
+import { AuthClient } from "@dfinity/auth-client";
+import { canisterId, createActor } from "../../../declarations/fairbid_v2_backend/index";
+import {useAuth} from '@contexts/authContext';
+
+const SignInButton = () => {
+    const { isLogged, setIsLogged } = useAuth();
+    const [authClient, setAuthClient] = useState(null);
+  
+    useEffect(() => {
+      AuthClient.create().then(setAuthClient);
+    }, []);
+  
+    const handleLogin = async () => {
+      if (!authClient) return;
+  
+      const identity = await authClient.login({
+        identityProvider: process.env.DFX_NETWORK === "ic"
+        ? `http://be2us-64aaa-aaaaa-qaabq-cai.localhost:4943`
+        : `http://be2us-64aaa-aaaaa-qaabq-cai.localhost:4943`,
+        onSuccess: () => {
+          setIsLogged(true);
+          const actor = createActor(canisterId, {
+            agentOptions: {
+              identity: authClient.getIdentity(),
+            },
+          });
+          // You can now use this actor to make authenticated calls to your backend
+        },
+      });
+    };
+  
+    return (
+      <>
+        {!isLogged ? (
+          <GradientBtn onClick={handleLogin}> 
+            Sign In
+          </GradientBtn>
+        ) : (
+          <LogoutButton />
+        )}
+      </>
+    );
+};
+
+  const LogoutButton = () => {
+    const {isLogged, setIsLogged} = useAuth();
+
+    return (
+        <>
+            {
+                isLogged ? (
+                    <button className="btn "
+                            aria-label="Logout"
+                            onClick={() => setIsLogged(!isLogged)}
+                            style={{alignSelf: 'center'}}>
+                        <FaSignOutAlt />
+                    </button>
+                ) : null
+            }
+        </>
+    )
+}
+
 const DropdownItem = ({title, children}) => {
     const [open, setOpen] = useState(false);
     const location = useLocation();
@@ -102,9 +170,7 @@ const Horizontal = ({links}) => {
                                     </div>
                                     :
                                     <Fragment key="wrapper">
-                                        <GradientBtn href="/connect-wallet">
-                                            Sign In
-                                        </GradientBtn>
+                                        <SignInButton/>
                                         <DropdownItem title={<DropdownMenu/>}>
                                             <UserLink>
                                                 <i className="icon icon-user"/>

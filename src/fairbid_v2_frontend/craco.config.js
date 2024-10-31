@@ -23,6 +23,9 @@ module.exports = {
             '@constants': path.resolve(__dirname, 'src/constants'),
             '@app': path.resolve(__dirname, 'src/app'),
             '@features': path.resolve(__dirname, 'src/features'),
+            'react-refresh/runtime': require.resolve('react-refresh/runtime'),
+            '@declarations': path.resolve(__dirname, 'src/declarations'),
         },
+        symlinks: true,
     },
 };

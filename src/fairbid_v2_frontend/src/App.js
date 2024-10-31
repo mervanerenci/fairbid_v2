@@ -27,6 +27,26 @@ import AppLayout from '@components/AppLayout';
 import { HashRouter, Route, Routes } from 'react-router-dom';
 import ScrollToTop from '@components/ScrollToTop';
 
+// import { config } from "./service/config"
+// import { WagmiConfig } from "wagmi"
+
+import { createPublicClient, http, createClient } from "viem"
+import { createConfig, WagmiConfig  } from "wagmi"
+import {  sepolia } from 'wagmi/chains'
+import { injected } from 'wagmi/connectors'
+import { metaMask } from 'wagmi/connectors'
+
+
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
+export const config = createConfig({
+    chains: [sepolia],
+    connectors: [injected()],
+    client({ chain }) {
+      return createClient({ chain, transport: http() })
+    }
+  })
+
 // pages
 const Home = lazy(() => import('@pages/Home'));
 const ExplorePage = lazy(() => import('@pages/ExplorePage'));
@@ -54,6 +74,10 @@ const SellerProfile = lazy(() => import('@pages/SellerProfile'));
 const Deposit = lazy(() => import('@pages/Deposit'));
 const Withdraw = lazy(() => import('@pages/Withdraw')); 
 
+// Create a react-query client
+const queryClient = new QueryClient()
+
+
 const App = () => {
     useEffect(() => {
         preventDefault();
@@ -63,8 +87,10 @@ const App = () => {
     gaKey && ReactGA.initialize(gaKey);
 
     return (
-        <AuthAPI>
-            <BidModalContextAPI>
+        <WagmiConfig config={config}>
+            <QueryClientProvider client={queryClient}>
+            <AuthAPI>
+                <BidModalContextAPI>
                 <SidebarContextAPI>
                     <ScrollToTop/>
                     <AppLayout>
@@ -92,6 +118,8 @@ const App = () => {
                 </SidebarContextAPI>
             </BidModalContextAPI>
         </AuthAPI>
+        </QueryClientProvider>
+        </WagmiConfig>
     )
 }
 

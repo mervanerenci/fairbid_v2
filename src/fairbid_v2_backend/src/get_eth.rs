@@ -53,19 +53,24 @@ pub const CANISTER_ID: Principal = Principal::from_slice(b"\x00\x00\x00\x00\x02\
     // Function for getting transaction receipt the transaction hash
 async fn eth_get_transaction_receipt(hash: String) -> Result<GetTransactionReceiptResult, String> {
     // Make the call to the EVM_RPC canister
-    let result: Result<(MultiGetTransactionReceiptResult,), String> = EVM_RPC 
-        .eth_get_transaction_receipt(
+    let result: Result<(MultiGetTransactionReceiptResult,), _> = call_with_payment128(
+        CANISTER_ID,
+        "eth_getTransactionReceipt",
+        (
             RpcServices::EthSepolia(Some(vec![
                 EthSepoliaService::PublicNode,
                 EthSepoliaService::BlockPi,
                 EthSepoliaService::Ankr,
             ])),
-            None, 
-            hash, 
-            10_000_000_000
-        )
-        .await 
-        .map_err(|e| format!("Failed to call eth_getTransactionReceipt: {:?}", e));
+            (),
+            hash,
+        ),
+        10_000_000_000,
+    )
+    .await
+    .map_err(|e| format!("Failed to call eth_getTransactionReceipt: {:?}", e));
+
+    println!("Raww result: {:?}", result);
 
     match result {
         Ok((MultiGetTransactionReceiptResult::Consistent(receipt),)) => {
