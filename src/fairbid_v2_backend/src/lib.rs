@@ -15,12 +15,13 @@ use std::collections::{BTreeMap, BTreeSet};
 mod eng_auction;
 mod dutch_auction;
 mod sb_auction;
-mod payment;
 
-mod get_balance;
+
 mod get_eth;
 mod get_alchemy;
-// mod evm_rpc;
+
+use get_alchemy::verify_transaction;
+use get_alchemy::VerificationResult;
 // TYPES START //
 
 type Memory = VirtualMemory<DefaultMemoryImpl>;
@@ -30,6 +31,7 @@ type Items = HashMap<AuctionId, ItemDetails>;
 type QuestionMap = HashMap<QuestionId, Conversation>;
 type ConversationMap = BTreeMap<AuctionId, Vec<u64>>;
 type BuyCodes = HashMap<AuctionId, u64>;
+type Credits = HashMap<Principal, u64>;
 
 
 type QuestionId = u64;
@@ -164,6 +166,20 @@ pub struct Conversation {
     is_private: bool,
 }
 
+#[derive(CandidType, Deserialize, Clone)]
+pub struct CreditTransaction {
+    amount: u64,
+    timestamp: u64,
+    transaction_type: TransactionType,
+}
+
+#[derive(CandidType, Deserialize, Clone)]
+pub enum TransactionType {
+    Deposit,
+    Withdrawal,
+    Spend,
+}
+
 
 //TYPES END //
 
@@ -222,6 +238,22 @@ impl BoundedStorable for SbAuction {
     const IS_FIXED_SIZE: bool = false;
 }
 
+
+impl Storable for CreditTransaction {
+    fn to_bytes(&self) -> Cow<[u8]> {
+        Cow::Owned(Encode!(self).unwrap())
+    }
+
+    fn from_bytes(bytes: Cow<[u8]>) -> Self {
+        Decode!(bytes.as_ref(), Self).unwrap()
+    }
+}
+
+impl BoundedStorable for CreditTransaction {
+    const MAX_SIZE: u32 = MAX_VALUE_SIZE;
+    const IS_FIXED_SIZE: bool = false;
+}
+
 thread_local! {
     
     // pub static ENGLISH_AUCTION_MAP: RefCell<StableBTreeMap<AuctionId, Auction, Memory>> = RefCell::new(StableBTreeMap::init(MEMORY_MANAGER.with(|mm| mm.borrow().get(MemoryId::new(0)))));            
@@ -250,7 +282,11 @@ thread_local! {
     pub static SCHEDULED_DUTCH_AUCTIONS: RefCell<HashMap<AuctionId, DutchAuction>> = RefCell::default();
     // SCHEDULED_SB_AUCTIONS_MAP
     pub static SCHEDULED_SB_AUCTIONS: RefCell<HashMap<AuctionId, SbAuction>> = RefCell::default();
-     
+
+
+    pub static CREDITS: RefCell<Credits> = RefCell::default();
+    pub static CREDIT_HISTORY: RefCell<HashMap<Principal, Vec<CreditTransaction>>> = RefCell::default();
+   
     
 }
 
@@ -293,6 +329,20 @@ fn init() {
 #[pre_upgrade]
 
 fn pre_upgrade() {
+
+    CREDITS.with(|credits| {
+        let credits = credits.borrow();
+        if let Err(e) = storage::stable_save((credits.clone(),)) {
+            ic_cdk::api::print(format!("Failed to save credits to stable memory: {:?}", e));
+        }
+    });
+
+    CREDIT_HISTORY.with(|history| {
+        let history = history.borrow();
+        if let Err(e) = storage::stable_save((history.clone(),)) {
+            ic_cdk::api::print(format!("Failed to save credit history to stable memory: {:?}", e));
+        }
+    });
 
     ENGLISH_AUCTION_MAP.with(|english_auction_map| {
         let english_auction_map = english_auction_map.borrow();
@@ -497,12 +547,96 @@ fn post_upgrade() {
         }
     }
 
+    match storage::stable_restore::<(Credits,)>() {
+        Ok((old_credits,)) => {
+            CREDITS.with(|credits| *credits.borrow_mut() = old_credits);
+        }
+        Err(e) => {
+            ic_cdk::api::print(format!("Failed to restore credits from stable memory: {:?}", e));
+        }
+    }
+
+    match storage::stable_restore::<(HashMap<Principal, Vec<CreditTransaction>>,)>() {
+        Ok((old_history,)) => {
+            CREDIT_HISTORY.with(|history| *history.borrow_mut() = old_history);
+        }
+        Err(e) => {
+            ic_cdk::api::print(format!("Failed to restore credit history from stable memory: {:?}", e));
+        }
+    }
+
 
 
 }
 
 
+///                                                            ///
+///                                                            ///
+///                                                            ///
+//////////////////////////////////////////////////////////////////
+/////////////////////////  CREDITS  //////////////////////////////
+//////////////////////////////////////////////////////////////////
+///                                                            ///
+///                                                            ///
+///                                                            ///
 
+
+#[ic_cdk::update]
+pub async fn add_credits(amount: u64, tx_hash: String) -> Result<(), String> {
+    let caller = ic_cdk::caller();
+    
+    // Verify the transaction first
+    let verification = verify_transaction(tx_hash).await;
+    
+    // Convert the verified amount from Nat to u64
+    let verified_amount = u64::try_from(verification.amount.0)
+        .map_err(|_| "Amount too large to process".to_string())?;
+
+    if verified_amount != amount {
+        return Err(format!("Amount mismatch: expected {}, got {}", amount, verified_amount));
+    }
+
+    CREDITS.with(|credits| {
+        let mut credits = credits.borrow_mut();
+        let new_balance = credits.get(&caller).unwrap_or(&0) + amount;
+        credits.insert(caller, new_balance);
+    });
+
+    // Record the transaction
+    let transaction = CreditTransaction {
+        amount,
+        timestamp: ic_cdk::api::time(),
+        transaction_type: TransactionType::Deposit,
+    };
+
+    CREDIT_HISTORY.with(|history| {
+        let mut history = history.borrow_mut();
+        history.entry(caller)
+            .or_insert_with(Vec::new)
+            .push(transaction);
+    });
+
+    Ok(())
+}
+
+#[ic_cdk::query]
+pub fn get_credit_balance() -> u64 {
+    let caller = ic_cdk::caller();
+    CREDITS.with(|credits| {
+        *credits.borrow().get(&caller).unwrap_or(&0)
+    })
+}
+
+#[ic_cdk::query]
+pub fn get_credit_history() -> Vec<CreditTransaction> {
+    let caller = ic_cdk::caller();
+    CREDIT_HISTORY.with(|history| {
+        history.borrow()
+            .get(&caller)
+            .cloned()
+            .unwrap_or_default()
+    })
+}
 
 
 

@@ -42,6 +42,7 @@ const VerifyTransaction = ({ hash }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [data, setData] = useState(null);
+    const [creditsAdded, setCreditsAdded] = useState(false);
   
     useEffect(() => {
       const verifyTx = async () => {
@@ -55,6 +56,15 @@ const VerifyTransaction = ({ hash }) => {
             setError("Verification failed: No data received");
             setData(null);
           }
+
+          if (!creditsAdded) {
+            
+            let amount = Number(result.amount.toString());
+
+            await backend.add_credits(amount, hash);
+            setCreditsAdded(true);
+            
+        }
         } catch (err) {
           console.error("Verification error:", err);
           setError(err?.message || "An error occurred during verification");
@@ -90,12 +100,18 @@ const VerifyTransaction = ({ hash }) => {
         </div>
       );
     }
-  
+    
+    
     try {
       return (
         <div className="verification-success">
           Transaction(<b>{hash}</b>) with <b>{formatEther(data.amount)}</b>ETH from{" "}
           <b>{data.from}</b> is confirmed on-chain.
+          {creditsAdded && (
+                <p className="credits-added">
+                    ✓ Credits have been added to your account
+                </p>
+            )}
         </div>
       );
     } catch (displayError) {

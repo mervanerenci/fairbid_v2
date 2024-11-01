@@ -49,44 +49,38 @@ const MenuTrigger = ({handler}) => {
     )
 }
 const SignInButton = () => {
-    const { isLogged, setIsLogged } = useAuth();
-    const [authClient, setAuthClient] = useState(null);
-  
-    useEffect(() => {
-      AuthClient.create().then(setAuthClient);
-    }, []);
+    const { isLogged, setIsLogged, authClient } = useAuth();
   
     const handleLogin = async () => {
-      if (!authClient) return;
+        if (!authClient) return;
   
-      const identity = await authClient.login({
-        identityProvider: process.env.DFX_NETWORK === "ic"
-        ? `http://be2us-64aaa-aaaaa-qaabq-cai.localhost:4943`
-        : `http://be2us-64aaa-aaaaa-qaabq-cai.localhost:4943`,
-        onSuccess: () => {
-          setIsLogged(true);
-          const actor = createActor(canisterId, {
-            agentOptions: {
-              identity: authClient.getIdentity(),
+        await authClient.login({
+            identityProvider: process.env.DFX_NETWORK === "ic"
+                ? `http://be2us-64aaa-aaaaa-qaabq-cai.localhost:4943`
+                : `http://be2us-64aaa-aaaaa-qaabq-cai.localhost:4943`,
+            onSuccess: () => {
+                setIsLogged(true);
+                const actor = createActor(canisterId, {
+                    agentOptions: {
+                        identity: authClient.getIdentity(),
+                    },
+                });
             },
-          });
-          // You can now use this actor to make authenticated calls to your backend
-        },
-      });
+        });
     };
-  
+
     return (
-      <>
-        {!isLogged ? (
-          <GradientBtn onClick={handleLogin}> 
-            Sign In
-          </GradientBtn>
-        ) : (
-          <LogoutButton />
-        )}
-      </>
+        <>
+            {!isLogged ? (
+                <GradientBtn onClick={handleLogin}>
+                    Sign In
+                </GradientBtn>
+            ) : (
+                <LogoutButton />
+            )}
+        </>
     );
-  };
+};
 
 const LogoutButton = () => {
     const {isLogged, setIsLogged} = useAuth();

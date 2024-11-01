@@ -95,201 +95,28 @@ type Conversation = record {
     originator: principal;
 };
 
-type GetTransactionReceiptResult = variant {
-  Ok : opt TransactionReceipt;
-  Err : RpcError;
-};
 
-type SimplifiedReceipt = record {
-    status: opt nat64;
-    transaction_hash: text;
-    block_number: opt nat64;
-    from: text;
-    to: opt text;
-    contract_address: opt text;
-    gas_used: nat64;
-};
-
-
-
-
-type HttpOutcallError = variant {
-  IcError : record { code : RejectionCode; message : text };
-  InvalidHttpJsonRpcResponse : record {
-    status : nat16;
-    body : text;
-    parsingError : opt text;
-  };
-};
-type ICRC1TransferError = variant {
-  GenericError : record { message : text; error_code : nat };
-  TemporarilyUnavailable;
-  BadBurn : record { min_burn_amount : nat };
-  Duplicate : record { duplicate_of : nat };
-  BadFee : record { expected_fee : nat };
-  CreatedInFuture : record { ledger_time : nat64 };
-  TooOld;
-  InsufficientFunds : record { balance : nat };
-};
-type ICRC2ApproveError = variant {
-  GenericError : record { message : text; error_code : nat };
-  TemporarilyUnavailable;
-  Duplicate : record { duplicate_of : nat };
-  BadFee : record { expected_fee : nat };
-  AllowanceChanged : record { current_allowance : nat };
-  CreatedInFuture : record { ledger_time : nat64 };
-  TooOld;
-  Expired : record { ledger_time : nat64 };
-  InsufficientFunds : record { balance : nat };
-};
-type JsonRpcError = record { code : int64; message : text };
-type LogEntry = record {
-  transactionHash : opt text;
-  blockNumber : opt nat;
-  data : text;
-  blockHash : opt text;
-  transactionIndex : opt nat;
-  topics : vec text;
-  address : text;
-  logIndex : opt nat;
-  removed : bool;
-};
-type ProviderError = variant {
-  TooFewCycles : record { expected : nat; received : nat };
-  MissingRequiredProvider;
-  ProviderNotFound;
-  NoPermission;
-};
-type RejectionCode = variant {
-  NoError;
-  CanisterError;
-  SysTransient;
-  DestinationInvalid;
-  Unknown;
-  SysFatal;
-  CanisterReject;
-};
-type Result = variant { Ok : nat; Err : ICRC2ApproveError };
-type Result_1 = variant { Ok : nat; Err : ICRC1TransferError };
-type Result_2 = variant { Ok : RetrieveEthRequest; Err : WithdrawalError };
-type RetrieveEthRequest = record { block_index : nat };
-type RpcError = variant {
-  JsonRpcError : JsonRpcError;
-  ProviderError : ProviderError;
-  ValidationError : ValidationError;
-  HttpOutcallError : HttpOutcallError;
-};
-type TransactionReceipt = record {
-  to : text;
-  status : nat;
-  transactionHash : text;
-  blockNumber : nat;
-  from : text;
-  logs : vec LogEntry;
-  blockHash : text;
-  "type" : text;
-  transactionIndex : nat;
-  effectiveGasPrice : nat;
-  logsBloom : text;
-  contractAddress : opt text;
-  gasUsed : nat;
-};
-type ValidationError = variant {
-  CredentialPathNotAllowed;
-  HostNotAllowed : text;
-  CredentialHeaderNotAllowed;
-  UrlParseError : text;
-  Custom : text;
-  InvalidHex : text;
-};
-type VerifiedTransactionDetails = record { from : text; amount : nat };
-type WithdrawalError = variant {
-  TemporarilyUnavailable : text;
-  InsufficientAllowance : record { allowance : nat };
-  AmountTooLow : record { min_withdrawal_amount : nat };
-  InsufficientFunds : record { balance : nat };
-};
-
-type MultiGetBlockByNumberResult = record {
-    number: nat64;
-    timestamp: nat64;
-    transactions: vec Transaction;
-};
-
-type MultiGetTransactionReceiptResult = variant {
-  Inconsistent : vec record {
-    provider : Provider;
-    result : ProviderResult;
-  };
-};
-
-type Provider = variant {
-  EthSepolia : EthSepoliaProvider;
-};
-
-type EthSepoliaProvider = variant {
-  BlockPi;
-  PublicNode;
-  Sepolia;
-};
-
-type ProviderResult = variant {
-  Ok : opt TransactionReceipt;
-  Err : ProviderError;
-};
-
-type Block = record {
-  baseFeePerGas : nat;
-  difficulty : nat;
-  extraData : text;
-  gasLimit : nat;
-  gasUsed : nat;
-  hash : text;
-  logsBloom : text;
-  miner : text;
-  mixHash : text;
-  nonce : nat;
-  number : nat;
-  parentHash : text;
-  receiptsRoot : text;
-  sha3Uncles : text;
-  size : nat;
-  stateRoot : text;
-  timestamp : nat;
-  totalDifficulty : nat;
-  transactions : vec text;
-  transactionsRoot : opt text;
-  uncles : vec text;
-};
-
-
-type Transaction = record {
-  hash : text;
-  nonce : nat;
-  block_hash : opt text;
-  block_number : opt nat;
-  transaction_index : opt nat;
-  from : text;
-  to : opt text;
-  value : nat;
-  gas_price : nat;
-  gas : nat;
-  input : text;
-  v : nat;
-  r : text;
-  s : text;
-};
 
 type VerificationResult = record {
     amount: nat;
     from: text;
 };
 
-// TODO
+type TransactionType = variant {
+    Deposit;
+    Withdrawal;
+    Spend;
+};
+
+type CreditTransaction = record {
+    amount: nat64;
+    timestamp: nat64;
+    transaction_type: TransactionType;
+};
 
 
-// post and pre upgrade functions and new storage types(refcell) -> " 1 sesh"
-// type reformatting for each auction type
+
+
 
 
 
@@ -431,28 +258,242 @@ service : {
     
     who_am_i: () -> (principal) query;
 
-    /////////////////////////////////////////
-    deposit_principal: (princip: text) -> (text) query;
-    // get_receipt: (hash: text) -> (GetTransactionReceiptResult);
     
+    ///// Payments /////
+
+    deposit_principal: (princip: text) -> (text) query;
     canister_deposit_principal: () -> (text) query;
-    get_latest_sepolia_block : () -> (variant { Ok : Block; Err : text });
-    get_latest_ethereum_block : () -> (Block);
-    // get_tx_receipt : (hash : text) -> (GetTransactionReceiptResult);
-    get_tx_receipt :  (hash : text) -> (variant { Ok : opt TransactionReceipt; Err : text });
-    get_receipt : (hash : text) -> (GetTransactionReceiptResult);
     get_transaction_receipt : (hash : text) -> (text);
+
     // returns amount and sender , nat and text
     verify_transaction: (hash: text) -> (VerificationResult);
+
+    add_credits: (amount: nat64, hash: text) -> (variant { Ok: null; Err: text });
+    get_credit_balance: () -> (nat64) query;
+    get_credit_history: () -> (vec CreditTransaction) query;
     
     
     
     
     
-    // get_balance : (opt text) -> (Result);
-    // eth_get_tx_receipt : (hash : text) -> (variant { Ok : opt GetTransactionReceiptResult; Err : text });
+    
 };
 
 
 //EVM-RPC GET RECEIPT CALL FROM DFX
 //////   dfx canister call evm_rpc eth_getTransactionReceipt '(variant {EthSepolia}, null, "0x0dab5ef451bf8072b51f4f398d5a55650483007ce060cf98273922bdaca48a82")' --wallet $(dfx identity get-wallet) --with-cycles 1000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// OLD ENTRIES
+
+// get_tx_receipt : (hash : text) -> (GetTransactionReceiptResult);
+// get_tx_receipt :  (hash : text) -> (variant { Ok : opt TransactionReceipt; Err : text });
+// get_receipt : (hash : text) -> (GetTransactionReceiptResult);
+// get_latest_sepolia_block : () -> (variant { Ok : Block; Err : text });
+// get_latest_ethereum_block : () -> (Block);
+// get_balance : (opt text) -> (Result);
+// eth_get_tx_receipt : (hash : text) -> (variant { Ok : opt GetTransactionReceiptResult; Err : text });
+// get_receipt: (hash: text) -> (GetTransactionReceiptResult);
+
+
+
+//type GetTransactionReceiptResult = variant {
+//     Ok : opt TransactionReceipt;
+//     Err : RpcError;
+//   };
+  
+//   type SimplifiedReceipt = record {
+//       status: opt nat64;
+//       transaction_hash: text;
+//       block_number: opt nat64;
+//       from: text;
+//       to: opt text;
+//       contract_address: opt text;
+//       gas_used: nat64;
+//   };
+  
+  
+  
+  
+//   type HttpOutcallError = variant {
+//     IcError : record { code : RejectionCode; message : text };
+//     InvalidHttpJsonRpcResponse : record {
+//       status : nat16;
+//       body : text;
+//       parsingError : opt text;
+//     };
+//   };
+//   type ICRC1TransferError = variant {
+//     GenericError : record { message : text; error_code : nat };
+//     TemporarilyUnavailable;
+//     BadBurn : record { min_burn_amount : nat };
+//     Duplicate : record { duplicate_of : nat };
+//     BadFee : record { expected_fee : nat };
+//     CreatedInFuture : record { ledger_time : nat64 };
+//     TooOld;
+//     InsufficientFunds : record { balance : nat };
+//   };
+//   type ICRC2ApproveError = variant {
+//     GenericError : record { message : text; error_code : nat };
+//     TemporarilyUnavailable;
+//     Duplicate : record { duplicate_of : nat };
+//     BadFee : record { expected_fee : nat };
+//     AllowanceChanged : record { current_allowance : nat };
+//     CreatedInFuture : record { ledger_time : nat64 };
+//     TooOld;
+//     Expired : record { ledger_time : nat64 };
+//     InsufficientFunds : record { balance : nat };
+//   };
+//   type JsonRpcError = record { code : int64; message : text };
+//   type LogEntry = record {
+//     transactionHash : opt text;
+//     blockNumber : opt nat;
+//     data : text;
+//     blockHash : opt text;
+//     transactionIndex : opt nat;
+//     topics : vec text;
+//     address : text;
+//     logIndex : opt nat;
+//     removed : bool;
+//   };
+//   type ProviderError = variant {
+//     TooFewCycles : record { expected : nat; received : nat };
+//     MissingRequiredProvider;
+//     ProviderNotFound;
+//     NoPermission;
+//   };
+//   type RejectionCode = variant {
+//     NoError;
+//     CanisterError;
+//     SysTransient;
+//     DestinationInvalid;
+//     Unknown;
+//     SysFatal;
+//     CanisterReject;
+//   };
+//   type Result = variant { Ok : nat; Err : ICRC2ApproveError };
+//   type Result_1 = variant { Ok : nat; Err : ICRC1TransferError };
+//   type Result_2 = variant { Ok : RetrieveEthRequest; Err : WithdrawalError };
+//   type RetrieveEthRequest = record { block_index : nat };
+//   type RpcError = variant {
+//     JsonRpcError : JsonRpcError;
+//     ProviderError : ProviderError;
+//     ValidationError : ValidationError;
+//     HttpOutcallError : HttpOutcallError;
+//   };
+//   type TransactionReceipt = record {
+//     to : text;
+//     status : nat;
+//     transactionHash : text;
+//     blockNumber : nat;
+//     from : text;
+//     logs : vec LogEntry;
+//     blockHash : text;
+//     "type" : text;
+//     transactionIndex : nat;
+//     effectiveGasPrice : nat;
+//     logsBloom : text;
+//     contractAddress : opt text;
+//     gasUsed : nat;
+//   };
+//   type ValidationError = variant {
+//     CredentialPathNotAllowed;
+//     HostNotAllowed : text;
+//     CredentialHeaderNotAllowed;
+//     UrlParseError : text;
+//     Custom : text;
+//     InvalidHex : text;
+//   };
+//   type VerifiedTransactionDetails = record { from : text; amount : nat };
+//   type WithdrawalError = variant {
+//     TemporarilyUnavailable : text;
+//     InsufficientAllowance : record { allowance : nat };
+//     AmountTooLow : record { min_withdrawal_amount : nat };
+//     InsufficientFunds : record { balance : nat };
+//   };
+  
+//   type MultiGetBlockByNumberResult = record {
+//       number: nat64;
+//       timestamp: nat64;
+//       transactions: vec Transaction;
+//   };
+  
+//   type MultiGetTransactionReceiptResult = variant {
+//     Inconsistent : vec record {
+//       provider : Provider;
+//       result : ProviderResult;
+//     };
+//   };
+  
+//   type Provider = variant {
+//     EthSepolia : EthSepoliaProvider;
+//   };
+  
+//   type EthSepoliaProvider = variant {
+//     BlockPi;
+//     PublicNode;
+//     Sepolia;
+//   };
+  
+//   type ProviderResult = variant {
+//     Ok : opt TransactionReceipt;
+//     Err : ProviderError;
+//   };
+  
+//   type Block = record {
+//     baseFeePerGas : nat;
+//     difficulty : nat;
+//     extraData : text;
+//     gasLimit : nat;
+//     gasUsed : nat;
+//     hash : text;
+//     logsBloom : text;
+//     miner : text;
+//     mixHash : text;
+//     nonce : nat;
+//     number : nat;
+//     parentHash : text;
+//     receiptsRoot : text;
+//     sha3Uncles : text;
+//     size : nat;
+//     stateRoot : text;
+//     timestamp : nat;
+//     totalDifficulty : nat;
+//     transactions : vec text;
+//     transactionsRoot : opt text;
+//     uncles : vec text;
+//   };
+  
+  
+//   type Transaction = record {
+//     hash : text;
+//     nonce : nat;
+//     block_hash : opt text;
+//     block_number : opt nat;
+//     transaction_index : opt nat;
+//     from : text;
+//     to : opt text;
+//     value : nat;
+//     gas_price : nat;
+//     gas : nat;
+//     input : text;
+//     v : nat;
+//     r : text;
+//     s : text;
+//   };

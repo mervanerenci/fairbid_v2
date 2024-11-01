@@ -18,7 +18,7 @@ use b3_utils::Subaccount;
 use candid::Principal;
 
 const MINTER_ADDRESS: &str = "0xb44b5e756a894775fc32eddf3314bb1b1944dc34";
-
+const ALCHEMY_API_KEY: &str = "XxgJ2PxT7vT_u9Bzz8cilmM6nuit4qFK";
 
 #[derive(CandidType, Deserialize)]
 pub struct VerifiedTransactionDetails {
@@ -73,7 +73,7 @@ fn deposit_principal(principal: String) -> String {
 
 // Then modify the verify_transaction function
 #[ic_cdk::update]
-async fn verify_transaction(hash: String) -> VerificationResult {
+pub async fn verify_transaction(hash: String) -> VerificationResult {
     let receipt_str = get_transaction_receipt(hash).await;
     
     // Parse the JSON string into our TransactionReceipt struct
@@ -102,7 +102,7 @@ async fn verify_transaction(hash: String) -> VerificationResult {
     }
 }
 
-const ALCHEMY_API_KEY: &str = "XxgJ2PxT7vT_u9Bzz8cilmM6nuit4qFK";
+
 
 #[ic_cdk::update]
 async fn get_transaction_receipt(tx_hash: String) -> String {
@@ -201,3 +201,5 @@ fn transform(raw: TransformArgs) -> HttpResponse {
     }
     res
 }
+
+
