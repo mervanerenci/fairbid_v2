@@ -18,6 +18,8 @@ target/
 
 src/fairbid_v2_frontend/src/assets
 
+src/fairbid_v2_frontend/build
+
 # frontend code
 node_modules/
 dist/

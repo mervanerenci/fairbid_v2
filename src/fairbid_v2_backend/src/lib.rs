@@ -638,6 +638,30 @@ pub fn get_credit_history() -> Vec<CreditTransaction> {
     })
 }
 
+// Transfer credit to another user
+// #[ic_cdk::update]
+// pub fn transfer_credit(to: Principal, amount: u64) -> Result<(), String> {
+//     let caller = ic_cdk::caller();
+//     let amount = amount;
+
+//     CREDITS.with(|credits| {
+//         let mut credits = credits.borrow_mut();
+//         let caller_balance = credits.get(&caller).unwrap_or(&0);
+//         if *caller_balance < amount {
+//             return Err(format!("Caller does not have enough credits to transfer. Caller has {} credits, trying to transfer {}", caller_balance, amount));
+//         }
+
+//         let new_caller_balance = *caller_balance - amount;
+//         credits.insert(caller, new_caller_balance);
+
+//         let recipient_balance = credits.get(&to).unwrap_or(&0);
+//         let new_recipient_balance = *recipient_balance + amount;
+//         credits.insert(to, new_recipient_balance);
+//     });
+
+//     Ok(())
+// }
+
 
 
 

@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkfairbid_v2_frontend=self.webpackChunkfairbid_v2_frontend||[]).push([[6451],{56451:(e,f,r)=>{r.r(f),r.d(f,{default:()=>a.A});var a=r(18713)}}]);
