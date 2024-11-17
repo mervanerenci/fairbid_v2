@@ -8,110 +8,89 @@ import GradientBtn from '@ui/GradientBtn';
 import StyledProgress from '@ui/StyledProgress';
 
 // hooks
-import {useRef, useEffect} from 'react';
+import {useRef, useEffect, useState} from 'react';
 import {useForm} from 'react-hook-form';
 import useFileReader from '@hooks/useFileReader';
-
+import { useAuth } from '@contexts/useAuthClient';
+import { useCredits } from '@contexts/useCredits';
 // utils
 import classNames from 'classnames';
 
 // assets
 import cover from '@assets/cover.webp';
 
-const DepositDetails = () => {
-    const {register, handleSubmit, formState: {errors}} = useForm();
-    const {file, setFile, handleFile, loading} = useFileReader();
-    const inputRef = useRef(null);
-
-    const triggerInput = () => inputRef.current?.click();
-
-    const setPlaceholder = () => setFile(cover);
-
-    const handleDelete = () => {
-        setPlaceholder();
-        toast.info('Cover photo was successfully deleted.');
-    };
-
-    const onSubmit = () => {
-        toast.info('Profile details updated successfully!');
-    }
+const WithdrawDetails = () => {
+    const [amount, setAmount] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const { credits, fetchCredits } = useCredits();
+    const { backendActor } = useAuth();
 
     useEffect(() => {
-        setPlaceholder();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+        fetchCredits();
+    }, [fetchCredits]);
+
+    const handleWithdraw = async () => {
+        if (!amount || parseFloat(amount) <= 0) {
+            toast.error("Please enter a valid amount");
+            return;
+        }
+
+        if (parseFloat(amount) > credits) {
+            toast.error("Insufficient balance");
+            return;
+        }
+
+        try {
+            setIsLoading(true);
+            await backendActor.withdraw_credit(parseFloat(amount));
+            toast.success('Withdrawal successful!');
+            setAmount('');
+            fetchCredits();
+        } catch (err) {
+            console.error("Error during withdrawal:", err);
+            toast.error(err.message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
-        <div className={`${styles.wrapper} border-10`}>
-            {/* <div className={`${styles.cover} border-10`}>
-                <LazyImage className={styles.cover_bg} src={file ? file : cover} alt="cover"/>
-                <span className={styles.cover_overlay}>
-                    
-                </span>
-                {loading && <StyledProgress visible isOverlay />}
-            </div> */}
-            <div className="d-flex flex-column g-20">
-                <h5 >Withdraw</h5>
-                <form className="d-flex flex-column g-40" onSubmit={handleSubmit(onSubmit)}>
-                    <div className="d-flex flex-column g-20">
-                        <div className={styles.group}>
-                            <input type="file" ref={inputRef} onChange={handleFile} hidden/>
-                            <input className={classNames('field field--outline', {'field--error': errors.firstName})}
-                                   type="number"
-                                //    defaultValue="0"
-                                   placeholder="Amount"
-                                   {...register('amount', {required: true})}/>
-                            {/* <input className={classNames('field field--outline', {'field--error': errors.lastName})}
-                                   type="text"
-                                   defaultValue="Jackson"
-                                   placeholder="Last name"
-                                   {...register('lastName', {required: true})}/>
-                            <input className={classNames('field field--outline', {'field--error': errors.email})}
-                                   type="text"
-                                   placeholder="Email"
-                                   {...register('email', {required: false, pattern: /^\S+@\S+$/i})} />
-                            <input className={classNames('field field--outline', {'field--error': errors.phone})}
-                                   type="text"
-                                   placeholder="Phone number"
-                                   {...register('phone', {required: false, pattern: /^\d{10}$/})} /> */}
-                        </div>
-                        {/* <input className={classNames('field field--outline', {'field--error': errors.url})}
-                               type="text"
-                               placeholder="Custom URL"
-                               {...register('url', {
-                                   required: false,
-                                   pattern: /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/
-                               })} /> */}
-                        {/* <textarea className={`${styles.textarea} field field--outline`} placeholder="Enter your bio"
-                                  {...register('bio', {required: false})} /> */}
-                    </div>
-                    <div className={styles.buttons}>
-                        <GradientBtn tag="button" type="submit">Confirm</GradientBtn>
-                        {/* <button className="btn btn--outline">Preview</button> */}
-                    </div>
-                </form>
-                <h5 >Credits Balance</h5>
-                <div className={styles.balance}>
-                    <span className="text-bold">0.0000</span>
-                    <span className="text-light">Credits(ETH)</span>
-                    {/* <GradientBtn className={styles.btn} tag="button">Deposit</GradientBtn>        
-                    <button className="btn btn--outline">
-                        Withdraw
-                    </button> */}
+        <div className={styles.container}>
+            <div className={styles.balanceCard}>
+                <h3>Available Balance</h3>
+                <div className={styles.balanceAmount}>
+                    <span>{credits}</span>
+                    <small>Credits (ETH)</small>
+                </div>
+            </div>
 
-                    
-
-                    
-
-
-                    
-
+            <div className={styles.withdrawCard}>
+                <h3>Withdraw Credits</h3>
+                <div className={styles.formGroup}>
+                    <label>Amount</label>
+                    <input
+                        type="number"
+                        placeholder="0.00"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                        className={styles.input}
+                        min="0"
+                        max={credits}
+                        step="0.01"
+                    />
                 </div>
 
-
+                <GradientBtn 
+                    tag="button"
+                    onClick={handleWithdraw}
+                    disabled={isLoading || !amount || parseFloat(amount) > credits}
+                    className={styles.submitButton}
+                >
+                    {isLoading ? 'Processing...' : 'Withdraw Credits'}
+                </GradientBtn>
             </div>
         </div>
-    )
+    );
 }
 
-export default DepositDetails
+export default WithdrawDetails;

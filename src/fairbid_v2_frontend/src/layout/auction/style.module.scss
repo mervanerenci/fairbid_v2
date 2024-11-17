@@ -113,6 +113,43 @@
     }
 }
 
+.answer {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    position: relative;
+}
+
+.privateTag {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background-color: #ff9800;
+    color: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+}
+
+.replyOptions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.privateCheckbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+
+    input {
+        cursor: pointer;
+    }
+}
+
 @media screen and (min-width: 768px) {
     .details_container {
         grid-template-columns: 300px minmax(0, calc(100% - 300px));

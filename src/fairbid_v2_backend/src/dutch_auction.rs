@@ -11,7 +11,7 @@ use crate::eng_auction::is_whitelisted;
 
 #[ic_cdk::update]
 
-fn new_dutch_auction(item: Item,  price: u64, duration: u64, contact: String, location: String, image: Vec<u8>, whitelist: bool, list_on_site: bool) {
+fn new_dutch_auction(item: Item,  price: u64, duration: u64, contact: String, location: String, image: Vec<u8>, whitelist: bool, list_on_site: bool, is_eth: bool) {
     let item_clone = item.clone();
     DUTCH_AUCTION_MAP.with(|am| {
         let mut auction_map = am.borrow_mut();
@@ -32,7 +32,7 @@ fn new_dutch_auction(item: Item,  price: u64, duration: u64, contact: String, lo
             winner: None,
             whitelist: whitelist,
             list_on_site: list_on_site,
-
+            is_eth: is_eth,
         };
 
         
@@ -169,7 +169,7 @@ fn end_dutch_auction(id: AuctionId) -> Result<(), &'static str> {
 
 
 #[ic_cdk::update]
-async fn new_dutch_auction_s(item: Item, price: u64, duration: u64, contact: String, location: String,  image: Vec<u8>, whitelist: bool, list_on_site: bool, id: u64) {
+async fn new_dutch_auction_s(item: Item, price: u64, duration: u64, contact: String, location: String,  image: Vec<u8>, whitelist: bool, list_on_site: bool, is_eth: bool, id: u64) {
     ic_cdk::api::print(format!("Starting new_auction_s for auction id: {}", id));
     let item_clone = item.clone();
     DUTCH_AUCTION_MAP.with(|am| {
@@ -190,7 +190,7 @@ async fn new_dutch_auction_s(item: Item, price: u64, duration: u64, contact: Str
             winner: None,
             whitelist: whitelist,
             list_on_site: list_on_site,
-
+            is_eth: is_eth,
         };
 
         
@@ -223,7 +223,7 @@ async fn new_dutch_auction_s(item: Item, price: u64, duration: u64, contact: Str
 
 
 #[ic_cdk::update]
-async fn schedule_new_dutch_auction(item: Item, price: u64, duration: u64, contact: String, location: String, image: Vec<u8>, whitelist: bool, list_on_site: bool, time: u64) {
+async fn schedule_new_dutch_auction(item: Item, price: u64, duration: u64, contact: String, location: String, image: Vec<u8>, whitelist: bool, list_on_site: bool, is_eth: bool, time: u64) {
     let id = random_id_eng().await ;
 
     let item_clone = item.clone();
@@ -250,7 +250,7 @@ async fn schedule_new_dutch_auction(item: Item, price: u64, duration: u64, conta
             winner: None,
             whitelist: whitelist,
             list_on_site: list_on_site,
-
+            is_eth: is_eth,
         };
 
         
@@ -282,7 +282,7 @@ async fn schedule_new_dutch_auction(item: Item, price: u64, duration: u64, conta
                 spawn(async move {
                     ic_cdk::api::print(format!("Executing new_dutch_auction_s for auction id: {}", id));
                     ic_cdk::api::print(format!("Executing new_dutch_auction_s with these details: {} {} {} {}", price, duration, contact, location));
-                    new_dutch_auction_s(item, price, duration, contact, location, image, whitelist, list_on_site, id).await;
+                    new_dutch_auction_s(item, price, duration, contact, location, image, whitelist, list_on_site, is_eth, id).await;
                     ic_cdk::api::print(format!("Executed new_dutch_auction_s for auction id: {}", id));
                 });
             }
@@ -341,7 +341,7 @@ fn get_dutch_auction_details(id: AuctionId) -> Option<AuctionDetails> {
             originator: auction.originator,
             contact: auction.contact.clone(),
             location: auction.location.clone(),
-            
+            is_eth: auction.is_eth,
            
         })
     })

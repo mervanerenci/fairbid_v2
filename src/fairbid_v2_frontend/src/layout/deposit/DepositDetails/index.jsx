@@ -3,13 +3,14 @@ import styles from './style.module.scss';
 
 // components
 import LazyImage from '@components/LazyImage';
-import {toast} from 'react-toastify';
+import { toast } from 'react-toastify';
 import GradientBtn from '@ui/GradientBtn';
 import StyledProgress from '@ui/StyledProgress';
+import Confirmation from '../Confirmation';
 
 // hooks
-import {useRef, useEffect} from 'react';
-import {useForm} from 'react-hook-form';
+import { useRef, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import useFileReader from '@hooks/useFileReader';
 
 // utils
@@ -18,100 +19,150 @@ import classNames from 'classnames';
 // assets
 import cover from '@assets/cover.webp';
 
-const DepositDetails = () => {
-    const {register, handleSubmit, formState: {errors}} = useForm();
-    const {file, setFile, handleFile, loading} = useFileReader();
-    const inputRef = useRef(null);
+// fairbid
+import { ethers } from 'ethers';
+import { fairbid_v2_backend } from "@declarations/fairbid_v2_backend";
+import { idlFactory } from "@declarations/fairbid_v2_backend";
+import { Actor, HttpAgent } from "@dfinity/agent";
+import helperAbi from "../../../service/abi.json";
+import { useState } from 'react';
+import { useAuth } from '@contexts/useAuthClient';
+import { useCredits } from "@contexts/useCredits";
+const canisterId = 'bw4dl-smaaa-aaaaa-qaacq-cai';
 
-    const triggerInput = () => inputRef.current?.click();
+const createActor = (canisterId, options = {}) => {
+    const agent = options.agent || new HttpAgent({ ...options.agentOptions });
 
-    const setPlaceholder = () => setFile(cover);
-
-    const handleDelete = () => {
-        setPlaceholder();
-        toast.info('Cover photo was successfully deleted.');
-    };
-
-    const onSubmit = () => {
-        toast.info('Profile details updated successfully!');
+    if (options.agent && options.agentOptions) {
+        console.warn(
+            "Detected both agent and agentOptions passed to createActor. Ignoring agentOptions and proceeding with the provided agent."
+        );
     }
 
+    // Fetch root key for certificate validation during development
+    if (process.env.DFX_NETWORK !== "ic") {
+        agent.fetchRootKey().catch((err) => {
+            console.warn(
+                "Unable to fetch root key. Check to ensure that your local replica is running"
+            );
+            console.error(err);
+        });
+    }
+
+    // Creates an actor with using the candid interface and the HttpAgent
+    return Actor.createActor(idlFactory, {
+        agent,
+        canisterId,
+        ...options.actorOptions,
+    });
+};
+
+const backend = canisterId ? createActor(canisterId) : undefined;
+
+const DepositDetails = () => {
+    const [amount, setAmount] = useState('');
+    const [principal, setPrincipal] = useState(0);
+    const [isLoading, setIsLoading] = useState(false);
+    const [txHash, setTxHash] = useState(null);
+    const { credits, fetchCredits } = useCredits();
+    const { backendActor } = useAuth();
+
     useEffect(() => {
-        setPlaceholder();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+        fetchCredits();
+    }, [fetchCredits]);
+
+    const handleDeposit = async () => {
+        if (!window.ethereum) {
+            toast.error("Please install MetaMask!");
+            return;
+        }
+
+        if (!amount || parseFloat(amount) <= 0) {
+            toast.error("Please enter a valid amount");
+            return;
+        }
+
+        try {
+            setIsLoading(true);
+            setTxHash(null);
+            const provider = new ethers.BrowserProvider(window.ethereum);
+            const signer = await provider.getSigner();
+
+            const contract = new ethers.Contract(
+                "0xb44B5e756A894775FC32EDdf3314Bb1B1944dC34",
+                helperAbi,
+                signer
+            );
+
+            const tx = await contract.deposit(principal, {
+                value: ethers.parseEther(amount.toString())
+            });
+
+            await tx.wait();
+            setTxHash(tx.hash);
+            toast.success('Deposit successful!');
+            fetchCredits();
+        } catch (err) {
+            console.error("Error during deposit:", err);
+            toast.error(err.message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        const fetchDepositPrincipal = async () => {
+            try {
+                const deposito = await backendActor.deposit_principal(canisterId);
+                setPrincipal(deposito);
+            } catch (err) {
+                console.error('Error fetching deposit principal:', err);
+                toast.error('Failed to fetch deposit details');
+            }
+        };
+
+        fetchDepositPrincipal();
+        fetchCredits();
+    }, [backendActor, fetchCredits]);
 
     return (
-        <div className={`${styles.wrapper} border-10`}>
-            {/* <div className={`${styles.cover} border-10`}>
-                <LazyImage className={styles.cover_bg} src={file ? file : cover} alt="cover"/>
-                <span className={styles.cover_overlay}>
-                    
-                </span>
-                {loading && <StyledProgress visible isOverlay />}
-            </div> */}
-            <div className="d-flex flex-column g-20">
-                <h5 >Deposit</h5>
-                <form className="d-flex flex-column g-40" onSubmit={handleSubmit(onSubmit)}>
-                    <div className="d-flex flex-column g-20">
-                        <div className={styles.group}>
-                            <input type="file" ref={inputRef} onChange={handleFile} hidden/>
-                            <input className={classNames('field field--outline', {'field--error': errors.firstName})}
-                                   type="text"
-                                //    defaultValue="0"
-                                   placeholder="Amount"
-                                   {...register('amount', {required: true})}/>
-                            {/* <input className={classNames('field field--outline', {'field--error': errors.lastName})}
-                                   type="text"
-                                   defaultValue="Jackson"
-                                   placeholder="Last name"
-                                   {...register('lastName', {required: true})}/>
-                            <input className={classNames('field field--outline', {'field--error': errors.email})}
-                                   type="text"
-                                   placeholder="Email"
-                                   {...register('email', {required: false, pattern: /^\S+@\S+$/i})} />
-                            <input className={classNames('field field--outline', {'field--error': errors.phone})}
-                                   type="text"
-                                   placeholder="Phone number"
-                                   {...register('phone', {required: false, pattern: /^\d{10}$/})} /> */}
-                        </div>
-                        {/* <input className={classNames('field field--outline', {'field--error': errors.url})}
-                               type="text"
-                               placeholder="Custom URL"
-                               {...register('url', {
-                                   required: false,
-                                   pattern: /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/
-                               })} /> */}
-                        {/* <textarea className={`${styles.textarea} field field--outline`} placeholder="Enter your bio"
-                                  {...register('bio', {required: false})} /> */}
-                    </div>
-                    <div className={styles.buttons}>
-                        <GradientBtn tag="button" type="submit">Confirm</GradientBtn>
-                        {/* <button className="btn btn--outline">Preview</button> */}
-                    </div>
-                </form>
-                <h5 >Credits Balance</h5>
-                <div className={styles.balance}>
-                    <span className="text-bold">0.0000</span>
-                    <span className="text-light">Credits(ETH)</span>
-                    {/* <GradientBtn className={styles.btn} tag="button">Deposit</GradientBtn>        
-                    <button className="btn btn--outline">
-                        Withdraw
-                    </button> */}
+        <div className={styles.container}>
+            <div className={styles.balanceCard}>
+                <h3>Available Balance</h3>
+                <div className={styles.balanceAmount}>
+                    <span>{credits}</span>
+                    <small>Credits (ETH)</small>
+                </div>
+            </div>
 
-                    
-
-                    
-
-
-                    
-
+            <div className={styles.depositCard}>
+                <h3>Deposit Credits</h3>
+                <div className={styles.formGroup}>
+                    <label>Amount (ETH)</label>
+                    <input
+                        type="number"
+                        placeholder="0.00"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                        className={styles.input}
+                        min="0"
+                        step="0.01"
+                    />
                 </div>
 
+                <GradientBtn 
+                    tag="button"
+                    onClick={handleDeposit}
+                    disabled={isLoading || !amount}
+                    className={styles.submitButton}
+                >
+                    {isLoading ? 'Processing...' : 'Deposit Credits'}
+                </GradientBtn>
 
+                {txHash && <Confirmation hash={txHash} />}
             </div>
         </div>
-    )
+    );
 }
 
-export default DepositDetails
+export default DepositDetails;

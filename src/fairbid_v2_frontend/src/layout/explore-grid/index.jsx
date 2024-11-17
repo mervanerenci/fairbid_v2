@@ -12,54 +12,55 @@ import usePagination from '@hooks/usePagination';
 import {useExploreGridContext} from '@contexts/exploreGridContext';
 
 // constants
-import {CATEGORIES, TYPE, STATUS, SORTING_OPTIONS, PRICE_RANGE} from '@constants/explore';
+
+const AUCTION_TYPES = [
+    {label: 'All', value: 'all'},
+    {label: 'English', value: 'english'},
+    {label: 'Dutch', value: 'dutch'},
+    {label: 'Sealed-bid', value: 'sealed-bid'},
+];
+
+const TYPE_OPTIONS = [
+    { label: 'All', value: 'all' },
+    { label: 'English', value: 'english' },
+    { label: 'Dutch', value: 'dutch' },
+    { label: 'Sealed-bid', value: 'sealed-bid' }
+];
+
 
 const ExploreGridContent = () => {
     const {
-        sort,
-        setSort,
-        sortedItems,
-        category,
-        setCategory,
-        status,
-        setStatus,
-        type,
-        setType,
-        priceRange,
-        setPriceRange
+        
+        items,
+        auctionType,
+        setAuctionType,
+        loading
+        
     } = useExploreGridContext();
-    const pagination = usePagination(sortedItems, 12);
+    const pagination = usePagination(items, 12);
+
+    
+
+    const handleTypeChange = (option) => {
+        console.log("Selected type:", option.value); // Debug log
+        setAuctionType(option.value);
+    };
 
     return (
         <div className="section mt-0">
             <div className="container d-flex flex-column g-30" ref={pagination.containerRef}>
                 <div className={styles.sorting}>
                     <div className={styles.select}>
-                        {/* <CustomSelect setSelected={setPriceRange}
-                                      options={PRICE_RANGE}
-                                      selected={priceRange}
-                                      placeholder="Price range"/>
-                        <CustomSelect setSelected={setCategory}
-                                      options={CATEGORIES}
-                                      selected={category}
-                                      placeholder="Categories"/> */}
-                        {/* <CustomSelect setSelected={setStatus}
-                                      options={STATUS}
-                                      selected={status}
-                                      placeholder="Status"/> */}
-                        {/* <CustomSelect setSelected={setType}
-                                      options={TYPE}
-                                      selected={type}
-                                      placeholder="Type"/>
-                        <CustomSelect setSelected={setSort}
-                                      options={SORTING_OPTIONS}
-                                      selected={sort}/> */}
+                          <CustomSelect setSelected={handleTypeChange}
+                                      options={TYPE_OPTIONS}
+                                      selected={TYPE_OPTIONS.find(option => option.value === auctionType)}
+                                      placeholder="Auction Type"/>
                     </div>
                     <span>{pagination.showingOf()}</span>
                 </div>
                 <div>
                     {
-                        sortedItems.length > 0 ?
+                        items.length > 0 ?
                             <ItemsGrid items={pagination.currentItems()}/>
                             :
                             <NothingFound/>

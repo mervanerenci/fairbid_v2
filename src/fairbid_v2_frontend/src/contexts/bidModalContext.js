@@ -6,6 +6,7 @@ export const BidModalContext = createContext(undefined);
 export const BidModalContextAPI = ({children}) => {
     const [isBidModalOpen, setIsBidModalOpen] = useState(false);
     const {lockScroll, unlockScroll} = useScrollLock();
+    const [currentAuctionId, setCurrentAuctionId] = useState(null)
 
     useEffect(() => {
         isBidModalOpen ? lockScroll() : unlockScroll();
@@ -16,12 +17,30 @@ export const BidModalContextAPI = ({children}) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isBidModalOpen]);
 
-    const openBidModal = () => setIsBidModalOpen(true);
+    const openBidModal = (id) => {
+        console.log("Opening bid modal for auction:", id);
+        setCurrentAuctionId(id);
+        setIsBidModalOpen(true);
+    };
 
-    const closeBidModal = () => setIsBidModalOpen(false);
+    const setId = (id) => {
+        setCurrentAuctionId(id);
+    };
+
+    const closeBidModal = () => {
+        setCurrentAuctionId(null);
+        setIsBidModalOpen(false);
+    };
+
+    useEffect(() => {
+        console.log("Bid Modal Context state:", {
+            isBidModalOpen,
+            currentAuctionId
+        });
+    }, [isBidModalOpen, currentAuctionId]);
 
     return (
-        <BidModalContext.Provider value={{isBidModalOpen, openBidModal, closeBidModal}}>
+        <BidModalContext.Provider value={{isBidModalOpen, openBidModal, closeBidModal, currentAuctionId, setId}}>
             {children}
         </BidModalContext.Provider>
     );

@@ -76,7 +76,7 @@ export const HeaderWrapper = styled(Headroom)`
         height: 110px;
         top: -30px;
         width: 1px;
-        background: var(--divider);
+        background: #161616;
       }
 
       &::before {

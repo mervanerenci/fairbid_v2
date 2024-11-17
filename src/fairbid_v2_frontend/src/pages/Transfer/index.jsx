@@ -5,27 +5,20 @@ import styles from './style.module.scss';
 import Title from '@components/Title';
 import SimplePageHeader from '@components/SimplePageHeader';
 import Funds from '@layout/profile/Funds';
-import ProfileDetails from '@layout/profile/ProfileDetails';
-import ProfileItems from '@layout/profile/ProfileItems';
-import { useEffect } from 'react';
+import TransferDetails from '@layout/transfer/TransferDetails';
 
-const Profile = () => {
-
-    useEffect(() => {
-        window.scrollTo(0, 0);
-    }, []);
-
+const Transfer = () => {
     return (
         <>
-            <Title title="Profile"/>
-            <SimplePageHeader title="Profile"/>
+            <Title title="Transfer"/>
+            <SimplePageHeader title="Transfer"/>
             <main>
                 <div className={`${styles.content} section`}>
                     <div className={`${styles.content_container} container`}>
                         <Funds />
-                        <ProfileDetails />
+                        <TransferDetails />
                     </div>
-                    <ProfileItems />
+                    
 
                 </div>
             </main>
@@ -33,4 +26,4 @@ const Profile = () => {
     );
 }
 
-export default Profile
+export default Transfer

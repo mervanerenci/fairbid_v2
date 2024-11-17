@@ -89,7 +89,7 @@ pub struct AuctionDetails {
     originator: Principal,
     contact: String,
     location: String,
-    
+    is_eth: bool,
 }
 
 #[derive(CandidType)]
@@ -101,6 +101,7 @@ pub struct SbAuctionDetails {
     originator: Principal,
     contact: String,
     location: String,
+    is_eth: bool,
     winner: Option<Principal>,
 }
 
@@ -118,6 +119,7 @@ pub struct Auction {
     auction_type: AuctionType,
     list_on_site: bool,
     whitelist: bool,
+    is_eth: bool,
 }
 
 #[derive(CandidType, Deserialize, Clone)]
@@ -136,6 +138,7 @@ pub struct DutchAuction {
     winner: Option<Principal>,
     whitelist: bool,
     list_on_site: bool,
+    is_eth: bool,
 }
 
 #[derive(CandidType, Deserialize, Clone)]
@@ -154,6 +157,7 @@ pub struct SbAuction {
     winner: Option<Principal>,
     whitelist: bool,
     list_on_site: bool,
+    is_eth: bool,
 } 
 
 
@@ -171,13 +175,15 @@ pub struct CreditTransaction {
     amount: u64,
     timestamp: u64,
     transaction_type: TransactionType,
+    from: Principal,
+    to: Principal,
 }
 
 #[derive(CandidType, Deserialize, Clone)]
 pub enum TransactionType {
     Deposit,
     Withdrawal,
-    Spend,
+    Transfer,
 }
 
 
@@ -322,6 +328,7 @@ fn init() {
         auction_type: AuctionType::English,
         list_on_site: false,
         whitelist: false,
+        is_eth: false,
     }));
 }
 
@@ -429,6 +436,8 @@ fn pre_upgrade() {
             ic_cdk::api::print(format!("Failed to save stable memory: {:?}", e));
         }
     });
+
+    
 }
 
 
@@ -607,6 +616,8 @@ pub async fn add_credits(amount: u64, tx_hash: String) -> Result<(), String> {
         amount,
         timestamp: ic_cdk::api::time(),
         transaction_type: TransactionType::Deposit,
+        from: caller,
+        to: caller,
     };
 
     CREDIT_HISTORY.with(|history| {
@@ -639,28 +650,56 @@ pub fn get_credit_history() -> Vec<CreditTransaction> {
 }
 
 // Transfer credit to another user
-// #[ic_cdk::update]
-// pub fn transfer_credit(to: Principal, amount: u64) -> Result<(), String> {
-//     let caller = ic_cdk::caller();
-//     let amount = amount;
+#[ic_cdk::update]
+pub fn transfer_credit(to: Principal, amount: u64) -> Result<(), String> {
+    let caller = ic_cdk::caller();
 
-//     CREDITS.with(|credits| {
-//         let mut credits = credits.borrow_mut();
-//         let caller_balance = credits.get(&caller).unwrap_or(&0);
-//         if *caller_balance < amount {
-//             return Err(format!("Caller does not have enough credits to transfer. Caller has {} credits, trying to transfer {}", caller_balance, amount));
-//         }
+    CREDITS.with(|credits| -> Result<(), String> {  // Explicitly specify return type
+        let mut credits = credits.borrow_mut();
+        let caller_balance = credits.get(&caller).unwrap_or(&0);
+        
+        if *caller_balance < amount {
+            return Err(format!(
+                "Caller does not have enough credits to transfer. Caller has {} credits, trying to transfer {}", 
+                caller_balance, 
+                amount
+            ));
+        }
 
-//         let new_caller_balance = *caller_balance - amount;
-//         credits.insert(caller, new_caller_balance);
+        let new_caller_balance = *caller_balance - amount;
+        credits.insert(caller, new_caller_balance);
 
-//         let recipient_balance = credits.get(&to).unwrap_or(&0);
-//         let new_recipient_balance = *recipient_balance + amount;
-//         credits.insert(to, new_recipient_balance);
-//     });
+        let recipient_balance = credits.get(&to).unwrap_or(&0);
+        let new_recipient_balance = *recipient_balance + amount;
+        credits.insert(to, new_recipient_balance);
 
-//     Ok(())
-// }
+        let transaction = CreditTransaction {
+            amount,
+            timestamp: ic_cdk::api::time(),
+            transaction_type: TransactionType::Transfer,
+            from: caller,
+            to: to,
+        };
+
+        CREDIT_HISTORY.with(|history| {
+            let mut history = history.borrow_mut();
+            history.entry(caller)
+                .or_insert_with(Vec::new)
+                .push(transaction.clone());
+        });
+
+        CREDIT_HISTORY.with(|history| {
+            let mut history = history.borrow_mut();
+            history.entry(to)
+                .or_insert_with(Vec::new)
+                .push(transaction);
+        });
+
+        
+
+        Ok(())  // Return Ok if successful
+    })
+}
 
 
 

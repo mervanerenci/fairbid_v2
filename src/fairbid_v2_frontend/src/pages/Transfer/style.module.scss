@@ -1,0 +1,13 @@
+.content {
+    margin-top: 0;
+
+    &_container {
+        display: grid;
+        gap: 40px;
+
+        @media screen and (min-width: 1170px) {
+            grid-template-columns: 460px minmax(0, calc(100% - 460px));
+            align-items: flex-start;
+        }
+    }
+}

@@ -3,13 +3,39 @@ import Title from '@components/Title';
 import SimplePageHeader from '@components/SimplePageHeader';
 import AuctionDetails from '@layout/auction';
 
+import { useParams } from 'react-router-dom';
+import { useExploreGridContext } from '@contexts/exploreGridContext';
+
+
 const Auction = () => {
+    const { id } = useParams();
+    const { items, loading } = useExploreGridContext();
+    console.log("items", items);
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    // Add items check
+    if (!items || items.length === 0) {
+        return <div>No items available</div>;
+    }
+
+    const auction = items.find(item => item.id === id);
+    console.log("Found auction:", auction, "for id:", id);
+
+    if (!auction) {
+        return <div>Auction not found</div>;
+    }
+
+
+
     return (
         <>
-            <Title title="Auction details" />
-            <SimplePageHeader title="Auction details" />
+            <Title title={auction.title} />
+            <SimplePageHeader title={auction.title} />
             <main>
-                <AuctionDetails />
+                <AuctionDetails item={auction} />
             </main>
         </>
     );

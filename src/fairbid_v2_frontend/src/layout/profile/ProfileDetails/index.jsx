@@ -8,9 +8,10 @@ import GradientBtn from '@ui/GradientBtn';
 import StyledProgress from '@ui/StyledProgress';
 
 // hooks
-import {useRef, useEffect} from 'react';
+import {useRef, useEffect, useState} from 'react';
 import {useForm} from 'react-hook-form';
 import useFileReader from '@hooks/useFileReader';
+import { useAuth } from '@contexts/useAuthClient';
 
 // utils
 import classNames from 'classnames';
@@ -21,8 +22,10 @@ import cover from '@assets/cover.webp';
 const ProfileDetails2 = () => {
     const {register, handleSubmit, formState: {errors}} = useForm();
     const {file, setFile, handleFile, loading} = useFileReader();
+    const { backendActor, principal } = useAuth();
     const inputRef = useRef(null);
-
+    const [user, setUser] = useState('');
+    const [credits, setCredits] = useState(0);
     const triggerInput = () => inputRef.current?.click();
 
     const setPlaceholder = () => setFile(cover);
@@ -32,14 +35,45 @@ const ProfileDetails2 = () => {
         toast.info('Cover photo was successfully deleted.');
     };
 
-    const onSubmit = () => {
-        toast.info('Profile details updated successfully!');
+    const onSubmit = async (data) => {
+        // change username
+        try {
+            await backendActor.set_username(data.username);
+            toast.success('Profile details updated successfully!');
+            // Refresh username after update
+            const newUsername = await backendActor.get_username();
+            setUser(newUsername || '');
+        } catch (error) {
+            console.error('Error updating username:', error);
+            toast.error('Failed to update profile details');
+        }
     }
 
     useEffect(() => {
         setPlaceholder();
+        // Fix promise handling
+        const fetchUserData = async () => {
+            try {
+                const username = await backendActor.get_username();
+                console.log(username);
+                setUser(username || '');
+
+                const credits = await backendActor.get_credit_balance();
+
+                console.log(Number(credits));
+                setCredits(Number(credits) || 0);
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+                setUser('');
+                setCredits(0);
+            }
+        };
+
+        fetchUserData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+
+    
 
     return (
         <div className={`${styles.wrapper} border-10`}>
@@ -51,48 +85,39 @@ const ProfileDetails2 = () => {
                 {loading && <StyledProgress visible isOverlay />}
             </div> */}
             <div className="d-flex flex-column g-20">
-                <h5 >Username</h5>
+                {user ? (
+                    <>
+                    <h5 >Username</h5>
+                    <div className={styles.balance}>
+                        <span className="text-bold">{user} </span>
+                    </div>
+                    </>
+                ) : (
+                    <>
+                    <h5 >Username</h5>
                 <form className="d-flex flex-column g-40" onSubmit={handleSubmit(onSubmit)}>
                     <div className="d-flex flex-column g-20">
                         <div className={styles.group}>
                             <input type="file" ref={inputRef} onChange={handleFile} hidden/>
                             <input className={classNames('field field--outline', {'field--error': errors.firstName})}
                                    type="text"
-                                   defaultValue="Rebecca"
-                                   placeholder="First name"
-                                   {...register('firstName', {required: true})}/>
-                            {/* <input className={classNames('field field--outline', {'field--error': errors.lastName})}
-                                   type="text"
-                                   defaultValue="Jackson"
-                                   placeholder="Last name"
-                                   {...register('lastName', {required: true})}/>
-                            <input className={classNames('field field--outline', {'field--error': errors.email})}
-                                   type="text"
-                                   placeholder="Email"
-                                   {...register('email', {required: false, pattern: /^\S+@\S+$/i})} />
-                            <input className={classNames('field field--outline', {'field--error': errors.phone})}
-                                   type="text"
-                                   placeholder="Phone number"
-                                   {...register('phone', {required: false, pattern: /^\d{10}$/})} /> */}
+                                   defaultValue={user}
+                                   placeholder="Username"
+                                   {...register('username', {required: true})}/>
+                            
                         </div>
-                        {/* <input className={classNames('field field--outline', {'field--error': errors.url})}
-                               type="text"
-                               placeholder="Custom URL"
-                               {...register('url', {
-                                   required: false,
-                                   pattern: /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/
-                               })} /> */}
-                        {/* <textarea className={`${styles.textarea} field field--outline`} placeholder="Enter your bio"
-                                  {...register('bio', {required: false})} /> */}
+                        
                     </div>
                     <div className={styles.buttons}>
-                        <GradientBtn tag="button" type="submit">Update username</GradientBtn>
+                        <GradientBtn tag="button" type="submit">Set username</GradientBtn>
                         {/* <button className="btn btn--outline">Preview</button> */}
                     </div>
                 </form>
+                    </>
+                )}
                 <h5 >Credits Balance</h5>
                 <div className={styles.balance}>
-                    <span className="text-bold">0.0000</span>
+                    <span className="text-bold">{credits} </span>
                     <span className="text-light">Credits(ETH)</span>
                     {/* <GradientBtn className={styles.btn} tag="button">Deposit</GradientBtn>        
                     <button className="btn btn--outline">

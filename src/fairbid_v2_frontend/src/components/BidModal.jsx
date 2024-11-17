@@ -11,9 +11,14 @@ import {toast} from 'react-toastify';
 import {useBidModalContext} from '@contexts/bidModalContext';
 import {useState} from 'react';
 import {useForm, Controller} from 'react-hook-form';
+import {useEffect} from 'react';
 
 // utils
 import classNames from 'classnames';
+
+// context
+
+import {useAuth} from "@contexts/useAuthClient"
 
 const StyledBidModal = styled(StyledModal)`
   .content {
@@ -42,23 +47,49 @@ const StyledBidModal = styled(StyledModal)`
 
 const BidModal = () => {
     const minBid = 3.08, fee = 0.10;
-    const {isBidModalOpen, closeBidModal} = useBidModalContext();
+    const {isBidModalOpen, closeBidModal, currentAuctionId} = useBidModalContext();
     const [bid, setBid] = useState(0);
     const {control, handleSubmit, formState: {errors}, reset} = useForm();
+
+    const { backendActor } = useAuth();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    useEffect(() => {
+        console.log("Current Auction ID:", currentAuctionId);
+        console.log("Backend Actor:", backendActor);
+    }, [currentAuctionId, backendActor]);
 
     const handleClose = () => {
         closeBidModal();
         setBid(minBid);
     }
 
-    const handleBid = () => {
-        toast.success('Bid placed successfully');
-        reset();
-        handleClose();
+    const handleBid = async (data) => {
+        if (!currentAuctionId || !backendActor) {
+            toast.error('Unable to place bid at this time');
+            return;
+        }
+
+        setIsSubmitting(true);
+        try {
+            // Convert bid to proper format if needed
+            const bidValue = parseInt(data.bid);
+            console.log("Bid Value:", bidValue);
+            const bidAmount = bidValue;
+            const auction_id = parseInt(currentAuctionId);
+            await backendActor.make_bid(auction_id, bidAmount);
+            toast.success('Bid placed successfully');
+            handleClose();
+        } catch (error) {
+            console.error("Error placing bid:", error);
+            toast.error(error.message || 'Failed to place bid');
+        } finally {
+            setIsSubmitting(false);
+        }
     }
 
     const getTotal = () => {
-        return bid !== 0 ? (+bid + fee).toFixed(2) : (minBid + fee).toFixed(2);
+        return bid !== 0 ? (+bid).toFixed(2) : (minBid + fee).toFixed(2);
     }
 
     return (
@@ -101,8 +132,18 @@ const BidModal = () => {
                 </p>
             </div>
             <div className="content_footer d-flex flex-column g-20">
-                <GradientBtn tag="button" onClick={handleSubmit(handleBid)}>Place a bid</GradientBtn>
-                <button className="btn btn--outline" onClick={handleClose}>
+                <GradientBtn 
+                    tag="button" 
+                    onClick={handleSubmit(handleBid)}
+                    disabled={isSubmitting}
+                >
+                    {isSubmitting ? 'Placing bid...' : 'Place a bid'}
+                </GradientBtn>
+                <button 
+                    className="btn btn--outline" 
+                    onClick={handleClose}
+                    disabled={isSubmitting}
+                >
                     Cancel
                 </button>
             </div>

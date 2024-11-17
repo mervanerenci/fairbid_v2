@@ -1,0 +1,19 @@
+.container {
+    height: var(--elements-height);
+    padding: 0 15px;
+    border-radius: 50px;
+    width: fit-content;
+    
+    button {
+      margin-left: 10px;
+      font-size: var(--text-sm);
+      padding: 5px 12px;
+      border-radius: 20px;
+      transition: all var(--transition);
+  
+      &:hover {
+        color: var(--accent);
+        border-color: var(--accent);
+      }
+    }
+  }

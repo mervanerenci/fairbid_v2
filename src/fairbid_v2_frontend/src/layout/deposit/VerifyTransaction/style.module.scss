@@ -1,0 +1,29 @@
+.verificationStatus,
+.verificationError,
+.verificationSuccess {
+    padding: 15px;
+    border-radius: 8px;
+    margin: 10px 0;
+    text-align: center;
+}
+
+.verificationStatus {
+    background-color: #f8f9fa;
+    color: #6c757d;
+}
+
+.verificationError {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.verificationSuccess {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.creditsAdded {
+    margin-top: 10px;
+    color: #28a745;
+    font-weight: 500;
+}

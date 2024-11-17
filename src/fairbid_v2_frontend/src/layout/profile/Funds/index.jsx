@@ -37,8 +37,11 @@ const Funds = () => {
                     <GradientBtn tag="button" href="/deposit" >
                         <NavLink to="/deposit">Deposit</NavLink>
                     </GradientBtn>
-                    <button className="btn btn--outline" href="/deposit"  disabled={file === placeholder}>
+                    <button className="btn btn--outline" href="/withdraw"  disabled={file === placeholder}>
                         <NavLink to="/withdraw">Withdraw</NavLink>
+                    </button>
+                    <button className="btn btn--outline" href="/transfer"  disabled={file === placeholder}>
+                        <NavLink to="/transfer">Transfer</NavLink>
                     </button>
                 </div>
                 <input type="file" ref={inputRef} onChange={handleFile} hidden/>

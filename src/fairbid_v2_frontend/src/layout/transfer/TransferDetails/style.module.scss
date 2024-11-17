@@ -79,7 +79,7 @@
     }
 }
 
-.balanceCard, .depositCard, .withdrawCard {
+.balanceCard {
     background: var(--bg-secondary);
     border-radius: 1rem;
     padding: 1.5rem;
@@ -87,7 +87,7 @@
 
     h3 {
         color: var(--text-light);
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
         font-size: 1.25rem;
     }
 }
@@ -108,6 +108,19 @@
     }
 }
 
+.transferCard {
+    background: var(--bg-secondary);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    h3 {
+        color: var(--text-light);
+        margin-bottom: 1.5rem;
+        font-size: 1.25rem;
+    }
+}
+
 .formGroup {
     margin-bottom: 1.5rem;
 
@@ -118,7 +131,7 @@
         font-size: 0.9rem;
     }
 
-    input {
+    input, select {
         width: 100%;
         padding: 0.75rem 1rem;
         border: 1px solid var(--divider);
@@ -131,12 +144,17 @@
             border-color: var(--accent);
             outline: none;
         }
-
-        &:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
     }
+}
+
+.errorInput {
+    border-color: var(--error) !important;
+}
+
+.errorText {
+    color: var(--error);
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
 }
 
 .submitButton {

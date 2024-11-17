@@ -22,6 +22,7 @@ type Auction = record {
     whitelist: bool;
     
     list_on_site: bool;
+    is_eth: bool;
 };
 
 type DutchAuction = record {
@@ -37,6 +38,7 @@ type DutchAuction = record {
     winner: opt principal;
     whitelist: bool;
     list_on_site: bool;
+    is_eth: bool;
 };
 
 type SbAuction = record {
@@ -52,6 +54,7 @@ type SbAuction = record {
     winner: opt principal;
     whitelist: bool;
     list_on_site: bool;
+    is_eth: bool;
 };
 
 type AuctionDetails = record {
@@ -62,6 +65,7 @@ type AuctionDetails = record {
     originator: principal;
     contact: text;
     location: text;
+    is_eth: bool;
 };
 
 type SbAuctionDetails = record {
@@ -73,6 +77,7 @@ type SbAuctionDetails = record {
     contact: text;
     location: text;
     winner: opt principal;
+    is_eth: bool;
 };
 
 
@@ -105,13 +110,16 @@ type VerificationResult = record {
 type TransactionType = variant {
     Deposit;
     Withdrawal;
-    Spend;
+    Transfer;
+    
 };
 
 type CreditTransaction = record {
     amount: nat64;
     timestamp: nat64;
     transaction_type: TransactionType;
+    from: principal;
+    to: principal;
 };
 
 
@@ -124,10 +132,10 @@ service : {
     ///// English Auction /////
 
     //C
-    new_auction: (item: Item, price: nat64, duration: nat64, contact: text, location: text, image: vec nat8, whitelist:bool, list_on_site:bool ) -> ();
+    new_auction: (item: Item, price: nat64, duration: nat64, contact: text, location: text, image: vec nat8, whitelist:bool, list_on_site:bool, is_eth: bool) -> ();
     make_bid: (id: AuctionId, price: nat64) -> (result: variant { Ok: null; Err: text });
-    schedule_new_auction: (item: Item, price: nat64, duration: nat64, contact: text, location: text, image: vec nat8, whitelist:bool, list_on_site:bool, time: nat64 ) -> ();
-    new_auction_s: (item: Item, price: nat64, duration: nat64, contact: text, location: text, image: vec nat8, whitelist:bool, list_on_site:bool, id: nat64) -> ();
+    schedule_new_auction: (item: Item, price: nat64, duration: nat64, contact: text, location: text, image: vec nat8, whitelist:bool, list_on_site:bool, is_eth: bool, time: nat64 ) -> ();
+    new_auction_s: (item: Item, price: nat64, duration: nat64, contact: text, location: text, image: vec nat8, whitelist:bool, list_on_site:bool, is_eth: bool, id: nat64) -> ();
     
     
     //U
@@ -159,10 +167,10 @@ service : {
     ///// Dutch Auction /////
 
     //C
-    new_dutch_auction: (item: Item, price: nat64, duration: nat64, contact: text, location: text, image: vec nat8,whitelist:bool, list_on_site:bool) -> ();
+    new_dutch_auction: (item: Item, price: nat64, duration: nat64, contact: text, location: text, image: vec nat8,whitelist:bool, list_on_site:bool, is_eth: bool) -> ();
     accept_price: (id: AuctionId) -> (result: variant { Ok: null; Err: text });
-    schedule_new_dutch_auction: (item: Item, price: nat64, duration: nat64, contact: text, location: text, image: vec nat8, whitelist:bool, list_on_site:bool, time: nat64 ) -> ();
-    new_dutch_auction_s: (item: Item, price: nat64, duration: nat64, contact: text, location: text, image: vec nat8, whitelist:bool, list_on_site:bool, id: nat64) -> ();
+    schedule_new_dutch_auction: (item: Item, price: nat64, duration: nat64, contact: text, location: text, image: vec nat8, whitelist:bool, list_on_site:bool, is_eth: bool, time: nat64 ) -> ();
+    new_dutch_auction_s: (item: Item, price: nat64, duration: nat64, contact: text, location: text, image: vec nat8, whitelist:bool, list_on_site:bool, is_eth: bool, id: nat64) -> ();
     
     //U
     lower_price: (id: AuctionId, price: nat64) -> (result: variant { Ok: null; Err: text });
@@ -193,10 +201,10 @@ service : {
     ///// Sealed Bid Auction /////
 
     //C
-    new_sb_auction: (item: Item, price: nat64, duration: nat64, contact: text, location: text, image: vec nat8,whitelist:bool, list_on_site:bool) -> ();
+    new_sb_auction: (item: Item, price: nat64, duration: nat64, contact: text, location: text, image: vec nat8,whitelist:bool, list_on_site:bool, is_eth: bool) -> ();
     make_bid_sb: (id: AuctionId, price: nat64) -> (result: variant { Ok: null; Err: text });
-    schedule_new_sb_auction: (item: Item, price: nat64, duration: nat64, contact: text, location: text, image: vec nat8, whitelist:bool, time: nat64 ) -> ();
-    new_sb_auction_s: (item: Item, price: nat64, duration: nat64, contact: text, location: text, image: vec nat8, whitelist:bool, id: nat64) -> ();
+    schedule_new_sb_auction: (item: Item, price: nat64, duration: nat64, contact: text, location: text, image: vec nat8, whitelist:bool, is_eth: bool, time: nat64 ) -> ();
+    new_sb_auction_s: (item: Item, price: nat64, duration: nat64, contact: text, location: text, image: vec nat8, whitelist:bool, is_eth: bool, id: nat64) -> ();
 
     //U
     end_sb_auction: (nat64) -> (result: variant { Ok: null; Err: text });
@@ -264,13 +272,14 @@ service : {
     deposit_principal: (princip: text) -> (text) query;
     canister_deposit_principal: () -> (text) query;
     get_transaction_receipt : (hash : text) -> (text);
-
-    // returns amount and sender , nat and text
     verify_transaction: (hash: text) -> (VerificationResult);
 
     add_credits: (amount: nat64, hash: text) -> (variant { Ok: null; Err: text });
+    transfer_credit: (to: principal, amount: nat64) -> (variant { Ok: null; Err: text });
     get_credit_balance: () -> (nat64) query;
     get_credit_history: () -> (vec CreditTransaction) query;
+
+
     
     
     
