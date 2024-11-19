@@ -6,6 +6,7 @@ import LazyImage from '@components/LazyImage';
 import {toast} from 'react-toastify';
 import GradientBtn from '@ui/GradientBtn';
 import StyledProgress from '@ui/StyledProgress';
+import TransactionHistory from '@components/TransactionHistory';
 
 // hooks
 import {useRef, useEffect, useState} from 'react';
@@ -29,6 +30,10 @@ const ProfileDetails2 = () => {
     const triggerInput = () => inputRef.current?.click();
 
     const setPlaceholder = () => setFile(cover);
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
 
     const handleDelete = () => {
         setPlaceholder();
@@ -76,67 +81,83 @@ const ProfileDetails2 = () => {
     
 
     return (
-        <div className={`${styles.wrapper} border-10`}>
-            {/* <div className={`${styles.cover} border-10`}>
-                <LazyImage className={styles.cover_bg} src={file ? file : cover} alt="cover"/>
-                <span className={styles.cover_overlay}>
-                    
-                </span>
-                {loading && <StyledProgress visible isOverlay />}
-            </div> */}
-            <div className="d-flex flex-column g-20">
-                {user ? (
-                    <>
-                    <h5 >Username</h5>
-                    <div className={styles.balance}>
-                        <span className="text-bold">{user} </span>
+        <div className={styles.container}>
+            <div className={styles.profileCard}>
+                <h3 className={styles.title}>Profile Details</h3>
+                
+                <div className={styles.section}>
+                    <h4 className={styles.sectionTitle}>Principal ID</h4>
+                    <div className={styles.principalId}>
+                        <span className={styles.idText}>{principal.toString()}</span>
+                        <button 
+                            className={styles.copyButton}
+                            onClick={() => {
+                                navigator.clipboard.writeText(principal.toString());
+                                toast.success('Principal ID copied to clipboard!');
+                            }}
+                        >
+                            Copy
+                        </button>
                     </div>
-                    </>
-                ) : (
-                    <>
-                    <h5 >Username</h5>
-                <form className="d-flex flex-column g-40" onSubmit={handleSubmit(onSubmit)}>
-                    <div className="d-flex flex-column g-20">
-                        <div className={styles.group}>
-                            <input type="file" ref={inputRef} onChange={handleFile} hidden/>
-                            <input className={classNames('field field--outline', {'field--error': errors.firstName})}
-                                   type="text"
-                                   defaultValue={user}
-                                   placeholder="Username"
-                                   {...register('username', {required: true})}/>
-                            
-                        </div>
-                        
-                    </div>
-                    <div className={styles.buttons}>
-                        <GradientBtn tag="button" type="submit">Set username</GradientBtn>
-                        {/* <button className="btn btn--outline">Preview</button> */}
-                    </div>
-                </form>
-                    </>
-                )}
-                <h5 >Credits Balance</h5>
-                <div className={styles.balance}>
-                    <span className="text-bold">{credits} </span>
-                    <span className="text-light">Credits(ETH)</span>
-                    {/* <GradientBtn className={styles.btn} tag="button">Deposit</GradientBtn>        
-                    <button className="btn btn--outline">
-                        Withdraw
-                    </button> */}
-
-                    
-
-                    
-
-
-                    
-
                 </div>
 
+                <div className={styles.section}>
+                    <h4 className={styles.sectionTitle}>Username</h4>
+                    {user ? (
+                        <div className={styles.userInfo}>
+                            <span className={styles.username}>{user}</span>
+                            <GradientBtn 
+                                tag="button" 
+                                onClick={() => setUser('')}
+                                className={styles.editButton}
+                            >
+                                Edit
+                            </GradientBtn>
+                        </div>
+                    ) : (
+                        <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
+                            <div className={styles.formGroup}>
+                                <input
+                                    type="text"
+                                    placeholder="Enter username"
+                                    className={errors.username ? styles.errorInput : ''}
+                                    {...register('username', { 
+                                        required: 'Username is required',
+                                        minLength: { 
+                                            value: 3, 
+                                            message: 'Username must be at least 3 characters' 
+                                        }
+                                    })}
+                                />
+                                {errors.username && (
+                                    <span className={styles.errorText}>
+                                        {errors.username.message}
+                                    </span>
+                                )}
+                            </div>
+                            <GradientBtn tag="button" type="submit">
+                                Set Username
+                            </GradientBtn>
+                        </form>
+                    )}
+                </div>
 
+                
+
+                <div className={styles.section}>
+                    <h4 className={styles.sectionTitle}>Credits Balance</h4>
+                    <div className={styles.balanceInfo}>
+                        <div className={styles.balance}>
+                            <span className={styles.amount}>{credits}</span>
+                            <span className={styles.currency}>Credits (ETH)</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-    )
-}
 
-export default ProfileDetails2
+            <TransactionHistory />
+        </div>
+    );
+};
+
+export default ProfileDetails2;

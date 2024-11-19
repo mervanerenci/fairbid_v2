@@ -8,8 +8,9 @@ export const useCredits = () => {
 
   const fetchCredits = useCallback(async () => {
     try {
-      const credits = await backendActor.get_credit_balance();
-      setCredits(Number(credits) || 0);
+      const creditsInWei = await backendActor.get_credit_balance();
+      const credits = Number(creditsInWei) / 1e18;
+      setCredits(credits || 0);
     } catch (error) {
       console.error('Error fetching credits:', error);
     }

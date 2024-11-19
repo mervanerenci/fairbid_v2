@@ -355,6 +355,13 @@ fn get_dutch_auction(id: AuctionId) -> Option<DutchAuction> {
     })
 }
 
+#[ic_cdk::query]
+fn get_current_bid_dutch(id: AuctionId) -> Option<u64> {
+    DUTCH_AUCTION_MAP.with(|am| {
+        let auction_map = am.borrow();
+        auction_map.get(&id).and_then(|auction| auction.bid_history.last().map(|bid| bid.price))
+    })
+}
 
 #[ic_cdk::query]
 fn get_active_dutch_auctions() -> Vec<AuctionOverview> {
@@ -513,6 +520,13 @@ fn get_all_scheduled_dutch_auctions() -> Vec<AuctionOverview> {
     })
 }
 
+#[ic_cdk::query]
+fn get_dutch_auction_is_eth(id: AuctionId) -> bool {
+    DUTCH_AUCTION_MAP.with(|am| {
+        let auction_map = am.borrow();
+        auction_map.get(&id).map(|auction| auction.is_eth).unwrap_or(false)
+    })
+}
 
 // #[ic_cdk::query]
 

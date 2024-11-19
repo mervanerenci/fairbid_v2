@@ -46,7 +46,7 @@ const TransactionHistory = () => {
     useEffect(() => {   
         fetchCreditHistory();
         
-    }, [fetchCreditHistory]);
+    }, [fetchCreditHistory, principal]);
 
     const getTransactionIcon = (type) => {
         if ('Deposit' in type) return '↓';
@@ -71,7 +71,7 @@ const TransactionHistory = () => {
 
 
     const formatTransactionAmount = (tx) => {
-        const isReceiver = 'Transfer' in tx.transaction_type && tx.to === principal.toString();
+        const isReceiver = 'Transfer' in tx.transaction_type && tx.to.toString() === principal.toString();
         const prefix = isReceiver || 'Deposit' in tx.transaction_type ? '+ ' : '- ';
         return `${prefix}${tx.amount} Credits`;
     };
@@ -104,7 +104,7 @@ const TransactionHistory = () => {
             ) : (
                 <div className={styles.transactionList}>
                     {creditHistory.map((tx, index) => {
-                        const isReceiver = 'Transfer' in tx.transaction_type && tx.to === principal.toString();
+                        const isReceiver = 'Transfer' in tx.transaction_type && tx.to.toString() === principal.toString();
                         
                         return (
                             <div key={index} className={styles.transactionItem}>

@@ -24,7 +24,7 @@ const WithdrawDetails = () => {
     const [isLoading, setIsLoading] = useState(false);
     const { credits, fetchCredits } = useCredits();
     const { backendActor } = useAuth();
-
+    const [ethAddress, setEthAddress] = useState('');
     useEffect(() => {
         fetchCredits();
     }, [fetchCredits]);
@@ -35,6 +35,11 @@ const WithdrawDetails = () => {
             return;
         }
 
+        if (!ethAddress || !/^0x[a-fA-F0-9]{40}$/.test(ethAddress)) {
+            toast.error("Please enter a valid ETH address");
+            return;
+        }
+
         if (parseFloat(amount) > credits) {
             toast.error("Insufficient balance");
             return;
@@ -42,7 +47,7 @@ const WithdrawDetails = () => {
 
         try {
             setIsLoading(true);
-            await backendActor.withdraw_credit(parseFloat(amount));
+            // await backendActor.withdraw_credit(parseFloat(amount), ethAddress);
             toast.success('Withdrawal successful!');
             setAmount('');
             fetchCredits();
@@ -66,6 +71,16 @@ const WithdrawDetails = () => {
 
             <div className={styles.withdrawCard}>
                 <h3>Withdraw Credits</h3>
+                <div className={styles.formGroup}>
+                    <label>ETH Address</label>
+                    <input
+                        type="text"
+                        placeholder="0x..."
+                        value={ethAddress}
+                        onChange={(e) => setEthAddress(e.target.value)}
+                        className={styles.input}
+                />
+            </div>
                 <div className={styles.formGroup}>
                     <label>Amount</label>
                     <input

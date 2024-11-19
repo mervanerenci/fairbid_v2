@@ -56,6 +56,7 @@ const AuctionForm = () => {
     const [listOnSite, setListOnSite] = useState(true);
     const [whitelist, setWhitelist] = useState(false);
     const [isEth, setIsEth] = useState(false);
+    const [previewImage, setPreviewImage] = useState(null);
 
     const concatUint8Arrays = (left, right) => {
         let temporary = [];
@@ -110,12 +111,10 @@ const AuctionForm = () => {
                 isEth
             });
 
-            console.log("type: ", type);
-            console.log("type value: ", type.value);
 
-            if (type || type.value === "english") {
+            if (type === "english" || type.value === "english") {
 
-                console.log("english auction");
+                console.log("creating english auction");
                 
                 await backendActor.new_auction(
                     item,
@@ -131,8 +130,8 @@ const AuctionForm = () => {
                 toast.success("Auction created successfully!");
                 navigate("/explore-page");
                 
-            } else if (type || type.value === "dutch") {
-                console.log("dutch auction");
+            } else if (type === "dutch" || type.value === "dutch") {
+                console.log("creating dutch auction");
                 await backendActor.new_dutch_auction(
                     item,
                     startingPrice,
@@ -147,8 +146,8 @@ const AuctionForm = () => {
                 toast.success("Auction created successfully!");
                 navigate("/explore-page");
             
-            } else if (type || type.value === "sealed-bid") {
-                console.log("sealed bid auction");
+            } else if (type === "sealed-bid" || type.value === "sealed-bid") {
+                console.log("creating sealed bid auction");
                 await backendActor.new_sb_auction(
                     item,
                     startingPrice,
@@ -178,98 +177,154 @@ const AuctionForm = () => {
 
 
     return (
-        <div className={`${styles.container} bg-secondary border-10`}>
-            <div className={styles.main}>
-                <h3>New Auction</h3>
-                <form className={styles.main_form} onSubmit={handleSubmit(onSubmit)}>
-                    <div className={styles.group}>
+        <div className={styles.container}>
+            <div className={styles.formSection}>
+                <h2 className={styles.title}>Create New Auction</h2>
+                <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
+                    <div className={styles.formGrid}>
+                        <div className={styles.formGroup}>
+                            <label>Item Title</label>
+                            <input
+                                type="text"
+                                placeholder="Enter item title"
+                                className={errors.name ? styles.errorInput : ''}
+                                {...register('name', { required: 'Title is required' })}
+                            />
+                            {errors.name && <span className={styles.errorText}>{errors.name.message}</span>}
+                        </div>
 
-                        <input className={classNames('field field--outline', { 'field--error': errors.name })}
-                            type="text"
-                            placeholder="Item Title"
-                            {...register('name', { required: true })} />
-                        <Checkbox id={"isEth"}
-                            defaultChecked={false}
-                            onChange={(e) => setIsEth(e.target.checked)}
-                        />
-                        <input className={classNames('field field--outline', { 'field--error': errors.name })}
-                            type="text"
-                            placeholder="Starting Price"
-                            {...register('startingPrice', { required: true })} />
-                        <input className={classNames('field field--outline', { 'field--error': errors.name })}
-                            type="text"
-                            placeholder="Location"
-                            {...register('location', { required: true })} />
-                        <input className={classNames('field field--outline', { 'field--error': errors.email })}
-                            type="text"
-                            placeholder="Contact"
-                            // , pattern: /^\S+@\S+$/i 
-                            {...register('contact', { required: true})} />
-                        <input className={classNames('field field--outline', { 'field--error': errors.subject })}
-                            type="text"
-                            placeholder="Duration"
-                            {...register('subject', { required: true })} />
-                        <CustomSelect setSelected={setDuration}
-                            options={DURATION_OPTS}
-                            selected={duration}
-                            placeholder="Minutes" />
+                        <div className={styles.formGroup}>
+                            <label>Starting Price</label>
+                            <div className={styles.priceInput}>
+                                <input
+                                    type="number"
+                                    placeholder="0.00"
+                                    className={errors.startingPrice ? styles.errorInput : ''}
+                                    {...register('startingPrice', { required: 'Starting price is required' })}
+                                />
+                                <div className={styles.ethToggle}>
+                                    <Checkbox
+                                        id="isEth"
+                                        checked={isEth}
+                                        onChange={(e) => setIsEth(e.target.checked)}
+                                    />
+                                    <label htmlFor="isEth">ETH</label>
+                                </div>
+                            </div>
+                            {errors.startingPrice && <span className={styles.errorText}>{errors.startingPrice.message}</span>}
+                        </div>
 
+                        <div className={styles.formGroup}>
+                            <label>Location</label>
+                            <input
+                                type="text"
+                                placeholder="Enter location"
+                                className={errors.location ? styles.errorInput : ''}
+                                {...register('location', { required: 'Location is required' })}
+                            />
+                            {errors.location && <span className={styles.errorText}>{errors.location.message}</span>}
+                        </div>
 
+                        <div className={styles.formGroup}>
+                            <label>Contact</label>
+                            <input
+                                type="text"
+                                placeholder="Enter contact information"
+                                className={errors.contact ? styles.errorInput : ''}
+                                {...register('contact', { required: 'Contact is required' })}
+                            />
+                            {errors.contact && <span className={styles.errorText}>{errors.contact.message}</span>}
+                        </div>
+
+                        <div className={styles.formGroup}>
+                            <label>Duration</label>
+                            <div className={styles.durationGroup}>
+                                <input
+                                    type="number"
+                                    placeholder="Enter duration"
+                                    className={errors.subject ? styles.errorInput : ''}
+                                    {...register('subject', { required: 'Duration is required' })}
+                                />
+                                <CustomSelect
+                                    setSelected={setDuration}
+                                    options={DURATION_OPTS}
+                                    selected={duration}
+                                    placeholder="Duration Type"
+                                />
+                            </div>
+                            {errors.subject && <span className={styles.errorText}>{errors.subject.message}</span>}
+                        </div>
+
+                        <div className={styles.formGroup}>
+                            <label>Auction Type</label>
+                            <CustomSelect
+                                setSelected={setType}
+                                options={AUCTION_OPTIONS}
+                                selected={AUCTION_OPTIONS.find(option => option.value === type)}
+                                placeholder="Select Auction Type"
+                            />
+                        </div>
                     </div>
 
+                    <div className={styles.uploadSection}>
+                        <label>Item Image</label>
+                        <div className={styles.imageUpload}>
+                            <input
+                                type="file"
+                                accept=".png,.jpg,.jpeg"
+                                onChange={(e) => changeFile(e.target.files?.[0])}
+                                className={styles.fileInput}
+                            />
+                            {previewImage && (
+                                <div className={styles.preview}>
+                                    <img src={previewImage} alt="Preview" />
+                                </div>
+                            )}
+                        </div>
+                    </div>
 
-                    <CustomSelect setSelected={setType}
-                        options={AUCTION_OPTIONS}
-                        selected={AUCTION_OPTIONS.find(option => option.value === type)}
-                        placeholder="Auction Type" />
-                        
-                    <ul className="sidebar_list">
+                    <div className={styles.formGroup}>
+                        <label>Description</label>
+                        <textarea
+                            placeholder="Enter item description"
+                            className={errors.message ? styles.errorInput : ''}
+                            {...register('message', { required: 'Description is required' })}
+                        />
+                        {errors.message && <span className={styles.errorText}>{errors.message.message}</span>}
+                    </div>
 
-                        <li className="sidebar_list-item">
-                            <Checkbox id={"list"}
-                                defaultChecked={true}
+                    <div className={styles.options}>
+                        <div className={styles.optionItem}>
+                            <Checkbox
+                                id="listOnSite"
+                                checked={listOnSite}
                                 onChange={(e) => setListOnSite(e.target.checked)}
                             />
-                            <label htmlFor={"list"}>List On Site</label>
-                        </li>
+                            <label htmlFor="listOnSite">List On Site</label>
+                        </div>
 
-
-                        <li className="sidebar_list-item">
-                            <Checkbox id={"whitelist"}
-                                defaultChecked={false}
+                        <div className={styles.optionItem}>
+                            <Checkbox
+                                id="whitelist"
+                                checked={whitelist}
                                 onChange={(e) => setWhitelist(e.target.checked)}
                             />
-                            <label htmlFor={"whitelist"}>Add Whitelist</label>
-                        </li>
-
-                    </ul>
-
-                    <div className={styles.upload_section}>
-                        <input 
-                            type="file" 
-                            accept='.png'
-                            onChange={(e) => changeFile(e.target.files?.[0])}
-                            className={styles.file_input}
-                        />
+                            <label htmlFor="whitelist">Enable Whitelist</label>
+                        </div>
                     </div>
 
-                    <textarea className={classNames('field field--outline', { 'field--error': errors.message })}
-                        placeholder="Enter item description"
-                        {...register('message', { required: true })} />
-                    <GradientBtn className={styles.btn} tag="button" type="submit" disabled={saving}>{saving ? "Creating..." : "Create"}</GradientBtn>
+                    <GradientBtn
+                        className={styles.submitBtn}
+                        tag="button"
+                        type="submit"
+                        disabled={saving}
+                    >
+                        {saving ? "Creating..." : "Create Auction"}
+                    </GradientBtn>
                 </form>
             </div>
-            <div className={`${styles.map} border-10`}>
-                <UploadImage />
-                {/* {
-                    MAP_KEY ?
-                        <Map/>
-                        :
-                        <LazyImage className={`${styles.img} border-10`} src={map} alt="map"/>
-                } */}
-            </div>
         </div>
-    )
+    );
 }
 
-export default AuctionForm
+export default AuctionForm;

@@ -28,6 +28,15 @@ const BidsHistory = ({ data  }) => {
             return null;
         }
     }
+
+    function convertUnixToDateTime(unixTime) {
+
+        const date = new Date(unixTime / 1000000);
+        const timeString = date.toLocaleString();
+        console.log("Time string: ", timeString);
+        return timeString;
+
+    }
     
     if (!Array.isArray(data)) {
         console.error("BidsHistory component received non-array data:", data);
@@ -49,12 +58,12 @@ const BidsHistory = ({ data  }) => {
                                         <p className="text-overflow">
 
 
-                                            <span className="text-accent text-bold">{bid.price} ETH</span>
+                                            <span className="text-accent text-bold">{Number(bid.price).toFixed(2)} ETH</span>
 
 
                                             by <span className="text-light text-bold">{bid.originator.toString()}</span>
                                         </p>
-                                        <span className="text-xs">{dayjs(dayjs().subtract(10, 'minutes')).fromNow()}</span>
+                                        <span className="text-xs">{convertUnixToDateTime(bid.date)}</span>
                                     </div>
                                 </>
                             )
@@ -66,7 +75,7 @@ const BidsHistory = ({ data  }) => {
                                             <p className="text-overflow">
 
 
-                                                <span className="text-accent text-bold">{bid.price} ETH</span>
+                                                <span className="text-accent text-bold">{Number(bid.price).toFixed(2)} ETH</span>
 
 
                                                 by <span className="text-light text-bold">{bidderUsername}</span>

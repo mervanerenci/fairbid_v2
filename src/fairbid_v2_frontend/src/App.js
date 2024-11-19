@@ -76,6 +76,7 @@ const SellerProfile = lazy(() => import('@pages/SellerProfile'));
 const Deposit = lazy(() => import('@pages/Deposit'));
 const Withdraw = lazy(() => import('@pages/Withdraw'));
 const Transfer = lazy(() => import('@pages/Transfer'));
+const HowToFairbid = lazy(() => import('@pages/HowToFairbid'));
 // Create a react-query client
 const queryClient = new QueryClient()
 
@@ -115,6 +116,7 @@ const App = () => {
                                             <Route path="/deposit" element={<Deposit />} />
                                             <Route path="/withdraw" element={<Withdraw />} />
                                             <Route path="/transfer" element={<Transfer />} />
+                                            <Route path="/how-to-fairbid" element={<HowToFairbid />} />
                                         </Routes>
 
                                     </Suspense>

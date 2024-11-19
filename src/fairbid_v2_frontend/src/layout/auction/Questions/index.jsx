@@ -76,7 +76,7 @@ const Questions = ({ id, isOriginator }) => {
             const idNumber = parseInt(id);
             const questions = await backendActor.get_questions(idNumber);
             setComments(questions);
-            console.log("Questions:", questions);
+            // console.log("Questions:", questions);
 
             // Fetch usernames for all new originators
             questions.forEach(question => {
@@ -112,11 +112,11 @@ const Questions = ({ id, isOriginator }) => {
     const canSeeQuestion = (question) => {
         const userPrincipal = principal?.toString();
         const isQuestionAsker = question.originator?.toString() === userPrincipal;
-        console.log("QQQ Question originator:", question.originator);
-        console.log("QQQ User principal:", userPrincipal);
-        console.log("QQQ Is question asker:", isQuestionAsker);
-        console.log("QQQ Question answer:", question.answer);
-        console.log("QQQ Question is private:", question.is_private);
+        // console.log("QQQ Question originator:", question.originator);
+        // console.log("QQQ User principal:", userPrincipal);
+        // console.log("QQQ Is question asker:", isQuestionAsker);
+        // console.log("QQQ Question answer:", question.answer);
+        // console.log("QQQ Question is private:", question.is_private);
 
         // If question is not private or has no answer, check visibility rules
         if (!question.answer || !question.is_private) {
@@ -159,18 +159,20 @@ const Questions = ({ id, isOriginator }) => {
 
         try {
             console.log("Answering question:", data.message);
-            console.log("Auction ID:", id);
+            console.log("Question Index:", replyingTo);
 
-            const idValue = parseInt(id);
+            
             if (isPrivateReply) {
-                await backendActor.answer_question_private(idValue, data.message);
+                await backendActor.answer_question_private(replyingTo, data.message);
             } else {
-                await backendActor.answer_question(idValue, data.message);
+                await backendActor.answer_question(replyingTo, data.message);
             }
 
 
 
             toast.success("Answer submitted successfully");
+            setReplyingTo(null);
+            setIsPrivateReply(false);
             reset();
         } catch (error) {
             console.error("Error submitting answer:", error);

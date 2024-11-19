@@ -46,8 +46,8 @@ const StyledBidModal = styled(StyledModal)`
 `;
 
 const BidModal = () => {
-    const minBid = 3.08, fee = 0.10;
-    const {isBidModalOpen, closeBidModal, currentAuctionId} = useBidModalContext();
+    const minBid = 0, fee = 0.10;
+    const {isBidModalOpen, closeBidModal, currentAuctionId, currentAuctionType} = useBidModalContext();
     const [bid, setBid] = useState(0);
     const {control, handleSubmit, formState: {errors}, reset} = useForm();
 
@@ -56,8 +56,9 @@ const BidModal = () => {
 
     useEffect(() => {
         console.log("Current Auction ID:", currentAuctionId);
-        console.log("Backend Actor:", backendActor);
-    }, [currentAuctionId, backendActor]);
+        console.log("Current Auction Type:", currentAuctionType);
+        console.log("Backend Actor:", backendActor);    
+    }, [currentAuctionId, currentAuctionType, backendActor]);
 
     const handleClose = () => {
         closeBidModal();
@@ -70,22 +71,43 @@ const BidModal = () => {
             return;
         }
 
-        setIsSubmitting(true);
-        try {
-            // Convert bid to proper format if needed
-            const bidValue = parseInt(data.bid);
-            console.log("Bid Value:", bidValue);
-            const bidAmount = bidValue;
-            const auction_id = parseInt(currentAuctionId);
-            await backendActor.make_bid(auction_id, bidAmount);
-            toast.success('Bid placed successfully');
-            handleClose();
-        } catch (error) {
-            console.error("Error placing bid:", error);
-            toast.error(error.message || 'Failed to place bid');
-        } finally {
-            setIsSubmitting(false);
+        console.log("Bidding..Current Auction Type:", currentAuctionType);
+        if (currentAuctionType === "english") {
+            console.log("English Auction");
+            setIsSubmitting(true);
+            try {
+                // Convert bid to proper format if needed
+                const bidValue = parseInt(data.bid);
+                console.log("Bid Value:", bidValue);
+                const bidAmount = bidValue;
+                const auction_id = parseInt(currentAuctionId);
+                await backendActor.make_bid(auction_id, bidAmount);
+                toast.success('Bid placed successfully');
+                handleClose();
+            } catch (error) {
+                console.error("Error placing bid:", error);
+                toast.error(error.message || 'Failed to place bid');
+            } finally {
+                setIsSubmitting(false);
+            }
+        } else if (currentAuctionType === "sealed-bid") {
+            console.log("Sealed Bid Auction");
+            setIsSubmitting(true);
+            try {
+                const bidValue = parseInt(data.bid);
+                console.log("Bid Value:", bidValue);
+                const bidAmount = bidValue;
+                const auction_id = parseInt(currentAuctionId);
+                await backendActor.make_bid_sb(auction_id, bidAmount);
+            } catch (error) {
+                console.error("Error placing bid:", error);
+                toast.error(error.message || 'Failed to place bid');
+            } finally {
+                setIsSubmitting(false);
+            }
         }
+
+        
     }
 
     const getTotal = () => {
@@ -121,9 +143,9 @@ const BidModal = () => {
                 </form>
             </div>
             <div className="content_main d-flex flex-column">
-                <p className="row d-flex justify-content-between">
+                {/* <p className="row d-flex justify-content-between">
                     You must bid at least: <span className="text-bold text-light">{minBid.toFixed(2)} ETH</span>
-                </p>
+                </p> */}
                 <p className="row d-flex justify-content-between">
                     Total bid amount:
                     <span className="text-bold text-light">

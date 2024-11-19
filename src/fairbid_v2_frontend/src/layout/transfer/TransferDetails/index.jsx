@@ -24,7 +24,7 @@ import cover from '@assets/cover.webp';
 const TransferDetails = () => {
     const { register, handleSubmit, formState: { errors }, reset } = useForm();
     const { credits, fetchCredits } = useCredits();
-    const { backendActor } = useAuth();
+    const { backendActor, principal } = useAuth();
 
     
 
@@ -44,7 +44,10 @@ const TransferDetails = () => {
             
             console.log("++ Transfering with amount: ", Number(data.amount));
             console.log("++ Transfering to: ", data.to);
-            await backendActor.transfer_credit(data.to, Number(data.amount));
+            const weiAmount = Number(data.amount) * 1e18;
+            await backendActor.transfer_credit(data.to, weiAmount);
+
+            
             toast.success('Transfer successful!');
             reset(); // Reset form after successful transfer
             fetchCredits(); // Refresh credits balance
@@ -55,7 +58,7 @@ const TransferDetails = () => {
 
     useEffect(() => {
         fetchCredits();
-    }, [fetchCredits]);
+    }, []);
 
     return (
         <div className={styles.container}>

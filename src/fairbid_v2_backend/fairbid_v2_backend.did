@@ -155,6 +155,7 @@ service : {
     get_auction_originator: (id: AuctionId) -> (opt principal) query;
     get_all_auctions_by_originator: () -> (vec AuctionOverview) query;
     get_item_image: (id: AuctionId) -> ( vec nat8) query;
+    get_auction_is_eth: (id: AuctionId) -> (bool) query;
 
     get_scheduled_auction: (id: AuctionId) -> (opt Auction) query;
     get_all_scheduled_auctions: () -> (vec AuctionOverview) query;
@@ -188,7 +189,8 @@ service : {
     get_remaining_time_dutch: (id: AuctionId) -> (opt nat64) query;
     get_all_dutch_bids_by_auction_id: (id: AuctionId) -> (vec Bid) query;
     get_dutch_winner_by_auction_id: (id: AuctionId) -> (opt principal) query;
-
+    get_dutch_auction_is_eth: (id: AuctionId) -> (bool) query;
+    get_current_bid_dutch: (id: AuctionId) -> (opt nat64) query;
     get_scheduled_dutch_auction: (id: AuctionId) -> (opt DutchAuction) query;
     get_all_scheduled_dutch_auctions: () -> (vec AuctionOverview) query;
 
@@ -221,7 +223,8 @@ service : {
     get_sb_winner_by_auction_id: (id: AuctionId) -> (opt principal) query;
     get_remaining_time_sb: (id: AuctionId) -> (opt nat64) query;
     get_sb_overview_list: () -> (vec AuctionOverview) query;
-    // get_active_auctions: () -> (vec AuctionOverview) query;
+    get_ended_sb_auctions: () -> (vec AuctionOverview) query;
+    get_sb_auction_is_eth: (id: AuctionId) -> (bool) query;
 
     get_scheduled_sb_auction: (id: AuctionId) -> (opt SbAuction) query;
     get_all_scheduled_sb_auctions: () -> (vec AuctionOverview) query;

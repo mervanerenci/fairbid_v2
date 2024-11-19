@@ -59,6 +59,10 @@ const ProfileItems = () => {
     const [dutchAuctions, setDutchAuctions] = useState([]);
     const [sbAuctions, setSbAuctions] = useState([]);
 
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
     const getEnglishAuctions = async () => {
         const auctions = await backendActor.get_all_auctions_by_originator();
         const transformedEnglish = await Promise.all(auctions.map(a => transformAuction(a, 'english')));

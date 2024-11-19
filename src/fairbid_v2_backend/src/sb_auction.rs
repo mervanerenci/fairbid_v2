@@ -505,6 +505,21 @@ fn get_sb_winner_by_auction_id(id: AuctionId) -> Option<Principal> {
     })
 }
 
+#[ic_cdk::query]
+fn get_ended_sb_auctions() -> Vec<AuctionOverview> {
+    SB_AUCTION_MAP.with(|am| {
+        let auction_map = am.borrow();
+        auction_map
+            .iter()
+            .filter(|(_, auction)| auction.remaining_time == 0)
+            .map(|(id, auction)| AuctionOverview {
+                id: *id, // remove the dereference operator here
+                item: auction.item.clone(),
+            })
+            .collect()
+    })
+}
+
 // get scheduled auctions
 #[ic_cdk::query]
 fn get_scheduled_sb_auction(id: AuctionId) -> Option<SbAuction> {
@@ -528,6 +543,13 @@ fn get_all_scheduled_sb_auctions() -> Vec<AuctionOverview> {
     })
 }
 
+#[ic_cdk::query]
+fn get_sb_auction_is_eth(id: AuctionId) -> bool {
+    SB_AUCTION_MAP.with(|am| {
+        let auction_map = am.borrow();
+        auction_map.get(&id).map(|auction| auction.is_eth).unwrap_or(false)
+    })
+}
 
 
 

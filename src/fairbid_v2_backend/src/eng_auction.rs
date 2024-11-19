@@ -563,6 +563,14 @@ pub fn is_whitelisted(auction_id: AuctionId, principal: Principal) -> bool {
     })
 }
 
+#[ic_cdk::query]
+fn get_auction_is_eth(id: AuctionId) -> bool {
+    ENGLISH_AUCTION_MAP.with(|am| {
+        let auction_map = am.borrow();
+        auction_map.get(&id).map(|auction| auction.is_eth).unwrap_or(false)
+    })
+}
+
 
 ///                                                            ///
 ///                                                            ///

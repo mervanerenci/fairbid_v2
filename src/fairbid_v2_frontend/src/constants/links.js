@@ -11,6 +11,7 @@ export const HEADER_LINKS = [
             {name: 'Explore', url: '/explore-page', isMain: true},
             {name: 'Live Auctions', url: '/explore/live-auctions'},
             {name: 'Upcoming Auctions', url: '/explore/upcoming-auctions'},
+            
             // {name: 'Single item', url: '/explore/item'},
             // {name: 'Author', url: '/author'},
         ]
@@ -37,6 +38,11 @@ export const HEADER_LINKS = [
         name: 'Create',
         isSingle: true,
         url: '/new-auction'
+    },
+    {
+        name: 'How to Fairbid',
+        isSingle: true,
+        url: '/how-to-fairbid'
     },
     {
         name: 'Account',

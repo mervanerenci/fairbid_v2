@@ -125,12 +125,16 @@ const DepositDetails = () => {
         fetchCredits();
     }, [backendActor, fetchCredits]);
 
+    useEffect(() => {
+        fetchCredits();
+    }, []);
+
     return (
         <div className={styles.container}>
             <div className={styles.balanceCard}>
                 <h3>Available Balance</h3>
                 <div className={styles.balanceAmount}>
-                    <span>{credits}</span>
+                    <span>{credits.toFixed(18)}</span>
                     <small>Credits (ETH)</small>
                 </div>
             </div>
