@@ -32,12 +32,12 @@ const TransactionHistory = () => {
     useEffect(() => {
         console.log('Full Credit History:', creditHistory);
         if (creditHistory && creditHistory.length > 0) {
-            console.log('First Transaction:', creditHistory[0]);
-            console.log('Transaction Type:', creditHistory[0].transaction_type);
-            console.log('Transaction Amount:', creditHistory[0].amount);
-            console.log('Transaction Timestamp:', creditHistory[0].timestamp);
-            console.log('Transaction From:', creditHistory[0].from);
-            console.log('Transaction To:', creditHistory[0].to);
+            // console.log('First Transaction:', creditHistory[0]);
+            // console.log('Transaction Type:', creditHistory[0].transaction_type);
+            // console.log('Transaction Amount:', creditHistory[0].amount);
+            // console.log('Transaction Timestamp:', creditHistory[0].timestamp);
+            // console.log('Transaction From:', creditHistory[0].from);
+            // console.log('Transaction To:', creditHistory[0].to);
             
             
         }
@@ -73,7 +73,8 @@ const TransactionHistory = () => {
     const formatTransactionAmount = (tx) => {
         const isReceiver = 'Transfer' in tx.transaction_type && tx.to.toString() === principal.toString();
         const prefix = isReceiver || 'Deposit' in tx.transaction_type ? '+ ' : '- ';
-        return `${prefix}${tx.amount} Credits`;
+        const amountInEth = Number(tx.amount) / 1e18;
+        return `${prefix}${amountInEth.toFixed(12)} Credits`;
     };
 
     const formatTimestamp = (timestamp) => {

@@ -11,11 +11,12 @@ use crate::eng_auction::is_whitelisted;
 
 #[ic_cdk::update]
 
-fn new_dutch_auction(item: Item,  price: u64, duration: u64, contact: String, location: String, image: Vec<u8>, whitelist: bool, list_on_site: bool, is_eth: bool) {
+async fn new_dutch_auction(item: Item,  price: u64, duration: u64, contact: String, location: String, image: Vec<u8>, whitelist: bool, list_on_site: bool, is_eth: bool) {
     let item_clone = item.clone();
+    let id = random_id_dutch().await;
     DUTCH_AUCTION_MAP.with(|am| {
         let mut auction_map = am.borrow_mut();
-        let id = auction_map.len() as AuctionId;
+        
 
         let auction = DutchAuction {
 
@@ -224,7 +225,7 @@ async fn new_dutch_auction_s(item: Item, price: u64, duration: u64, contact: Str
 
 #[ic_cdk::update]
 async fn schedule_new_dutch_auction(item: Item, price: u64, duration: u64, contact: String, location: String, image: Vec<u8>, whitelist: bool, list_on_site: bool, is_eth: bool, time: u64) {
-    let id = random_id_eng().await ;
+    let id = random_id_dutch().await ;
 
     let item_clone = item.clone();
     let contact_clone = contact.clone();
@@ -532,3 +533,12 @@ fn get_dutch_auction_is_eth(id: AuctionId) -> bool {
 
 
 // #[ic_cdk::query]
+
+pub async fn random_id_dutch() -> u64 {
+    let (random_bytes,): (Vec<u8>,) = call(Principal::management_canister(), "raw_rand", ()).await.unwrap();
+    let mut number: u32 = 0;
+    for i in 0..4 {
+        number = (number << 8) | (random_bytes[i] as u32);
+    }
+    (number % 1_000_000).into()
+}

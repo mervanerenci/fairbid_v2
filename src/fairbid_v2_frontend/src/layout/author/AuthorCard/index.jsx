@@ -37,10 +37,10 @@ const AuthorCard = () => {
         toast.success('Copied to clipboard');
     }
 
-    const handleFollow = e => {
-        setIsFollowed(!isFollowed);
-        setFollowers(isFollowed ? followers - 1 : followers + 1);
-    }
+    // const handleFollow = e => {
+    //     setIsFollowed(!isFollowed);
+    //     setFollowers(isFollowed ? followers - 1 : followers + 1);
+    // }
 
     return (
         <StyledAuthorCard>

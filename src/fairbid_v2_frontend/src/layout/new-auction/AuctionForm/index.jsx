@@ -26,10 +26,10 @@ import { useState } from 'react';
 
 
 const AuctionForm = () => {
-    
+
     const MAP_KEY = process.env.REACT_APP_PUBLIC_MAP_KEY;
     const { register, handleSubmit, formState: { errors }, reset } = useForm();
-    const { backendActor } = useAuth();
+    const { backendActor, isAuthenticated } = useAuth();
     const navigate = useNavigate();
 
 
@@ -57,6 +57,9 @@ const AuctionForm = () => {
     const [whitelist, setWhitelist] = useState(false);
     const [isEth, setIsEth] = useState(false);
     const [previewImage, setPreviewImage] = useState(null);
+
+    const [isScheduled, setIsScheduled] = useState(false);
+    const [scheduledTime, setScheduledTime] = useState(null);
 
     const concatUint8Arrays = (left, right) => {
         let temporary = [];
@@ -86,6 +89,31 @@ const AuctionForm = () => {
         setImage(data);
     }
 
+    // Convert scheduled date to UNIX timestamp
+    const convertToUnixTimestamp = (date) => {
+        return Math.floor(new Date(scheduledTime).getTime() / 1000);
+    }
+
+    const convertToSeconds = (value) => {
+        if (duration === "minutes" || duration.value === "minutes" ) {
+            return value * 60;
+        } else if (duration === "days" || duration.value === "days") {
+            return value * 24 * 60 * 60;
+        }
+    }
+
+    if (!isAuthenticated) {
+        return (
+            <div className={styles.container}>
+                <div className={styles.authPrompt}>
+                    <h2>Authentication Required</h2>
+                    <p>Please sign in to create an auction</p>
+                    <GradientBtn tag="link" to="/login">Sign In</GradientBtn>
+                </div>
+            </div>
+        );
+    }
+
     const onSubmit = async (data) => {
         setSaving(true);
         try {
@@ -94,15 +122,20 @@ const AuctionForm = () => {
                 description: data.message,
             };
 
-            const duration = parseInt(data.subject);
+            const durationInt = parseInt(data.subject);
+            console.log("durationInt", durationInt);
+            const _duration = convertToSeconds(durationInt);
+            console.log("converted duration", _duration);
+
             const startingPrice = parseInt(data.startingPrice);
-            console.log("type", type);
-            console.log("type value", type.value);
+
+            const unixTimestamp = isScheduled ? convertToUnixTimestamp(scheduledTime) : null;
+            console.log("unixTimestamp", unixTimestamp);
 
             console.log("Creating auction:", {
                 item,
                 startingPrice,
-                duration: duration,
+                duration: _duration,
                 contact: data.contact,
                 location: data.location,
                 image,
@@ -111,15 +144,20 @@ const AuctionForm = () => {
                 isEth
             });
 
+            if (isScheduled) {
+                console.log("creating scheduled auction");
+                return;
+            }
+
 
             if (type === "english" || type.value === "english") {
 
                 console.log("creating english auction");
-                
+
                 await backendActor.new_auction(
                     item,
                     startingPrice,
-                    duration,
+                    _duration,
                     data.contact,
                     data.location,
                     image,
@@ -129,13 +167,13 @@ const AuctionForm = () => {
                 );
                 toast.success("Auction created successfully!");
                 navigate("/explore-page");
-                
+
             } else if (type === "dutch" || type.value === "dutch") {
                 console.log("creating dutch auction");
                 await backendActor.new_dutch_auction(
                     item,
                     startingPrice,
-                    duration,
+                    _duration,
                     data.contact,
                     data.location,
                     image,
@@ -145,13 +183,13 @@ const AuctionForm = () => {
                 );
                 toast.success("Auction created successfully!");
                 navigate("/explore-page");
-            
+
             } else if (type === "sealed-bid" || type.value === "sealed-bid") {
                 console.log("creating sealed bid auction");
                 await backendActor.new_sb_auction(
                     item,
                     startingPrice,
-                    duration,
+                    _duration,
                     data.contact,
                     data.location,
                     image,
@@ -165,7 +203,7 @@ const AuctionForm = () => {
                 console.error("Invalid auction type");
             }
 
-            
+
         } catch (error) {
             console.error("Error creating auction:", error);
             toast.error("Failed to create auction");
@@ -311,6 +349,26 @@ const AuctionForm = () => {
                             />
                             <label htmlFor="whitelist">Enable Whitelist</label>
                         </div>
+                    </div>
+
+                    <div className={styles.formGroup}>
+                        <div className={styles.scheduleToggle}>
+                            <Checkbox
+                                id="isScheduled"
+                                checked={isScheduled}
+                                onChange={(e) => setIsScheduled(e.target.checked)}
+                            />
+                            <label htmlFor="isScheduled">Schedule Auction</label>
+                        </div>
+
+                        {isScheduled && (
+                            <input
+                                type="datetime-local"
+                                className={styles.dateTimePicker}
+                                onChange={(e) => setScheduledTime(e.target.value)}
+                                min={new Date().toISOString().slice(0, 16)}
+                            />
+                        )}
                     </div>
 
                     <GradientBtn

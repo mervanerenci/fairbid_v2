@@ -7,6 +7,7 @@ import GradientBtn from '@ui/GradientBtn';
 import {NumericFormat} from 'react-number-format';
 import {toast} from 'react-toastify';
 
+
 // hooks
 import {useBidModalContext} from '@contexts/bidModalContext';
 import {useState} from 'react';
@@ -99,6 +100,8 @@ const BidModal = () => {
                 const bidAmount = bidValue;
                 const auction_id = parseInt(currentAuctionId);
                 await backendActor.make_bid_sb(auction_id, bidAmount);
+                toast.success('Bid placed successfully');
+                handleClose();
             } catch (error) {
                 console.error("Error placing bid:", error);
                 toast.error(error.message || 'Failed to place bid');
@@ -111,7 +114,7 @@ const BidModal = () => {
     }
 
     const getTotal = () => {
-        return bid !== 0 ? (+bid).toFixed(2) : (minBid + fee).toFixed(2);
+        return bid !== 0 ? (+bid).toFixed(3) : (minBid + fee).toFixed(3);
     }
 
     return (
@@ -129,10 +132,10 @@ const BidModal = () => {
                                 render={({field}) => (
                                     <NumericFormat
                                         className={classNames('field field--outline flex-1', {'field--error': errors.bid})}
-                                        placeholder={`${minBid} ETH`}
+                                        placeholder={`${minBid} `}
                                         thousandSeparator={true}
                                         allowNegative={false}
-                                        suffix=" ETH"
+                                        suffix=" "
                                         name={field.name}
                                         onValueChange={({value}) => {
                                             setBid(+value);
@@ -149,7 +152,7 @@ const BidModal = () => {
                 <p className="row d-flex justify-content-between">
                     Total bid amount:
                     <span className="text-bold text-light">
-                            {getTotal()} ETH
+                            {getTotal()} 
                         </span>
                 </p>
             </div>

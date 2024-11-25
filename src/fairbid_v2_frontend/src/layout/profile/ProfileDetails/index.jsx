@@ -106,13 +106,13 @@ const ProfileDetails2 = () => {
                     {user ? (
                         <div className={styles.userInfo}>
                             <span className={styles.username}>{user}</span>
-                            <GradientBtn 
+                            {/* <GradientBtn 
                                 tag="button" 
                                 onClick={() => setUser('')}
                                 className={styles.editButton}
                             >
                                 Edit
-                            </GradientBtn>
+                            </GradientBtn> */}
                         </div>
                     ) : (
                         <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>

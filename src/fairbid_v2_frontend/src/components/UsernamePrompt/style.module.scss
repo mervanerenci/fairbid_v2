@@ -1,0 +1,42 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  .modal {
+    background: var(--bg-secondary);
+    padding: 2rem;
+    border-radius: 1rem;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+  
+    h2 {
+      color: var(--text);
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+  
+    p {
+      color: var(--text-light);
+      margin-bottom: 2rem;
+    }
+  }
+  
+  .buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+  
+    button {
+      min-width: 120px;
+    }
+}

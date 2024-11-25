@@ -27,3 +27,22 @@
     display: flex;
     flex-direction: column;
 }
+
+.content_avatar {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+
+    .container {
+        width: 120px;
+        height: 120px;
+    }
+
+    .username {
+        font-size: 1.1rem;
+        color: var(--text);
+        font-weight: 500;
+    }
+}

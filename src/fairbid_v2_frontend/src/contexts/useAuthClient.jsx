@@ -11,12 +11,12 @@ export const getIdentityProvider = () => {
     const isLocal = process.env.DFX_NETWORK !== "ic";
     // Safari does not support localhost subdomains
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    if (isLocal && isSafari) {
+    if (isLocal ) {
       idpProvider = `http://be2us-64aaa-aaaaa-qaabq-cai.localhost:4943`;
       console.log('isLocal && isSafari', idpProvider);
-    } else if (isLocal) {
-      idpProvider = `http://be2us-64aaa-aaaaa-qaabq-cai.localhost:4943`;
-      console.log('isLocal', idpProvider);
+    } else {
+      idpProvider = `"https://identity.ic0.app"`;
+      console.log('mainnet', idpProvider);
     }
   }
   return idpProvider;

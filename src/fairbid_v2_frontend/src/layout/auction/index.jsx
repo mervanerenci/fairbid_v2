@@ -11,10 +11,14 @@ import BidsHistory from '@components/BidsHistory';
 import AskForm from '@components/AskForm';
 import Countdown from 'react-countdown';
 import Sticky from 'react-stickynode';
+import { toast } from 'react-toastify';
+import NewAvatar from '@components/NewAvatar';
+
 
 // hooks
 import { useBidModalContext } from '@contexts/bidModalContext';
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
+
 import { useWindowSize } from 'react-use';
 import { useForm } from 'react-hook-form';
 
@@ -64,7 +68,7 @@ const AuctionDetails = ({ item }) => {
 
 
     const { openBidModal } = useBidModalContext();
-    const { identity, principal, backendActor } = useAuth();
+    const { principal, backendActor } = useAuth();
 
     const activeBids = itemz.bids.filter(itemz => itemz.active), prevBids = itemz.bids.filter(itemz => !itemz.active);
     const date = useRef(dayjs().add(7, 'days').toDate());
@@ -89,6 +93,15 @@ const AuctionDetails = ({ item }) => {
     const [currentBidDutch, setCurrentBidDutch] = useState(null);
     const [lowerAmount, setLowerAmount] = useState(null);
 
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        reset
+    } = useForm();
+
+
+
 
     const tabs = [
         { label: 'Bids', key: 'item-1', children: <BidsHistory data={item.bids} /> },
@@ -107,13 +120,17 @@ const AuctionDetails = ({ item }) => {
 
     const getBuyCode = async () => {
 
-        const _id = parseInt(item.id);
-        await backendActor.assign_buy_code(_id);
-        console.log("Buy code assigned");
-        const code = await backendActor.get_buy_code(_id);
-        const secret = Number(code);
-        // console.log("Buy Code: ", secret);
-        setSecretCode(secret);
+        try {
+            const _id = parseInt(item.id);
+            await backendActor.assign_buy_code(_id);
+            console.log("Buy code assigned");
+            const code = await backendActor.get_buy_code(_id);
+            const secret = Number(code);
+            setSecretCode(secret);
+        } catch (error) {
+            console.error("Error getting buy code:", error);
+            toast.error("Failed to get buy code");
+        }
 
     }
 
@@ -155,6 +172,7 @@ const AuctionDetails = ({ item }) => {
 
         try {
             const _bids = await backendActor.get_all_bids(_id);
+            console.log("AAA- getBidsBids:", _bids);
             setBids(_bids);
         } catch (error) {
             console.error("Error fetching bids:", error);
@@ -186,6 +204,15 @@ const AuctionDetails = ({ item }) => {
         const _highestBid = await backendActor.get_highest_bid_details(_id);
         console.log("AAA- Highest bid:", _highestBid);
         setHighestBid(_highestBid);
+    }
+
+    const getLastElementOfBids = async () => {
+        const bids_array = item.bids;
+        console.log("AAA- Bids array:", bids_array);
+        const last_element = bids_array[bids_array.length - 1];
+        console.log("AAA- Last element:", last_element);
+        console.log("AAA- last element number:", Number(last_element.price));
+        setHighestBid(last_element);
     }
 
     const getCurrentBidDutch = async () => {
@@ -232,31 +259,84 @@ const AuctionDetails = ({ item }) => {
         await backendActor.transfer_price(item.originator, highestBid);
     }
 
+    const onLowerPrice = async (data) => {
+        try {
+            const _id = parseInt(item.id);
+            await backendActor.lower_price(_id, Number(data.lowerAmount));
+            console.log("Price lowered successfully to amount", Number(data.lowerAmount));
+            // Refresh current price
+            getCurrentBidDutch();
+            reset(); // Clear form after successful submission
+        } catch (error) {
+            console.error("Error lowering price:", error);
+            alert("Failed to lower price");
+        }
+    };
+
+    const handleAcceptPrice = async () => {
+        try {
+            await backendActor.accept_price(item.id);
+            console.log("AAA- Price accepted successfully");
+        } catch (error) {
+            console.error("Error accepting price:", error);
+        }
+    }
+
+
     // Log remaining time
     useEffect(() => {
-        console.log(",,AAA- Auction type:", item.auctionType);
+        let timeInterval;
+        // let bidsInterval;
 
-        if (item.auctionType === "english") {
-            getRemainingTime();
-            setInterval(getRemainingTime, 1000);
 
-            getBids();
-            setInterval(getBids, 12000);
-        } else if (item.auctionType === "dutch") {
-            getRemainingTimeDutch();
-            setInterval(getRemainingTimeDutch, 1000);
+        const updateTime = async () => {  // Make this function async
+            try {
+                if (item.auctionType === "english") {
+                    await getRemainingTime();  // Await the promise
+                } else if (item.auctionType === "dutch") {
+                    await getRemainingTimeDutch();  // Await the promise
+                } else {
+                    await getRemainingTimeSb();  // Await the promise
+                }
+            } catch (error) {
+                console.error("Error updating time:", error);
+            }
+        };
 
-            getBidsDutch();
-            setInterval(getBidsDutch, 12000);
-        } else {
-            getRemainingTimeSb();
-            setInterval(getRemainingTimeSb, 1000);
+        // const updateBids = () => {
+        //     if (item.auctionType === "english") {
+        //         getBids();
+        //     } else if (item.auctionType === "dutch") {
+        //         getBidsDutch();
+        //     } else {
+        //         getBidsSb();
+        //     }
+        // };
 
-            getBidsSb();
-            setInterval(getBidsSb, 12000);
-        }
+        updateTime();
+        // updateBids();
 
-    }, [remainingTime]);
+        timeInterval = setInterval(updateTime, 1000);
+        // bidsInterval = setInterval(updateBids, 12000);
+        return () => {
+            clearInterval(timeInterval);
+            // clearInterval(bidsInterval);
+        };
+
+    }, [item.auctionType]);
+
+    // useEffect(() => {
+    //     if (item.auctionType === "english") {
+    //         getBids();
+    //         setInterval(getBids, 12000);
+    //     } else if (item.auctionType === "dutch") {
+    //         getBidsDutch();
+    //         setInterval(getBidsDutch, 12000);
+    //     } else {
+    //         getBidsSb();
+    //         setInterval(getBidsSb, 12000);
+    //     }
+    // }, [bids]);
 
 
     // Get highest bid and winner when auction is ended
@@ -268,6 +348,7 @@ const AuctionDetails = ({ item }) => {
             getCurrentBidDutch();
             getWinnerDutch();
         } else {
+            getLastElementOfBids();
             getWinnerSb();
         }
 
@@ -286,8 +367,6 @@ const AuctionDetails = ({ item }) => {
 
         const fetchDetails = async () => {
             const _id = parseInt(item.id);
-
-
             try {
                 const _details = await backendActor.get_auction_details(_id);
                 setDetails(_details[0]);
@@ -445,16 +524,16 @@ const AuctionDetails = ({ item }) => {
 
 
 
-    const handleBidClick = () => {
+    const handleBidClick = useCallback(() => {
         console.log("AAA- Opening bid modal for auction:", item.id);
         openBidModal(item.id, item.auctionType);
-    }
+    }, [item.id, item.auctionType, openBidModal]);
 
-    const handleTransferClick = () => {
+    const handleTransferClick = useCallback(() => {
         console.log("AAA- Transferring price for auction:", item.id);
-    }
+    }, [item.id]);
 
-    
+
 
     // For calculating remaining time
     function convertNanoToSeconds(nanoSeconds) {
@@ -511,337 +590,303 @@ const AuctionDetails = ({ item }) => {
         )
     }
 
-    const EnglishAuctionComponent = () => {
-        return (
-            <div>
-                <div className={styles.main} id="item_main">
-                    <div className={styles.main_about}>
-                        <div className="d-flex flex-column g-10">
-                            {remainingTime === 0 ? (
-                                <span className="h6">🚫 Auction Ended</span>
-                            ) : (
-                                <span className="h6">🔥 {remainingTime} seconds</span>
-                            )}
+    const EnglishAuctionComponent = useMemo(() =>
+    (
+        <div>
+            <div className={styles.main} id="item_main">
+                <div className={styles.main_about}>
+                    <div className="d-flex flex-column g-10">
+                        {remainingTime === 0 ? (
+                            <span className="h6">🚫 Auction Ended</span>
+                        ) : (
+                            <span className="h6">🔥 {remainingTime} seconds</span>
+                        )}
 
 
-                            <div>
+                        <div>
 
-                                {/* {remainingTime ? convertUnixToDateTime(Number(remainingTime)) : "Loading..."} */}
-                            </div>
-                            <h2 className={styles.title}>{item.title}</h2>
-                            <div className={styles.bid}>
-                                
-                                    <div className="d-flex g-10">
-                                        English Auction
-                                    </div>
-                                
-
-                                
-
-
-
-
-
-
-
-                                {/* <div className="d-flex g-10">
-                                    On sale for <span className="text-light text-bold">100 ETH</span>
-                                </div> */}
-
-
-
-                                {isEth ? (
-                                    <div className="d-flex g-10">
-                                        Starting price <span className="text-accent text-bold">{Number(item.startPrice)} ETH</span>
-                                    </div>
-                                ) : (
-                                    <div className="d-flex g-10">
-                                        Starting price <span className="text-accent text-bold">{Number(item.startPrice)} USD</span>
-                                    </div>
-                                )}
-                            </div>
+                            {/* {remainingTime ? convertUnixToDateTime(Number(remainingTime)) : "Loading..."} */}
                         </div>
-                        <div className={styles.actions}>
-                            {/* <Like className={`${styles.btn} ${styles.like} btn btn--icon`} count={item.likes}/> */}
-                            {/* <button className={`${styles.btn} btn btn--icon`} aria-label="Menu">
+                        <h2 className={styles.title}>{item.title}</h2>
+                        <div className={styles.bid}>
+
+                            <div className="d-flex g-10">
+                                English Auction
+                            </div>
+
+
+
+                            {isEth ? (
+                                <div className="d-flex g-10">
+                                    Starting price <span className="text-accent text-bold">{Number(item.startPrice)} ETH</span>
+                                </div>
+                            ) : (
+                                <div className="d-flex g-10">
+                                    Starting price <span className="text-accent text-bold">{Number(item.startPrice)} USD</span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                    <div className={styles.actions}>
+                        {/* <Like className={`${styles.btn} ${styles.like} btn btn--icon`} count={item.likes}/> */}
+                        {/* <button className={`${styles.btn} btn btn--icon`} aria-label="Menu">
                                 <i className="icon icon-ellipsis"/>
                             </button> */}
-                        </div>
                     </div>
-                    <p className={`${styles.main_text} text-sm`}>
-                        {item.description}
-                    </p>
-
-                    {/* Contact and Location */}
-                    <div className="d-flex g-10">
-                        <span className="text-bold">Contact: {item.contact}</span>
-                    </div>
-                    <div className="d-flex g-10">
-                        <span className="text-bold">Location: {item.location}</span>
-                    </div>
-
-
-                    <div className={styles.main_creator}>
-                        <div className={`${styles.block} border-10`}>
-                            {/* <Avatar src={creator} alt="@thadraid" size="sm" isVerified /> */}
-                            <div className={styles.block_details}>
-                                <span className="text-xs">
-                                    <span className="text-bold">Creator: </span>
-
-                                </span>
-
-                                {originatorUsername ? (
-                                    <span className="text-sm text-bold text-light">{originatorUsername}</span>
-                                ) : (
-                                    <span className="text-sm text-bold text-light">{item.originator.toString()}</span>
-                                )}
-
-
-
-                            </div>
-                        </div>
-
-                    </div>
-
-                    {(remainingTime === 0 && (principal === winnerPrincipal || isOriginator)) && (
-                        (isEth) ? (
-                            <div>
-                                <button className="btn btn--outline" onClick={handleTransferClick}>Transfer Price ({Number(highestBid)} ETH)</button>
-                            </div>
-
-                        ) : (
-                            <div>
-                                <h2>Buy Code</h2>
-                                <p>{secretCode}</p>
-                                <button style={{ background: "white", color: "black" }} onClick={getBuyCode} >Click to Reveal</button>
-
-                            </div>
-                        )
-                    )}
-
-                    {isOriginator ? (
-                        <div className="main_tabs">
-                            <StyledTabs tabs={tabs} />
-                        </div>
-                    ) : (
-                        <div className="main_tabs">
-                            <StyledTabs tabs={tabs} />
-                            <div className={styles.buttons}>
-                                {/* <GradientBtn tag="button" onClick={openBidModal}>Buy for 20 ETH</GradientBtn> */}
-                                <button className="btn btn--outline" onClick={handleBidClick}>Place a bid</button>
-                            </div>
-                        </div>
-                    )}
-                    <QrCodeComponent />
                 </div>
-            </div>
-        )
-    }
+                <p className={`${styles.main_text} text-sm`}>
+                    {item.description}
+                </p>
 
-    const DutchAuctionComponent = () => {
-        const {
-            register,
-            handleSubmit,
-            formState: { errors },
-            reset
-        } = useForm();
+                {/* Contact and Location */}
+                <div className="d-flex g-10">
+                    <span className="text-bold">Contact: {item.contact}</span>
+                </div>
+                <div className="d-flex g-10">
+                    <span className="text-bold">Location: {item.location}</span>
+                </div>
 
-        const onLowerPrice = async (data) => {
-            try {
-                const _id = parseInt(item.id);
-                await backendActor.lower_price(_id, Number(data.lowerAmount));
-                console.log("Price lowered successfully to amount", Number(data.lowerAmount));
-                // Refresh current price
-                getCurrentBidDutch();
-                reset(); // Clear form after successful submission
-            } catch (error) {
-                console.error("Error lowering price:", error);
-                alert("Failed to lower price");
-            }
-        };
 
-        const handleAcceptPrice = async () => {
-            try {
-                await backendActor.accept_price(item.id);
-                console.log("AAA- Price accepted successfully");
-            } catch (error) {
-                console.error("Error accepting price:", error);
-            }
-        }
+                <div className={styles.main_creator}>
+                    <div className={`${styles.block} border-10`}>
+                        {/* <Avatar src={creator} alt="@thadraid" size="sm" isVerified /> */}
 
-     
+                        {originatorUsername ? (
+                            <NewAvatar src={originatorUsername} alt="" size="20" isVerified />
+                        ) : (
+                            <></>
+                        )}
+                        <div className={styles.block_details}>
+                            <span className="text-xs">
+                                <span className="text-bold">Creator: </span>
 
-        return (
-            <div>
-                <div className={styles.main} id="item_main">
-                    <div className={styles.main_about}>
-                        <div className="d-flex flex-column g-10">
-                            {remainingTime === 0 ? (
-                                <span className="h6">🚫 Auction Ended</span>
+                            </span>
+
+                            {originatorUsername ? (
+                                <span className="text-sm text-bold text-light">{originatorUsername}</span>
                             ) : (
-                                <span className="h6">🔥 {remainingTime} seconds</span>
+                                <span className="text-sm text-bold text-light">{item.originator.toString()}</span>
                             )}
 
 
-                            <div>
-
-                               
-                            </div>
-                            <h2 className={styles.title}>{item.title}</h2>
-                            <div className={styles.bid}>
-                                
-                                    
-                                
-
-                                
-                                    <div className="d-flex g-10">
-                                        Dutch Auction
-                                    </div>
-                                
-
-                               
-
-
-
-
-
-
-
-
-
-                                {isEth ? (
-                                    <div className="d-flex g-10">
-                                        Starting price <span className="text-accent text-bold">{Number(item.startPrice)} ETH</span>
-                                    </div>
-                                ) : (
-                                    <div className="d-flex g-10">
-                                        Starting price <span className="text-accent text-bold">{Number(item.startPrice)} USD</span>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                        <div className={styles.actions}>
-                            
-                        </div>
-                    </div>
-                    <p className={`${styles.main_text} text-sm`}>
-                        {item.description}
-                    </p>
-
-                    {/* Contact and Location */}
-                    <div className="d-flex g-10">
-                        <span className="text-bold">Contact: {item.contact}</span>
-                    </div>
-                    <div className="d-flex g-10">
-                        <span className="text-bold">Location: {item.location}</span>
-                    </div>
-
-
-                    <div className={styles.main_creator}>
-                        <div className={`${styles.block} border-10`}>
-                            {/* <Avatar src={creator} alt="@thadraid" size="sm" isVerified /> */}
-                            <div className={styles.block_details}>
-                                <span className="text-xs">
-                                    <span className="text-bold">Creator: </span>
-
-                                </span>
-
-                                {originatorUsername ? (
-                                    <span className="text-sm text-bold text-light">{originatorUsername}</span>
-                                ) : (
-                                    <span className="text-sm text-bold text-light">{item.originator.toString()}</span>
-                                )}
-
-
-
-                            </div>
-                        </div>
-
-                    </div>
-
-                    {(remainingTime === 0 && (principal === winnerPrincipal || isOriginator)) && (
-                        (isEth) ? (
-                            <div>
-                                <button className="btn btn--outline" onClick={handleTransferClick}>Transfer Price ({Number(highestBid)} ETH)</button>
-                            </div>
-
-                        ) : (
-                            <div>
-                                <h2>Buy Code</h2>
-                                <p>{secretCode}</p>
-                                <button style={{ background: "white", color: "black" }} onClick={getBuyCode} >Click to Reveal</button>
-
-                            </div>
-                        )
-                    )}
-
-                    {isOriginator ? (
-                        <div className="main_tabs">
-                            <StyledTabs tabs={tabs} />
-                            {/* lower price button and input area */}
-                            <div className={styles.price_lower_container}>
-                                <form
-                                    className={styles.price_lower_container}
-                                    onSubmit={handleSubmit(onLowerPrice)}
-                                >
-                                    <div className={styles.price_lower_input}>
-                                        <input
-                                            type="number"
-                                            placeholder="Amount to lower"
-                                            step="any"
-                                            {...register("lowerAmount", {
-                                                required: "Amount is required",
-                                                min: {
-                                                    value: 0.000001,
-                                                    message: "Amount must be greater than 0"
-                                                },
-                                                validate: value =>
-                                                    Number(value) <= Number(highestBid) ||
-                                                    "Amount cannot be greater than current price"
-                                            })}
-                                            className={`form-control ${errors.lowerAmount ? styles.error : ''}`}
-                                        />
-                                        <span>{isEth ? 'ETH' : 'USD'}</span>
-                                    </div>
-                                    {errors.lowerAmount && (
-                                        <span className={styles.error_message}>
-                                            {errors.lowerAmount.message}
-                                        </span>
-                                    )}
-                                    <button
-                                        type="submit"
-                                        className="btn btn--outline"
-                                    >
-                                        Lower Price
-                                    </button>
-                                </form>
-                            </div>
 
                         </div>
+                    </div>
+
+                </div>
+
+                {(remainingTime === 0 && (principal === winnerPrincipal || isOriginator)) && (
+                    (isEth) ? (
+                        <div>
+                            <button className="btn btn--outline" onClick={handleTransferClick}>Transfer Price ({Number(highestBid)} ETH)</button>
+                        </div>
+
                     ) : (
-                        <div className="main_tabs">
-                            <StyledTabs tabs={tabs} />
-                            <div className={styles.buttons}>
-                                {/* <GradientBtn tag="button" onClick={openBidModal}>Buy for 20 ETH</GradientBtn> */}
+                        <div>
+                            <h2>Buy Code</h2>
+                            <p>{secretCode}</p>
+                            <button style={{ background: "white", color: "black" }} onClick={getBuyCode} >Click to Reveal</button>
+
+                        </div>
+                    )
+                )}
+
+                {isOriginator ? (
+                    <div className="main_tabs">
+                        <StyledTabs tabs={tabs} />
+                    </div>
+                ) : (
+                    <div className="main_tabs">
+                        <StyledTabs tabs={tabs} />
+                        <div className={styles.buttons}>
+                            {/* <GradientBtn tag="button" onClick={openBidModal}>Buy for 20 ETH</GradientBtn> */}
+                            <button className="btn btn--outline" onClick={handleBidClick}>Place a bid</button>
+                        </div>
+                    </div>
+                )}
+                <QrCodeComponent />
+            </div>
+        </div>
+    ), [remainingTime, highestBid, bids, isEnded, secretCode]);
+
+    const DutchAuctionComponent = useMemo(() =>
+
+
+    (
+        <div>
+            <div className={styles.main} id="item_main">
+                <div className={styles.main_about}>
+                    <div className="d-flex flex-column g-10">
+                        {remainingTime === 0 ? (
+                            <span className="h6">🚫 Auction Ended</span>
+                        ) : (
+                            <span className="h6">🔥 {remainingTime} seconds</span>
+                        )}
+
+
+                        <div>
+
+
+                        </div>
+                        <h2 className={styles.title}>{item.title}</h2>
+                        <div className={styles.bid}>
+
+
+
+
+
+                            <div className="d-flex g-10">
+                                Dutch Auction
+                            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+                            {isEth ? (
+                                <div className="d-flex g-10">
+                                    Starting price <span className="text-accent text-bold">{Number(item.startPrice)} ETH</span>
+                                </div>
+                            ) : (
+                                <div className="d-flex g-10">
+                                    Starting price <span className="text-accent text-bold">{Number(item.startPrice)} USD</span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                    <div className={styles.actions}>
+
+                    </div>
+                </div>
+                <p className={`${styles.main_text} text-sm`}>
+                    {item.description}
+                </p>
+
+                {/* Contact and Location */}
+                <div className="d-flex g-10">
+                    <span className="text-bold">Contact: {item.contact}</span>
+                </div>
+                <div className="d-flex g-10">
+                    <span className="text-bold">Location: {item.location}</span>
+                </div>
+
+
+                <div className={styles.main_creator}>
+                    <div className={`${styles.block} border-10`}>
+                        {/* <Avatar src={creator} alt="@thadraid" size="sm" isVerified /> */}
+                        {originatorUsername ? (
+                            <NewAvatar src={originatorUsername} alt="" size="sm" isVerified />
+                        ) : (
+                            <></>
+                        )}
+                        <div className={styles.block_details}>
+                            <span className="text-xs">
+                                <span className="text-bold">Creator: </span>
+
+                            </span>
+
+                            {originatorUsername ? (
+                                <span className="text-sm text-bold text-light">{originatorUsername}</span>
+                            ) : (
+                                <span className="text-sm text-bold text-light">{item.originator.toString()}</span>
+                            )}
+
+
+
+                        </div>
+                    </div>
+
+                </div>
+
+                {(remainingTime === 0 && (principal === winnerPrincipal || isOriginator)) && (
+                    (isEth) ? (
+                        <div>
+                            <button className="btn btn--outline" onClick={handleTransferClick}>Transfer Price ({Number(highestBid)} ETH)</button>
+                        </div>
+
+                    ) : (
+                        <div>
+                            <h2>Buy Code</h2>
+                            <p>{secretCode}</p>
+                            <button style={{ background: "white", color: "black" }} onClick={getBuyCode} >Click to Reveal</button>
+
+                        </div>
+                    )
+                )}
+
+                {isOriginator ? (
+                    <div className="main_tabs">
+                        <StyledTabs tabs={tabs} />
+                        {/* lower price button and input area */}
+                        <div className={styles.price_lower_container}>
+                            <form
+                                className={styles.price_lower_container}
+                                onSubmit={handleSubmit(onLowerPrice)}
+                            >
+                                <div className={styles.price_lower_input}>
+                                    <input
+                                        type="number"
+                                        placeholder="Amount to lower"
+                                        step="any"
+                                        {...register("lowerAmount", {
+                                            required: "Amount is required",
+                                            min: {
+                                                value: 0.000001,
+                                                message: "Amount must be greater than 0"
+                                            },
+                                            validate: value =>
+                                                Number(value) <= Number(highestBid) ||
+                                                "Amount cannot be greater than current price"
+                                        })}
+                                        className={`form-control ${errors.lowerAmount ? styles.error : ''}`}
+                                    />
+                                    <span>{isEth ? 'ETH' : 'USD'}</span>
+                                </div>
+                                {errors.lowerAmount && (
+                                    <span className={styles.error_message}>
+                                        {errors.lowerAmount.message}
+                                    </span>
+                                )}
                                 <button
-                                    className="btn btn--gradient"
-                                    onClick={handleAcceptPrice}
+                                    type="submit"
+                                    className="btn btn--outline"
                                 >
-                                    Accept Current Price {isEth ? `(${Number(highestBid)} ETH)` : `($${Number(highestBid)})`}
+                                    Lower Price
                                 </button>
-                            </div>
+                            </form>
                         </div>
-                    )}
-                    <QrCodeComponent />
-                </div>
-            </div>
-        )
-    }
 
-    const SealedBidAuctionComponent = () => {
-        return (
+                    </div>
+                ) : (
+                    <div className="main_tabs">
+                        <StyledTabs tabs={tabs} />
+                        <div className={styles.buttons}>
+                            {/* <GradientBtn tag="button" onClick={openBidModal}>Buy for 20 ETH</GradientBtn> */}
+                            <button
+                                className="btn btn--gradient"
+                                onClick={handleAcceptPrice}
+                            >
+                                Accept Current Price {isEth ? `(${Number(highestBid)} ETH)` : `($${Number(highestBid)})`}
+                            </button>
+                        </div>
+                    </div>
+                )}
+                <QrCodeComponent />
+            </div>
+        </div>
+    ), [remainingTime, highestBid, bids, isEnded, secretCode]);
+
+    const SealedBidAuctionComponent = useMemo(() =>
+    (
+        <div>
             <div>
-                <div>
                 <div className={styles.main} id="item_main">
                     <div className={styles.main_about}>
                         <div className="d-flex flex-column g-10">
@@ -858,23 +903,11 @@ const AuctionDetails = ({ item }) => {
                             </div>
                             <h2 className={styles.title}>{item.title}</h2>
                             <div className={styles.bid}>
-                            
-                                
-                                    <div className="d-flex g-10">
-                                        Sealed Bid Auction
-                                    </div>
-                                
 
 
-
-
-
-
-
-                                {/* <div className="d-flex g-10">
-                                    On sale for <span className="text-light text-bold">100 ETH</span>
-                                </div> */}
-
+                                <div className="d-flex g-10">
+                                    Sealed Bid Auction
+                                </div>
 
 
                                 {isEth ? (
@@ -889,10 +922,7 @@ const AuctionDetails = ({ item }) => {
                             </div>
                         </div>
                         <div className={styles.actions}>
-                            {/* <Like className={`${styles.btn} ${styles.like} btn btn--icon`} count={item.likes}/> */}
-                            {/* <button className={`${styles.btn} btn btn--icon`} aria-label="Menu">
-                                <i className="icon icon-ellipsis"/>
-                            </button> */}
+
                         </div>
                     </div>
                     <p className={`${styles.main_text} text-sm`}>
@@ -911,6 +941,11 @@ const AuctionDetails = ({ item }) => {
                     <div className={styles.main_creator}>
                         <div className={`${styles.block} border-10`}>
                             {/* <Avatar src={creator} alt="@thadraid" size="sm" isVerified /> */}
+                            {originatorUsername ? (
+                                <NewAvatar src={originatorUsername} alt="" size="sm" isVerified />
+                            ) : (
+                                <></>
+                            )}
                             <div className={styles.block_details}>
                                 <span className="text-xs">
                                     <span className="text-bold">Creator: </span>
@@ -968,9 +1003,8 @@ const AuctionDetails = ({ item }) => {
                     <QrCodeComponent />
                 </div>
             </div>
-            </div>
-        )
-    }
+        </div>
+    ), [remainingTime, highestBid, bids, isEnded, secretCode]);
 
     return (
         <section className={styles.details}>
@@ -988,17 +1022,11 @@ const AuctionDetails = ({ item }) => {
                     )}
                 </Sticky>
 
-                {item.auctionType === "english" && (
-                    <EnglishAuctionComponent />
-                )}
+                {item.auctionType === "english" && EnglishAuctionComponent}
 
-                {item.auctionType === "dutch" && (
-                    <DutchAuctionComponent />
-                )}
+                {item.auctionType === "dutch" && DutchAuctionComponent}
 
-                {item.auctionType === "sealed-bid" && (
-                    <SealedBidAuctionComponent />
-                )}
+                {item.auctionType === "sealed-bid" && SealedBidAuctionComponent}
 
                 <div className={styles.secondary_content}>
                     <div className={styles.main}>
@@ -1008,10 +1036,10 @@ const AuctionDetails = ({ item }) => {
                             </div>
                         </div>
                     </div>
-                    
+
                 </div>
 
-                
+
             </div>
 
         </section>

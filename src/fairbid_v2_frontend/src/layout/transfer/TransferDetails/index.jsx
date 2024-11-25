@@ -107,7 +107,7 @@ const TransferDetails = () => {
                             className={errors.amount ? styles.errorInput : ''}
                             {...register('amount', { 
                                 required: 'Amount is required',
-                                min: { value: 0.01, message: 'Minimum amount is 0.01' },
+                                min: { value: 0, message: 'Minimum amount is 0.00' },
                                 max: { value: credits, message: 'Insufficient balance' }
                             })}
                         />

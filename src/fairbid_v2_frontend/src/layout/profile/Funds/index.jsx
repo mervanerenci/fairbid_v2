@@ -6,11 +6,14 @@ import Avatar from '@ui/Avatar';
 import GradientBtn from '@ui/GradientBtn';
 import StyledProgress from '@ui/StyledProgress';
 import {toast} from 'react-toastify';
-
+import NewAvatar from '@components/NewAvatar';
 // hooks
 import {useRef} from 'react';
 import useFileReader from '@hooks/useFileReader';
 import {NavLink} from 'react-router-dom';
+import {useState, useEffect} from 'react';
+import {useAuth} from '@contexts/useAuthClient';
+
 // assets
 import avatar from '@assets/avatar.webp';
 import placeholder from '@assets/avatar_placeholder.webp';
@@ -19,18 +22,37 @@ const Funds = () => {
     const {file, setFile, handleFile, loading} = useFileReader();
     const inputRef = useRef(null);
 
-    const triggerInput = () => inputRef.current?.click();
+    const { backendActor, principal } = useAuth();
+    const [username, setUsername] = useState(null);
 
-    const handleDelete = () => {
-        setFile(placeholder);
-        toast.info('Your profile picture was successfully deleted.');
+    const getUsername = async () => {
+        const username = await backendActor.get_username_by_principal(principal);
+        setUsername(username);
     }
+
+    // const triggerInput = () => inputRef.current?.click();
+
+    // const handleDelete = () => {
+    //     setFile(placeholder);
+    //     toast.info('Your profile picture was successfully deleted.');
+    // }
+
+    useEffect(() => {
+        getUsername();
+    }, []);
 
     return (
         <div className={`${styles.wrapper} bg-secondary border-10`}>
             <div className={styles.content}>
                 <div className={styles.content_avatar}>
-                    <Avatar className={styles.container} src={file ? file : avatar} alt="avatar"/>
+                {username ? (
+                    <>
+                        <NewAvatar username={username} size={180} className={styles.container} />
+                        <span className={styles.username}>@{username}</span>
+                    </>
+                    ) : (
+                        <Avatar className={styles.container} src={file ? file : avatar} alt="avatar"/>
+                    )}
                     {loading && <StyledProgress visible isOverlay isRound />}
                 </div>
                 <div className="d-flex flex-column g-20">
@@ -44,7 +66,7 @@ const Funds = () => {
                         <NavLink to="/transfer">Transfer</NavLink>
                     </button>
                 </div>
-                <input type="file" ref={inputRef} onChange={handleFile} hidden/>
+                {/* <input type="file" ref={inputRef} onChange={handleFile} hidden/> */}
             </div>
         </div>
     )

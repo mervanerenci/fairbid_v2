@@ -21,7 +21,10 @@ image = { version = "0.24", features = ["png"], default-features = false }
 qrcode-generator = "4.1"
 anyhow = "1.0"
 fast_qr = "=0.12.3"
-b3_utils = "0.11.0"
+
+# TODO: add b3_utils = { version = "0.11.0", features = ["ledger"] }
+b3_utils = "0.11.0" 
+
 evm-rpc-canister-types = "3.0.0"
 
 

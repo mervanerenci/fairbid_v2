@@ -4,16 +4,18 @@ import PageHeader from '@components/PageHeader';
 import Spring from '@components/Spring';
 
 
-import { 
-    FaGavel, 
-    FaChartLine, 
-    FaLock, 
+import {
+    FaGavel,
+    FaChartLine,
+    FaLock,
     FaWallet,
     FaEthereum,
     FaMoneyBillWave,
-    FaExchangeAlt, 
+    FaExchangeAlt,
     FaUser,
-    FaUserFriends
+    FaUserFriends,
+    FaCog,
+    FaList,
 } from 'react-icons/fa';
 
 const HowToFairbid = () => {
@@ -102,11 +104,49 @@ const HowToFairbid = () => {
         ]
     };
 
+    const createAuctionGuide = {
+        title: "Creating Auctions",
+        icon: <FaGavel size={32} />,
+        sections: [
+            {
+                title: "Choose Auction Type",
+                icon: <FaList size={24} />,
+                description: "Select from English, Dutch, or Sealed-bid auctions based on your needs.",
+                steps: [
+                    "English: Traditional ascending price auction",
+                    "Dutch: Descending price auction",
+                    "Sealed-bid: Private bidding auction"
+                ]
+            },
+            {
+                title: "Payment Options",
+                icon: <FaEthereum size={24} />,
+                description: "Configure how buyers can pay for your items.",
+                steps: [
+                    "Enable ETH for cryptocurrency payments",
+                    "Use platform credits for fee-free transactions",
+                    "Set starting price and duration"
+                ]
+            },
+            {
+                title: "Advanced Features",
+                icon: <FaCog size={24} />,
+                description: "Customize your auction with additional options.",
+                steps: [
+                    "Schedule auction for future start time",
+                    "Enable whitelist for private auctions",
+                    "Control visibility with list on site option",
+                    "Add item details and images"
+                ]
+            }
+        ]
+    };
+
     return (
         <>
-            <Title title="How to FairBid"/>
-            <PageHeader title="How to Use FairBid"/>
-            
+            <Title title="How to FairBid" />
+            <PageHeader title="How to Use FairBid" />
+
             <main className={styles.main}>
                 <div className="container">
                     <section className={styles.section}>
@@ -169,6 +209,29 @@ const HowToFairbid = () => {
                             ))}
                         </div>
                     </section>
+
+                    <section className={styles.section}>
+                        <h2 className={styles.sectionTitle}>{createAuctionGuide.title}</h2>
+                        <div className={styles.auctionTypes}>
+                            {createAuctionGuide.sections.map((section, index) => (
+                                <Spring className={styles.auctionCard} key={index} index={index}>
+                                    <div className={styles.iconWrapper}>
+                                        {section.icon}
+                                    </div>
+                                    <h3 className={styles.cardTitle}>{section.title}</h3>
+                                    <p className={styles.description}>{section.description}</p>
+                                    <div className={styles.steps}>
+                                        {section.steps.map((step, stepIndex) => (
+                                            <div key={stepIndex} className={styles.step}>
+                                                <span className={styles.stepNumber}>{stepIndex + 1}</span>
+                                                <span className={styles.stepText}>{step}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </Spring>
+                            ))}
+                        </div>
+                    </section>
                 </div>
             </main>
         </>
@@ -176,3 +239,7 @@ const HowToFairbid = () => {
 };
 
 export default HowToFairbid;
+
+
+// wallets principal id mainnet  : 3l5j4-niaaa-aaaal-ad3ya-cai
+//  

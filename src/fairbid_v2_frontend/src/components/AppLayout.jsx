@@ -5,7 +5,7 @@ import loadable from '@loadable/component'
 const Header = loadable(() => import('@components/Header'));
 const Footer = loadable(() => import('@components/Footer'));
 const BidModal = loadable(() => import('@components/BidModal'));
-
+// const UsernamePrompt = loadable(() => import('@components/UsernamePrompt'));
 const AppLayout = ({children}) => {
     return (
         <div>
@@ -13,6 +13,7 @@ const AppLayout = ({children}) => {
             {children}
             <Footer/>
             <BidModal/>
+            {/* <UsernamePrompt/> */}
         </div>
     )
 }
