@@ -12,6 +12,7 @@ import Horizontal from './MenuList/Horizontal';
 import React from 'react';
 import { FaBars, FaSearch, FaWallet, FaSignOutAlt } from 'react-icons/fa';
 import Wallet from '@components/Wallet';
+import CreditsBalance from './CreditsBalance';
 
 // hooks
 import { useWindowSize } from 'react-use';
@@ -133,8 +134,13 @@ const CompactHeaderContent = ({ sidebarHandler, modal, modalHandler }) => {
                 <i className="icon icon-search-regular"/>
             </button> */}
             {/* <SignInButton /> */}
-
-            {isAuthenticated ? <LogoutButton /> : <SignInButton />}
+            
+            {isAuthenticated ? 
+                <>
+                    <CreditsBalance />
+                    <LogoutButton />
+                </>
+                : <SignInButton />}
 
 
 
@@ -160,7 +166,12 @@ const TabletHeaderContent = ({ width, handler }) => {
             {/* <GradientBtn >
                 Sign In
             </GradientBtn> */}
-            {isAuthenticated ? <LogoutButton /> : <SignInButton />}
+            {isAuthenticated ? 
+                <>
+                    <CreditsBalance />
+                    <LogoutButton />
+                </>
+                : <SignInButton />}
             <div className="d-flex g-20">
                 {width < 1440 && <MenuTrigger handler={handler} />}
                 {/* <LogoutButton/> */}

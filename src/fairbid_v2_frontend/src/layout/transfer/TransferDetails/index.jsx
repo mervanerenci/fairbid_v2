@@ -22,34 +22,43 @@ import classNames from 'classnames';
 import cover from '@assets/cover.webp';
 
 const TransferDetails = () => {
-    const { register, handleSubmit, formState: { errors }, reset } = useForm();
+    // const { register, handleSubmit, formState: { errors }, reset } = useForm();
     const { credits, fetchCredits } = useCredits();
     const { backendActor, principal } = useAuth();
 
+    const [who, setWho] = useState("username");
+    const [to, setTo] = useState("");
+    const [toPrincipal, setToPrincipal] = useState("");
+    const [amount, setAmount] = useState(0);
+
+
     
 
-    const onSubmit = async (data) => {
+    const handleSubmit = async () => {
+       
+        
+        console.log("----------------Before Transfer---------------");
         try {
-            if (data.who === 'username') {
-                const principal = await backendActor.get_principal_by_username(data.to);
-                data.to = principal;
-                console.log("++ Transfering using given username: ", data.to);
+            let _principal;
+            if (who === 'username') {
+                _principal = await backendActor.get_principal_by_username(to);
+                console.log("principal of given username ->: ", _principal);
+                
                 
             } else {
                 
-                data.to = Principal.fromText(data.to);
-                console.log("++ Transfering using given principal: ", data.to);
+                _principal = Principal.fromText(to);
+           
 
             }
-            
-            console.log("++ Transfering with amount: ", Number(data.amount));
-            console.log("++ Transfering to: ", data.to);
-            const weiAmount = Number(data.amount) * 1e18;
-            await backendActor.transfer_credit(data.to, weiAmount);
+            console.log("++ Transfering with amount: ", Number(amount));
+            console.log("++ Transfering to: ", _principal);
+            const weiAmount = Number(amount) * 1e18;
+            await backendActor.transfer_credit(_principal, Number(weiAmount));
 
             
-            toast.success('Transfer successful!');
-            reset(); // Reset form after successful transfer
+            toast.success(Number(amount) + ' amount transfer to ' + to + 'is successful!');
+            // reset(); // Reset form after successful transfer
             fetchCredits(); // Refresh credits balance
         } catch (error) {
             toast.error('Transfer failed. Please check the recipient details and try again.');
@@ -72,17 +81,18 @@ const TransferDetails = () => {
 
             <div className={styles.transferCard}>
                 <h3>Send Credits</h3>
-                <form onSubmit={handleSubmit(onSubmit)}>
+                
                     <div className={styles.formGroup}>
                         <label>Recipient Type</label>
                         <select 
-                            className={errors.who ? styles.errorInput : ''}
-                            {...register('who', { required: 'Please select recipient type' })}
+                            // className={errors.who ? styles.errorInput : ''}
+                            value={who}
+                            onChange={(e) => setWho(e.target.value)}
                         >
                             <option value="username">Username</option>
                             <option value="principal">Principal ID</option>
                         </select>
-                        {errors.who && <span className={styles.errorText}>{errors.who.message}</span>}
+                        {/* {errors.who && <span className={styles.errorText}>{errors.who.message}</span>} */}
                     </div>
 
                     <div className={styles.formGroup}>
@@ -90,13 +100,12 @@ const TransferDetails = () => {
                         <input
                             type="text"
                             placeholder="Enter recipient details"
-                            className={errors.to ? styles.errorInput : ''}
-                            {...register('to', { 
-                                required: 'Recipient is required',
-                                minLength: { value: 3, message: 'Minimum 3 characters' }
-                            })}
+                            // className={errors.to ? styles.errorInput : ''}
+                            value={to}
+                            onChange={(e) => setTo(e.target.value)}
+                            
                         />
-                        {errors.to && <span className={styles.errorText}>{errors.to.message}</span>}
+                        {/* {errors.to && <span className={styles.errorText}>{errors.to.message}</span>} */}
                     </div>
 
                     <div className={styles.formGroup}>
@@ -104,25 +113,24 @@ const TransferDetails = () => {
                         <input
                             type="number"
                             placeholder="0.00"
-                            className={errors.amount ? styles.errorInput : ''}
-                            {...register('amount', { 
-                                required: 'Amount is required',
-                                min: { value: 0, message: 'Minimum amount is 0.00' },
-                                max: { value: credits, message: 'Insufficient balance' }
-                            })}
+                            // className={errors.amount ? styles.errorInput : ''}
+                            value={amount}
+                            onChange={(e) => setAmount(e.target.value)}
+                            
                         />
-                        {errors.amount && <span className={styles.errorText}>{errors.amount.message}</span>}
+                        {/* {errors.amount && <span className={styles.errorText}>{errors.amount.message}</span>} */}
                     </div>
 
                     <GradientBtn 
                         tag="button" 
                         type="submit" 
                         className={styles.submitButton}
-                        disabled={Object.keys(errors).length > 0}
+                        onClick={handleSubmit}
+                        // disabled={Object.keys(errors).length > 0}
                     >
                         Transfer Credits
                     </GradientBtn>
-                </form>
+                
             </div>
 
             <TransactionHistory />

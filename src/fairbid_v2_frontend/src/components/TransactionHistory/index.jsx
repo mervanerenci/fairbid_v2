@@ -24,24 +24,24 @@ const TransactionHistory = () => {
         const time = Number(unixTime);
         const date = new Date(time / 1000000);
         const timeString = date.toLocaleString();
-        console.log("Time string: ", timeString);
+   
         return timeString;
 
     }
     
-    useEffect(() => {
-        console.log('Full Credit History:', creditHistory);
-        if (creditHistory && creditHistory.length > 0) {
-            // console.log('First Transaction:', creditHistory[0]);
-            // console.log('Transaction Type:', creditHistory[0].transaction_type);
-            // console.log('Transaction Amount:', creditHistory[0].amount);
-            // console.log('Transaction Timestamp:', creditHistory[0].timestamp);
-            // console.log('Transaction From:', creditHistory[0].from);
-            // console.log('Transaction To:', creditHistory[0].to);
+    // useEffect(() => {
+    //     console.log('Full Credit History:', creditHistory);
+    //     if (creditHistory && creditHistory.length > 0) {
+    //         // console.log('First Transaction:', creditHistory[0]);
+    //         // console.log('Transaction Type:', creditHistory[0].transaction_type);
+    //         // console.log('Transaction Amount:', creditHistory[0].amount);
+    //         // console.log('Transaction Timestamp:', creditHistory[0].timestamp);
+    //         // console.log('Transaction From:', creditHistory[0].from);
+    //         // console.log('Transaction To:', creditHistory[0].to);
             
             
-        }
-    }, [creditHistory]);
+    //     }
+    // }, [creditHistory]);
 
     useEffect(() => {   
         fetchCreditHistory();
@@ -74,7 +74,7 @@ const TransactionHistory = () => {
         const isReceiver = 'Transfer' in tx.transaction_type && tx.to.toString() === principal.toString();
         const prefix = isReceiver || 'Deposit' in tx.transaction_type ? '+ ' : '- ';
         const amountInEth = Number(tx.amount) / 1e18;
-        return `${prefix}${amountInEth.toFixed(12)} Credits`;
+        return `${prefix}${amountInEth.toFixed(6)} Credits`;
     };
 
     const formatTimestamp = (timestamp) => {

@@ -6,7 +6,7 @@ import { idlFactory, CreateActorOptions } from "../declarations/fairbid_v2_backe
 import { Actor, HttpAgent } from "@dfinity/agent";
 import { useAuth } from "../contexts/useAuthClient";
 
-console.log("Imported backend:", fairbid_v2_backend);
+
 const canisterId = 'bw4dl-smaaa-aaaaa-qaacq-cai';
 
 // const createActor = (canisterId, options = {}) => {
@@ -60,13 +60,13 @@ const VerifyTransaction = ({ hash }) => {
       console.log('Transaction verification result:', result); // Log the result
 
       const whoami1 = await backendActor.whoami();
-      console.log('Whoami check 1:', whoami1); // More descriptive log
+    
 
       if (result) {
         setData(result);
         setError(null);
         setWhoami1(whoami1);
-        console.log('Data set successfully:', result); // Log successful data set
+      
       } else {
         setError("Verification failed: No data received");
         setData(null);
@@ -78,7 +78,7 @@ const VerifyTransaction = ({ hash }) => {
         console.log('Processing amount:', amount); // Log amount
 
         let whoami = await backendActor.whoami();
-        console.log('Whoami before adding credits:', whoami);
+   
 
         const addCreditsResult = await backendActor.add_credits(amount, hash);
         console.log('Credits added result:', addCreditsResult); // Log credits result
@@ -90,8 +90,8 @@ const VerifyTransaction = ({ hash }) => {
       setError(err?.message || "An error occurred during verification");
       setData(null);
     } finally {
-      let whoami2 = await backendActor.whoami();
-      console.log('Final whoami check:', whoami2);
+      
+
       setLoading(false);
     }
   };

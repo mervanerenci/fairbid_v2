@@ -47,7 +47,7 @@ const WithdrawDetails = () => {
 
         try {
             setIsLoading(true);
-            // await backendActor.withdraw_credit(parseFloat(amount), ethAddress);
+            await backendActor.withdraw(parseFloat(amount), ethAddress);
             toast.success('Withdrawal successful!');
             setAmount('');
             fetchCredits();

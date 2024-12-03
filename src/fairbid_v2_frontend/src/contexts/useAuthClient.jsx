@@ -3,21 +3,29 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { createActor } from "../declarations/fairbid_v2_backend";
 
 const AuthContext = createContext();
-const canisterId = 'bw4dl-smaaa-aaaaa-qaacq-cai';
+// Mainnet canisterId
+const canisterId = 'sultb-kyaaa-aaaal-arsfq-cai';
+// Local canisterId
+// const canisterId = 'bw4dl-smaaa-aaaaa-qaacq-cai';
+
 export const getIdentityProvider = () => {
   let idpProvider;
   // Safeguard against server rendering
   if (typeof window !== "undefined") {
-    const isLocal = process.env.DFX_NETWORK !== "ic";
-    // Safari does not support localhost subdomains
-    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    if (isLocal ) {
-      idpProvider = `http://be2us-64aaa-aaaaa-qaabq-cai.localhost:4943`;
-      console.log('isLocal && isSafari', idpProvider);
-    } else {
-      idpProvider = `"https://identity.ic0.app"`;
-      console.log('mainnet', idpProvider);
-    }
+    // const isLocal = process.env.DFX_NETWORK !== "ic";
+    // // Safari does not support localhost subdomains
+    // const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    // if (isLocal ) {
+    //   // idpProvider = `http://be2us-64aaa-aaaaa-qaabq-cai.localhost:4943`;
+    //   idpProvider = `https://identity.ic0.app`;
+    //   console.log('isLocal && isSafari', idpProvider);
+    // } else {
+    //   idpProvider = `https://identity.ic0.app`;
+    //   console.log('mainnet', idpProvider);
+    // }
+
+    idpProvider = `https://identity.ic0.app`;
+    //   console.log('mainnet', idpProvider);
   }
   return idpProvider;
 };
@@ -81,7 +89,7 @@ export const useAuthClient = (options = defaultOptions) => {
     // console.log('identity', identity);
     const principal = identity.getPrincipal();
     setPrincipal(principal);
-    console.log('principal', principal);
+    
 
     setAuthClient(client);
 

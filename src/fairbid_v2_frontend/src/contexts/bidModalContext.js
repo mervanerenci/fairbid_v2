@@ -35,13 +35,13 @@ export const BidModalContextAPI = ({children}) => {
         setIsBidModalOpen(false);
     };
 
-    useEffect(() => {
-        console.log("Bid Modal Context state:", {
-            isBidModalOpen,
-            currentAuctionId,
-            currentAuctionType
-        });
-    }, [isBidModalOpen, currentAuctionId, currentAuctionType]);
+    // useEffect(() => {
+    //     console.log("Bid Modal Context state:", {
+    //         isBidModalOpen,
+    //         currentAuctionId,
+    //         currentAuctionType
+    //     });
+    // }, [isBidModalOpen, currentAuctionId, currentAuctionType]);
 
     return (
         <BidModalContext.Provider value={{isBidModalOpen, openBidModal, closeBidModal, currentAuctionId, setId, currentAuctionType}}>

@@ -55,12 +55,7 @@ const BidModal = () => {
     const { backendActor } = useAuth();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    useEffect(() => {
-        console.log("Current Auction ID:", currentAuctionId);
-        console.log("Current Auction Type:", currentAuctionType);
-        console.log("Backend Actor:", backendActor);    
-    }, [currentAuctionId, currentAuctionType, backendActor]);
-
+    
     const handleClose = () => {
         closeBidModal();
         setBid(minBid);
@@ -72,14 +67,14 @@ const BidModal = () => {
             return;
         }
 
-        console.log("Bidding..Current Auction Type:", currentAuctionType);
+       
         if (currentAuctionType === "english") {
             console.log("English Auction");
             setIsSubmitting(true);
             try {
                 // Convert bid to proper format if needed
                 const bidValue = parseInt(data.bid);
-                console.log("Bid Value:", bidValue);
+               
                 const bidAmount = bidValue;
                 const auction_id = parseInt(currentAuctionId);
                 await backendActor.make_bid(auction_id, bidAmount);
@@ -92,11 +87,11 @@ const BidModal = () => {
                 setIsSubmitting(false);
             }
         } else if (currentAuctionType === "sealed-bid") {
-            console.log("Sealed Bid Auction");
+            
             setIsSubmitting(true);
             try {
                 const bidValue = parseInt(data.bid);
-                console.log("Bid Value:", bidValue);
+              
                 const bidAmount = bidValue;
                 const auction_id = parseInt(currentAuctionId);
                 await backendActor.make_bid_sb(auction_id, bidAmount);

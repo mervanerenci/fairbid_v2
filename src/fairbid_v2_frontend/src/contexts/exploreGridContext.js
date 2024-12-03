@@ -84,7 +84,7 @@ export const ExploreGridContextAPI = ({ children }) => {
                     } catch (error) {
                         console.warn(`Failed to fetch originator for ${auctionType} auction ${auction.id}:`, error);
                     }
-                    console.log("__Originator:", _originator[0]);
+                   
                     // const creator = await backendActor.get_auction_originator(auction.id);
 
                     try {
@@ -155,7 +155,7 @@ export const ExploreGridContextAPI = ({ children }) => {
 
                 setAllItems(allAuctions);
                 setEndedItems(allEndedAuctions);
-                console.log("All auctions set:", allAuctions);
+               
             } catch (error) {
                 console.error("Error fetching auctions:", error);
             } finally {

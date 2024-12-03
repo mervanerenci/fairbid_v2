@@ -6,7 +6,7 @@ import Tooltip from '@mui/material/Tooltip';
 import { NavLink as Link } from 'react-router-dom';
 import { Fragment } from 'react';
 import GradientBtn from '@ui/GradientBtn';
-
+import CreditsBalance from '../CreditsBalance';
 // hooks
 import { useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
@@ -154,9 +154,14 @@ const Horizontal = ({ links }) => {
                                     </div>
                                     :
                                     <Fragment key="wrapper">
-                                        {isAuthenticated ? <LogoutButton /> : <SignInButton />}
-                                        {isAuthenticated ? 
-                                        <DropdownItem title={<DropdownMenu />}>
+                                        {isAuthenticated ?
+                                            <>
+                                                <CreditsBalance />
+                                                <LogoutButton />
+                                            </>
+                                            : <SignInButton />}
+                                        {isAuthenticated ?
+                                            <DropdownItem title={<DropdownMenu />}>
                                             <UserLink>
                                                 <FaUser />
                                                 </UserLink>

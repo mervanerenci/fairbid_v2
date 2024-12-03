@@ -22,9 +22,9 @@ const BidsHistory = ({ data  }) => {
     const getBidderUsername = async (bidderPrincipal) => {
         try {
             const principalString = bidderPrincipal.toString();
-            console.log("BidderPrincipal String:", principalString);
+           
             const username = await backendActor.get_username_by_principal(bidderPrincipal);
-            console.log("Bidder Username:", username);
+           
             setBidderUsername(username);
         } catch (error) {
             console.error("Error fetching username:", error);
@@ -65,7 +65,7 @@ const BidsHistory = ({ data  }) => {
 
         const date = new Date(unixTime / 1000000);
         const timeString = date.toLocaleString();
-        console.log("Time string: ", timeString);
+       
         return timeString;
 
     }

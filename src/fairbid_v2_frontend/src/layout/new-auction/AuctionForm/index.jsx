@@ -123,15 +123,14 @@ const AuctionForm = () => {
             };
 
             const durationInt = parseInt(data.subject);
-            console.log("durationInt", durationInt);
+         
             const _duration = convertToSeconds(durationInt);
-            console.log("converted duration", _duration);
+          
 
             const startingPrice = parseInt(data.startingPrice);
 
             const unixTimestamp = isScheduled ? convertToUnixTimestamp(scheduledTime) : null;
-            console.log("unixTimestamp", unixTimestamp);
-
+           
             console.log("Creating auction:", {
                 item,
                 startingPrice,

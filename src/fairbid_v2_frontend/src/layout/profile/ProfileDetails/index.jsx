@@ -13,6 +13,7 @@ import {useRef, useEffect, useState} from 'react';
 import {useForm} from 'react-hook-form';
 import useFileReader from '@hooks/useFileReader';
 import { useAuth } from '@contexts/useAuthClient';
+import { useCredits } from '@contexts/useCredits';
 
 // utils
 import classNames from 'classnames';
@@ -26,7 +27,7 @@ const ProfileDetails2 = () => {
     const { backendActor, principal } = useAuth();
     const inputRef = useRef(null);
     const [user, setUser] = useState('');
-    const [credits, setCredits] = useState(0);
+    const { credits, fetchCredits } = useCredits();
     const triggerInput = () => inputRef.current?.click();
 
     const setPlaceholder = () => setFile(cover);
@@ -55,6 +56,10 @@ const ProfileDetails2 = () => {
     }
 
     useEffect(() => {
+        fetchCredits();
+    }, []);
+
+    useEffect(() => {
         setPlaceholder();
         // Fix promise handling
         const fetchUserData = async () => {
@@ -63,20 +68,22 @@ const ProfileDetails2 = () => {
                 console.log(username);
                 setUser(username || '');
 
-                const credits = await backendActor.get_credit_balance();
+                // const credits = await backendActor.get_credit_balance();
 
-                console.log(Number(credits));
-                setCredits(Number(credits) || 0);
+                // console.log(Number(credits));
+                // setCredits(Number(credits) || 0);
             } catch (error) {
                 console.error('Error fetching user data:', error);
                 setUser('');
-                setCredits(0);
+                // setCredits(0);
             }
         };
 
         fetchUserData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+
+    
 
     
 

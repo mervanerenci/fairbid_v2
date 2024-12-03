@@ -98,8 +98,7 @@ export const ExploreUpcomingContextAPI = ({children}) => {
 
     // Use useMemo for filtered items
     const items = useMemo(() => {
-        console.log("Filtering items. Type:", auctionType); // Debug log
-        console.log("All items:", allItems); // Debug log
+        
         let filtered;
         switch(auctionType) {
             case AUCTION_TYPES.ALL:
@@ -122,7 +121,7 @@ export const ExploreUpcomingContextAPI = ({children}) => {
                 filtered = allItems;
         }
         
-        console.log("Filtered items:", filtered); // Debug log
+        
         return filtered;
     }, [auctionType, allItems]);
 

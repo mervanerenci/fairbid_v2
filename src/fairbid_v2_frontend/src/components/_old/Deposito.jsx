@@ -10,7 +10,7 @@ import { useContractWrite } from "wagmi"
 import Confirmation from "./Confirmation"
 
 
-console.log("Imported backend:", fairbid_v2_backend);
+
 const canisterId = 'bw4dl-smaaa-aaaaa-qaacq-cai';
 
 const createActor = (canisterId, options = {}) => {
@@ -56,14 +56,14 @@ const Deposito = () => {
     const fetchDepositPrincipal = async () => {
 
       try {
-        console.log("Backend in useEffect:", backend);
+   
 
         if (!backend) {
           throw new Error("fairbid_v2_backend is not defined in the imported module");
         }
         let deposito = await backend.deposit_principal(canisterId);
         setPrincipal(deposito);
-        console.log("Deposit principal:", deposito);
+      
       } catch (err) {
         console.error('Error fetching deposit principal:', err);
         setError(`Failed to fetch deposit principal: ${err.message}`);

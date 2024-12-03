@@ -28,7 +28,11 @@ import helperAbi from "../../../service/abi.json";
 import { useState } from 'react';
 import { useAuth } from '@contexts/useAuthClient';
 import { useCredits } from "@contexts/useCredits";
-const canisterId = 'bw4dl-smaaa-aaaaa-qaacq-cai';
+
+// Mainnet canisterId
+const canisterId = 'sultb-kyaaa-aaaal-arsfq-cai';
+// Local canisterId
+// const canisterId = 'bw4dl-smaaa-aaaaa-qaacq-cai';
 
 const createActor = (canisterId, options = {}) => {
     const agent = options.agent || new HttpAgent({ ...options.agentOptions });
@@ -113,8 +117,8 @@ const DepositDetails = () => {
     useEffect(() => {
         const fetchDepositPrincipal = async () => {
             try {
-                const deposito = await backendActor.deposit_principal(canisterId);
-                setPrincipal(deposito);
+                const depositPrincipal = await backendActor.deposit_principal(canisterId);
+                setPrincipal(depositPrincipal);
             } catch (err) {
                 console.error('Error fetching deposit principal:', err);
                 toast.error('Failed to fetch deposit details');
@@ -134,7 +138,7 @@ const DepositDetails = () => {
             <div className={styles.balanceCard}>
                 <h3>Available Balance</h3>
                 <div className={styles.balanceAmount}>
-                    <span>{credits.toFixed(18)}</span>
+                    <span>{credits}</span>
                     <small>Credits (ETH)</small>
                 </div>
             </div>

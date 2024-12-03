@@ -172,7 +172,7 @@ const AuctionDetails = ({ item }) => {
 
         try {
             const _bids = await backendActor.get_all_bids(_id);
-            console.log("AAA- getBidsBids:", _bids);
+          
             setBids(_bids);
         } catch (error) {
             console.error("Error fetching bids:", error);
@@ -202,16 +202,15 @@ const AuctionDetails = ({ item }) => {
     const getHighestBid = async () => {
         const _id = parseInt(item.id);
         const _highestBid = await backendActor.get_highest_bid_details(_id);
-        console.log("AAA- Highest bid:", _highestBid);
+       
         setHighestBid(_highestBid);
     }
 
     const getLastElementOfBids = async () => {
         const bids_array = item.bids;
-        console.log("AAA- Bids array:", bids_array);
+       
         const last_element = bids_array[bids_array.length - 1];
-        console.log("AAA- Last element:", last_element);
-        console.log("AAA- last element number:", Number(last_element.price));
+       
         setHighestBid(last_element);
     }
 
@@ -242,7 +241,7 @@ const AuctionDetails = ({ item }) => {
     const fetchImage = async () => {
         const _id = parseInt(item.id);
         const image = await backendActor.get_item_image(_id);
-        console.log("AAA- Image:", image);
+      
 
 
         const blob = new Blob([image], { type: 'image/png' });
@@ -357,39 +356,34 @@ const AuctionDetails = ({ item }) => {
 
     // Fetch all necessary details
     useEffect(() => {
-        console.log("AAA- Auction item from auction_details:", item);
-        console.log("AAA- Principal:", principal);
+      
 
         const stringPrincipal = principal.toString();
 
         setType(item.auctionType);
-        console.log("AAA- Auction type:", item.auctionType);
+        
 
         const fetchDetails = async () => {
             const _id = parseInt(item.id);
             try {
                 const _details = await backendActor.get_auction_details(_id);
                 setDetails(_details[0]);
-                console.log("AAAAAAA- Details:", _details[0]);
-
+             
                 const _bids = _details[0].bid_history;
+
                 setBids(_bids);
-                console.log("AAA- Bids:", _bids);
-                console.log("AAA- Contact:", _details[0].contact);
                 setContact(_details[0].contact);
-                console.log("AAA- Location:", _details[0].location);
                 setLocation(_details[0].location);
 
                 const _startPrice = _details[0].starting_price;
                 setStartPrice(Number(_startPrice[0]));
-                console.log("AAA- Start price:", _startPrice[0]);
+              
 
                 // const remaining_time_nano = await backendActor.get_remaining_time(_id);
                 // const remaining_time = convertNanoToSeconds(remaining_time_nano);
                 // setRemainingTime(remaining_time);
-                console.log("AAA-Calling Is Eth value and with Id:", _id);
+             
                 const _isEth = await backendActor.get_auction_is_eth(_id);
-                console.log("AAA- Is Eth:", _isEth);
                 setIsEth(_isEth);
 
 
@@ -405,23 +399,21 @@ const AuctionDetails = ({ item }) => {
             try {
                 const _details = await backendActor.get_dutch_auction_details(_id);
                 setDetails(_details[0]);
-                console.log("DDAAA- Details:", _details[0]);
+                
 
                 const _bids = _details[0].bid_history;
                 setBids(_bids);
-                console.log("DDAAA- Bids:", _bids);
+               
 
                 const _startPrice = _details[0].starting_price;
                 setStartPrice(Number(_startPrice[0]));
-                console.log("DDAAA- Start price:", _startPrice[0]);
-
+              
                 const _contact = details[0].contact;
                 setContact(_contact);
-                console.log("DDAAA- Contact:", _contact);
-
+                
                 const _location = details[0].location;
                 setLocation(_location);
-                console.log("DDAAA- Location:", _location);
+             
 
                 // const remaining_time_nano = await backendActor.get_remaining_time_dutch(_id);
                 // const remaining_time = convertNanoToSeconds(remaining_time_nano);
@@ -429,7 +421,7 @@ const AuctionDetails = ({ item }) => {
 
                 const _isEth = await backendActor.get_dutch_auction_is_eth(_id);
                 setIsEth(_isEth);
-                console.log("DDAAA- Is Eth:", _isEth);
+               
             } catch (error) {
                 console.error("Error fetching dutch details:", error);
             }
@@ -439,28 +431,25 @@ const AuctionDetails = ({ item }) => {
             const _id = parseInt(item.id);
             try {
                 const _details = await backendActor.get_sb_auction_details(_id);
-                console.log("SBAAA- Details:", _details[0]);
+              
                 setDetails(_details[0]);
 
                 const _bids = _details[0].bid_history;
                 setBids(_bids);
-                console.log("SBAAA- Bids:", _bids);
-
+              
                 const _startPrice = _details[0].starting_price;
                 setStartPrice(Number(_startPrice[0]));
-                console.log("SBAAA- Start price:", _startPrice[0]);
+                
 
                 const _contact = details[0].contact;
                 setContact(_contact);
-                console.log("SBAAA- Contact:", _contact);
-
+           
                 const _location = details[0].location;
                 setLocation(_location);
-                console.log("SBAAA- Location:", _location);
-
+              
                 const _isEth = await backendActor.get_sb_auction_is_eth(_id);
                 setIsEth(_isEth);
-                console.log("SBAAA- Is Eth:", _isEth);
+              
 
             } catch (error) {
                 console.error("Error fetching sealed bid details:", error);
@@ -469,9 +458,9 @@ const AuctionDetails = ({ item }) => {
 
         const fetchOriginatorUsername = async () => {
             try {
-                console.log("AAA- Fetching originator username for:", item.originator);
+               
                 const originatorUsername = await backendActor.get_username_by_principal(item.originator);
-                console.log("AAA- Originator username:", originatorUsername); // This will now show the actual string
+               
                 return originatorUsername;
             } catch (error) {
                 console.error("Error fetching username:", error);
@@ -494,17 +483,17 @@ const AuctionDetails = ({ item }) => {
         fetchOriginatorUsername().then(username => {
 
             if (username) {
-                console.log("AAA- Originator has a username:", username);
+              
                 setOriginatorUsername(username);
             }
 
             if (principal.toString() !== item.originator.toString()) {
-                console.log("AAA- You are NOT the originator of this auction");
-                console.log("AAA- Original item originator:", item.originator.toString());
+                console.log("You are NOT the originator of this auction");
+                console.log("Original item originator:", item.originator.toString());
                 setIsOriginator(false);
             } else {
-                console.log("AAA- You are the originator of this auction");
-                console.log("AAA- Original item originator:", item.originator.toString());
+                console.log("You are the originator of this auction");
+                console.log("Original item originator:", item.originator.toString());
                 setIsOriginator(true);
             }
 
@@ -525,7 +514,7 @@ const AuctionDetails = ({ item }) => {
 
 
     const handleBidClick = useCallback(() => {
-        console.log("AAA- Opening bid modal for auction:", item.id);
+        
         openBidModal(item.id, item.auctionType);
     }, [item.id, item.auctionType, openBidModal]);
 
@@ -546,7 +535,7 @@ const AuctionDetails = ({ item }) => {
 
         const date = new Date(unixTime / 1000000);
         const timeString = date.toLocaleString();
-        console.log("Time string: ", timeString);
+    
         return timeString;
 
     }
