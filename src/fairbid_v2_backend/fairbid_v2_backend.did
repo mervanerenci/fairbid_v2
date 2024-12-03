@@ -122,8 +122,70 @@ type CreditTransaction = record {
     to: principal;
 };
 
+type WithdrawalArg = record {
+    // The amount of ckETH in Wei that the client wants to withdraw.
+    amount : nat;
+    // The address to which the minter should deposit ETH.
+    recipient : text;
 
+    
 
+    // The subaccount to burn ckETH from.
+    from_subaccount : opt Subaccount;
+};
+
+type RetrieveEthRequest = record {
+    block_index: nat;
+};
+
+type WithdrawalError = variant {
+    // The withdrawal amount is too low.
+    // The payload contains the minimal withdrawal amount.
+    AmountTooLow : record { min_withdrawal_amount : nat };
+    // The ckETH balance of the withdrawal account is too low.
+    InsufficientFunds : record { balance : nat };
+    // The allowance given to the minter is too low.
+    InsufficientAllowance : record { allowance : nat };
+   // Recipient's address is blocked.
+   // No withdrawal can be made to that address.
+    RecipientAddressBlocked : record { address : text };
+    // The minter or the ckETH ledger is temporarily unavailable, retry the request.
+    // The payload contains a human-readable message explaining what caused the unavailability.
+    TemporarilyUnavailable : text;
+};
+
+type WithdrawalResult = variant {
+    Ok: RetrieveEthRequest;
+    Err: WithdrawalError;
+};
+
+type ICRC2ApproveError = variant {
+  GenericError : record { message : text; error_code : nat };
+  TemporarilyUnavailable;
+  Duplicate : record { duplicate_of : nat };
+  BadFee : record { expected_fee : nat };
+  AllowanceChanged : record { current_allowance : nat };
+  CreatedInFuture : record { ledger_time : nat64 };
+  TooOld;
+  Expired : record { ledger_time : nat64 };
+  InsufficientFunds : record { balance : nat };
+};
+
+type ApproveResult = variant { Ok : nat; Err : ICRC2ApproveError };
+
+type ICRC1TransferError = variant {
+  GenericError : record { message : text; error_code : nat };
+  TemporarilyUnavailable;
+  BadBurn : record { min_burn_amount : nat };
+  Duplicate : record { duplicate_of : nat };
+  BadFee : record { expected_fee : nat };
+  CreatedInFuture : record { ledger_time : nat64 };
+  TooOld;
+  InsufficientFunds : record { balance : nat };
+};
+
+type ICRC1TransferResult = variant { Ok : nat; Err : ICRC1TransferError };
+type Subaccount = blob;
 
 
 
@@ -277,11 +339,17 @@ service : {
     get_transaction_receipt : (hash : text) -> (text);
     verify_transaction: (hash: text) -> (VerificationResult);
 
+    // Withdrawal
+    withdraw: (amount: nat, recipient: text) -> (WithdrawalResult);
+    balance: () -> (nat) ;
+    transfer: (to: text, amount: nat) -> (ICRC1TransferResult);
+    approve: (amount: nat) -> (ApproveResult);
+
     add_credits: (amount: nat64, hash: text) -> (variant { Ok: null; Err: text });
     transfer_credit: (to: principal, amount: nat64) -> (variant { Ok: null; Err: text });
     get_credit_balance: () -> (nat64) query;
     get_credit_history: () -> (vec CreditTransaction) query;
-
+    decrease_credits: (amount: nat64) -> ();
 
     
     

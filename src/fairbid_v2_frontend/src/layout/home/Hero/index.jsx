@@ -92,7 +92,7 @@ const Hero = () => {
                             <GradientBtn href="/explore-page">Explore</GradientBtn>
                         </Spring>
                         <Spring delay={1000}>
-                            <NavLink className="btn btn--outline" to="/login">Create</NavLink>
+                            <NavLink className="btn btn--outline" to="/new-auction">Create</NavLink>
                         </Spring>
                     </div>
                 </div>

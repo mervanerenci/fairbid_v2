@@ -13,7 +13,10 @@ use b3_utils::ledger::{ICRC2ApproveArgs, ICRC2ApproveResult, ICRC2};
 
 // withdraw
 use candid::{CandidType, Deserialize};
-use b3_utils::InterCall;
+use b3_utils::api::{InterCall, CallCycles};
+
+use candid::Nat;
+
 
 use crate::CREDITS;
 
@@ -25,6 +28,7 @@ const MINTER: &str = "jzenf-aiaaa-aaaar-qaa7q-cai";
 pub struct WithdrawalArg {
     pub amount: Nat,
     pub recipient: String,
+    pub from_subaccount: Option<Vec<u8>>,
 }
 
 #[derive(CandidType, Deserialize, Clone, Debug)]
@@ -56,10 +60,14 @@ async fn withdraw(amount: Nat, recipient: String) -> WithdrawalResult {
     //     return Err(WithdrawalError::InsufficientFunds { balance });
     // }
 
-    let withraw = WithdrawalArg { amount, recipient };
+    let withdraw_arg = WithdrawalArg {
+        amount,
+        recipient,
+        from_subaccount: None,
+    };
 
     InterCall::from(MINTER)
-        .call("withdraw_eth", withraw)
+        .call("withdraw_eth", withdraw_arg, CallCycles::NoPay)
         .await
         .unwrap()
 }
@@ -108,4 +116,5 @@ async fn approve(amount: Nat) -> ICRC2ApproveResult {
     ICRC2::from(LEDGER).approve(args).await.unwrap()
 }
 
-
+// Export -----------------------------
+// ic_cdk::export_candid!();

@@ -15,7 +15,7 @@ use std::collections::{BTreeMap, BTreeSet};
 mod eng_auction;
 mod dutch_auction;
 mod sb_auction;
-
+mod withdraw;
 
 mod get_eth;
 mod get_alchemy;
@@ -699,6 +699,17 @@ pub fn transfer_credit(to: Principal, amount: u64) -> Result<(), String> {
 
         Ok(())  // Return Ok if successful
     })
+}
+
+
+#[ic_cdk::update]
+pub fn decrease_credits(amount: u64) {
+    let caller = ic_cdk::caller();
+    CREDITS.with(|credits| {
+        let mut credits = credits.borrow_mut();
+        let new_balance = credits.get(&caller).unwrap_or(&0) - amount;
+        credits.insert(caller, new_balance);
+    });
 }
 
 
