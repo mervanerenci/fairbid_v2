@@ -93,6 +93,8 @@ dfx deploy
 
 - Sealed-Bid: Submit private bid
 
+For more info you can check How to Fairbid page on website: https://2umgr-waaaa-aaaal-artta-cai.icp0.io/#/how-to-fairbid
+
 ## Documentation
 
 The project structure follows a standard React application layout:
