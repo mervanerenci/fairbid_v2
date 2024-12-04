@@ -9,6 +9,22 @@ FairBid utilizes Internet Computer blockchain to record every transaction secure
 
 ## Key Features
 
+key features of Fairbid:
+
+- Cross-chain Gasless Payments: Seller can choose to facilitate payments using ETH with zero transaction fees on the Internet Computer.
+- Multiple Auction Types: Supports English, Dutch, and sealed-bid auctions.
+- Whitelist Option: Enable controlled access by adding a whitelist.
+- Ask to Seller: Directly ask seller questions about the item, on-chain.
+- Easy Sharing: Participate quickly by sharing QR codes.
+- Scheduled or Instant Auctions: Flexible auction timing options.
+- Listing Option:** List auctions on the site for greater visibility.
+- Buy Code For Added Security: When an auction ends a random number is generated, only the seller and winner can see the buy
+code. This way, users who do not want to be paid with ETH can communicate securely during the shopping process.
+- Frictionless Onboarding: Internet Identity for seamless user onboarding.
+- Custom Usernames: Create personalized usernames.
+
+Fairbid is designed to simplify the auction organization process, making it more efficient, transparent, and accessible for everyone. Even non-crypto users can benefit from the technology without needing to understand complexities of Web3. Also, Ethereum users can enjoy free transactions when paying for a product or receiving payments on the platform.
+
 ### Multiple Auction Formats
 FairBid caters to different auction preferences by offering various formats:
 - English Auction: Price starts low and increases until the last bidder remains.
@@ -32,6 +48,10 @@ FairBid encourages transparent communication between buyers and sellers through 
 ### Internet Identity
 FairBid integrates Internet Identity, a decentralized identity management solution, to ensure secure and seamless user authentication.
 
+- Listing Option: List auctions on the site for greater visibility.
+- Buy Code For Added Security: When an auction ends a random number is generated, only the seller and winner can see the buy
+code. This way, users who do not want to be paid with ETH can communicate securely during the shopping process.
+
 
 
 
@@ -51,7 +71,7 @@ To learn more, see the following documentation available online:
 If you want to start working on your project right away, you might want to try the following commands:
 
 ```bash
-cd fairbid_v1/
+cd fairbid_v2/
 dfx help
 dfx canister --help
 ```
