@@ -101,11 +101,11 @@ src/
 ├── assets/         # Static assets
 ├── components/     # Reusable components
 ├── contexts/       # Context providers
-├── db/            # Mock database
-├── layout/        # Page layouts
-├── pages/         # Application pages
-├── styles/        # Global styles
-└── ui/            # UI components
+├── db/             # Mock database
+├── layout/         # Page layouts
+├── pages/          # Application pages
+├── styles/         # Global styles
+└── ui/             # UI components
 ```
 ## Testing
 
@@ -120,12 +120,13 @@ npm test --workspace fairbid_v2_frontend
 ## Roadmap
 
 - [ ] Integration with additional blockchain networks
-- [ ] Advanced auction analytics
+- [ ] Implement NFT marketplace integration
+- [ ] UX improvement
+- [ ] More detailed profile dashboard
+- [ ] Enable cross-chain NFTs
+- [ ] Expand cross-chain payment support
 - [ ] Social features and community tools
 - [ ] Multi-language support
-- [ ]  UX improvement, more detailed profile dashboard
-- [ ] Implement NFT marketplace integration
-- [ ] Expand cross-chain payment support
 - [ ] Develop more comprehensive documentation
 
 ## License
