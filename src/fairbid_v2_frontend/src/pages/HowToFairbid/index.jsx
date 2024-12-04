@@ -67,12 +67,12 @@ const HowToFairbid = () => {
             {
                 title: "Place Bids",
                 icon: <FaMoneyBillWave size={24} />,
-                description: "Use your credits to participate in auctions. All transactions are fee-free within the platform."
+                description: "Use your credits to participate in auctions or directly transfer to other users. All transactions are fee-free within the platform."
             },
             {
                 title: "Withdraw Funds",
                 icon: <FaExchangeAlt size={24} />,
-                description: "Withdraw your credits as ETH to your wallet or as ckETH to Internet Computer."
+                description: "Withdraw your credits as ETH to your specified wallet."
             }
         ]
     };

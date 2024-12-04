@@ -22,7 +22,7 @@ const Funds = () => {
     const {file, setFile, handleFile, loading} = useFileReader();
     const inputRef = useRef(null);
 
-    const { backendActor, principal } = useAuth();
+    const { backendActor, principal, isAuthenticated } = useAuth();
     const [username, setUsername] = useState(null);
 
     const getUsername = async () => {
@@ -40,6 +40,14 @@ const Funds = () => {
     useEffect(() => {
         getUsername();
     }, []);
+
+    if (!isAuthenticated) {
+        return (
+            <div className={`${styles.wrapper} bg-secondary border-10`}>
+                
+            </div>
+        );
+    }
 
     return (
         <div className={`${styles.wrapper} bg-secondary border-10`}>

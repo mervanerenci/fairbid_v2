@@ -542,7 +542,7 @@ const AuctionDetails = ({ item }) => {
 
     async function getQrCode(id) {
 
-        let input = "http://127.0.0.1:4943/auction/" + id;
+        let input = "https://2umgr-waaaa-aaaal-artta-cai.icp0.io/#/auction/" + id;
 
         // console.log("Getting data url with input: ", input);
         let qr_result;

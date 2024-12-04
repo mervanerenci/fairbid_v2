@@ -108,7 +108,7 @@ const AuctionForm = () => {
                 <div className={styles.authPrompt}>
                     <h2>Authentication Required</h2>
                     <p>Please sign in to create an auction</p>
-                    <GradientBtn tag="link" to="/login">Sign In</GradientBtn>
+                    
                 </div>
             </div>
         );

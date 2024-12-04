@@ -25,13 +25,15 @@ const WithdrawDetails = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isApproving, setIsApproving] = useState(false);
     const { credits, fetchCredits } = useCredits();
-    const { backendActor } = useAuth();
+    const { backendActor, isAuthenticated } = useAuth();
     // const [isCheckingBalance, setIsCheckingBalance] = useState(false);
     // const [ledgerBalance, setLedgerBalance] = useState(null);
     const [ethAddress, setEthAddress] = useState('');
     useEffect(() => {
         fetchCredits();
     }, []);
+
+
 
     // const handleCheckBalance = async () => {
     //     try {
@@ -93,7 +95,7 @@ const WithdrawDetails = () => {
             result = await backendActor.withdraw(valueWei, ethAddress);
             console.log('Raw withdrawal result:', result);
             console.log('result.Ok:', result.Ok);
-            
+
 
             if (result.Ok) {
                 await backendActor.decrease_credits(valueWei);
@@ -108,13 +110,7 @@ const WithdrawDetails = () => {
                 toast.error(result.Err);
             }
 
-            // Pattern matching on the Result type
-            // if ('ok' in result) {
-            //     console.log('Withdrawal successful:', result.ok);
-            //     console.log('Block Index:', result.ok.block_index.toString());
-            //     toast.success('Withdrawal successful!');
-            // } else {
-            //     console.error('Withdrawal error:', result.err);
+            
 
             //     // Handling different error cases
             //     // if ('AmountTooLow' in result.err) {
@@ -126,7 +122,7 @@ const WithdrawDetails = () => {
             //     // } else if ('TemporarilyUnavailable' in result.err) {
             //     //     toast.error(`Temporarily unavailable: ${result.err.TemporarilyUnavailable}`);
             //     // }
-            // }
+            
             setAmount('');
             fetchCredits();
         } catch (err) {
@@ -136,6 +132,17 @@ const WithdrawDetails = () => {
             setIsLoading(false);
         }
     };
+
+    if (!isAuthenticated) {
+        return (
+            <div className={styles.container}>
+                <div className={styles.authPrompt}>
+                    <h2>Authentication Required</h2>
+                    <p>Please sign in to withdraw credits</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.container}>

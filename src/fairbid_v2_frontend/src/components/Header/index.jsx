@@ -151,6 +151,7 @@ const CompactHeaderContent = ({ sidebarHandler, modal, modalHandler }) => {
             <StyledModal open={modal} onClose={() => modalHandler(false)}>
                 <SearchForm className="field--outline" placeholder={placeholder} />
             </StyledModal>
+            {/* <ConnectWallet /> */}
 
         </div>
     )
@@ -174,6 +175,7 @@ const TabletHeaderContent = ({ width, handler }) => {
                 : <SignInButton />}
             <div className="d-flex g-20">
                 {width < 1440 && <MenuTrigger handler={handler} />}
+                {/* <ConnectWallet /> */}
                 {/* <LogoutButton/> */}
             </div>
         </div>

@@ -230,3 +230,18 @@ input {
         align-items: stretch;
     }
 }
+
+.authPrompt {
+    text-align: center;
+    padding: 2rem;
+    
+    h2 {
+        margin-bottom: 1rem;
+        color: var(--text);
+    }
+    
+    p {
+        margin-bottom: 2rem;
+        color: var(--text-light);
+    }
+}

@@ -69,11 +69,13 @@ const DepositDetails = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [txHash, setTxHash] = useState(null);
     const { credits, fetchCredits } = useCredits();
-    const { backendActor } = useAuth();
+    const { backendActor, isAuthenticated } = useAuth();
 
     useEffect(() => {
         fetchCredits();
     }, [fetchCredits]);
+
+
 
     const handleDeposit = async () => {
         if (!window.ethereum) {
@@ -133,6 +135,17 @@ const DepositDetails = () => {
         fetchCredits();
     }, []);
 
+    if (!isAuthenticated) {
+        return (
+            <div className={styles.container}>
+                <div className={styles.authPrompt}>
+                    <h2>Authentication Required</h2>
+                    <p>Please sign in to deposit credits</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className={styles.container}>
             <div className={styles.balanceCard}>
@@ -158,7 +171,7 @@ const DepositDetails = () => {
                     />
                 </div>
 
-                <GradientBtn 
+                <GradientBtn
                     tag="button"
                     onClick={handleDeposit}
                     disabled={isLoading || !amount}

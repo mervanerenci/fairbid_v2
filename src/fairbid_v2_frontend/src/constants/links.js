@@ -58,7 +58,7 @@ export const FOOTER_LINKS = [
         links: [
             {
                 title: 'Profile',
-                url: '/login',
+                url: '/profile',
             },
             {
                 title: 'Deposit',
