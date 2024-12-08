@@ -10,7 +10,7 @@ import { useExploreGridContext } from '@contexts/exploreGridContext';
 const Auction = () => {
     const { id } = useParams();
     const { items, loading, endedItems } = useExploreGridContext();
-    console.log("items at auction", items);
+    
 
     if (loading) {
         return <div>Loading...</div>;

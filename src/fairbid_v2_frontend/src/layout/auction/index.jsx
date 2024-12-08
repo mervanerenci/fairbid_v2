@@ -88,7 +88,7 @@ const AuctionDetails = ({ item }) => {
     const [isEnded, setIsEnded] = useState(false);
     const [winnerPrincipal, setWinnerPrincipal] = useState(null);
     const [highestBid, setHighestBid] = useState(null);
-    const [qrData, setQrData] = useState(null);
+    const [qrData, setQrData] = useState("");
     const [imageData, setImageData] = useState(null);
     const [currentBidDutch, setCurrentBidDutch] = useState(null);
     const [lowerAmount, setLowerAmount] = useState(null);
@@ -167,50 +167,50 @@ const AuctionDetails = ({ item }) => {
 
 
 
-    const getBids = async () => {
-        const _id = parseInt(item.id);
+    // const getBids = async () => {
+    //     const _id = parseInt(item.id);
 
-        try {
-            const _bids = await backendActor.get_all_bids(_id);
-          
-            setBids(_bids);
-        } catch (error) {
-            console.error("Error fetching bids:", error);
-        }
-    }
+    //     try {
+    //         const _bids = await backendActor.get_all_bids(_id);
 
-    const getBidsDutch = async () => {
-        const _id = parseInt(item.id);
-        try {
-            const _bids = await backendActor.get_all_bids_by_dutch_auction_id(_id);
-            setBids(_bids);
-        } catch (error) {
-            console.error("Error fetching bids:", error);
-        }
-    }
+    //         setBids(_bids);
+    //     } catch (error) {
+    //         console.error("Error fetching bids:", error);
+    //     }
+    // }
 
-    const getBidsSb = async () => {
-        const _id = parseInt(item.id);
-        try {
-            const _bids = await backendActor.get_all_sb_bids_by_auction_id(_id);
-            setBids(_bids);
-        } catch (error) {
-            console.error("Error fetching bids:", error);
-        }
-    }
+    // const getBidsDutch = async () => {
+    //     const _id = parseInt(item.id);
+    //     try {
+    //         const _bids = await backendActor.get_all_bids_by_dutch_auction_id(_id);
+    //         setBids(_bids);
+    //     } catch (error) {
+    //         console.error("Error fetching bids:", error);
+    //     }
+    // }
+
+    // const getBidsSb = async () => {
+    //     const _id = parseInt(item.id);
+    //     try {
+    //         const _bids = await backendActor.get_all_sb_bids_by_auction_id(_id);
+    //         setBids(_bids);
+    //     } catch (error) {
+    //         console.error("Error fetching bids:", error);
+    //     }
+    // }
 
     const getHighestBid = async () => {
         const _id = parseInt(item.id);
         const _highestBid = await backendActor.get_highest_bid_details(_id);
-       
+
         setHighestBid(_highestBid);
     }
 
     const getLastElementOfBids = async () => {
         const bids_array = item.bids;
-       
+
         const last_element = bids_array[bids_array.length - 1];
-       
+
         setHighestBid(last_element);
     }
 
@@ -241,7 +241,7 @@ const AuctionDetails = ({ item }) => {
     const fetchImage = async () => {
         const _id = parseInt(item.id);
         const image = await backendActor.get_item_image(_id);
-      
+
 
 
         const blob = new Blob([image], { type: 'image/png' });
@@ -356,19 +356,19 @@ const AuctionDetails = ({ item }) => {
 
     // Fetch all necessary details
     useEffect(() => {
-      
+
 
         const stringPrincipal = principal.toString();
 
         setType(item.auctionType);
-        
+
 
         const fetchDetails = async () => {
             const _id = parseInt(item.id);
             try {
                 const _details = await backendActor.get_auction_details(_id);
                 setDetails(_details[0]);
-             
+
                 const _bids = _details[0].bid_history;
 
                 setBids(_bids);
@@ -377,12 +377,12 @@ const AuctionDetails = ({ item }) => {
 
                 const _startPrice = _details[0].starting_price;
                 setStartPrice(Number(_startPrice[0]));
-              
+
 
                 // const remaining_time_nano = await backendActor.get_remaining_time(_id);
                 // const remaining_time = convertNanoToSeconds(remaining_time_nano);
                 // setRemainingTime(remaining_time);
-             
+
                 const _isEth = await backendActor.get_auction_is_eth(_id);
                 setIsEth(_isEth);
 
@@ -399,21 +399,21 @@ const AuctionDetails = ({ item }) => {
             try {
                 const _details = await backendActor.get_dutch_auction_details(_id);
                 setDetails(_details[0]);
-                
+
 
                 const _bids = _details[0].bid_history;
                 setBids(_bids);
-               
+
 
                 const _startPrice = _details[0].starting_price;
                 setStartPrice(Number(_startPrice[0]));
-              
+
                 const _contact = details[0].contact;
                 setContact(_contact);
-                
+
                 const _location = details[0].location;
                 setLocation(_location);
-             
+
 
                 // const remaining_time_nano = await backendActor.get_remaining_time_dutch(_id);
                 // const remaining_time = convertNanoToSeconds(remaining_time_nano);
@@ -421,7 +421,7 @@ const AuctionDetails = ({ item }) => {
 
                 const _isEth = await backendActor.get_dutch_auction_is_eth(_id);
                 setIsEth(_isEth);
-               
+
             } catch (error) {
                 console.error("Error fetching dutch details:", error);
             }
@@ -431,25 +431,25 @@ const AuctionDetails = ({ item }) => {
             const _id = parseInt(item.id);
             try {
                 const _details = await backendActor.get_sb_auction_details(_id);
-              
+
                 setDetails(_details[0]);
 
                 const _bids = _details[0].bid_history;
                 setBids(_bids);
-              
+
                 const _startPrice = _details[0].starting_price;
                 setStartPrice(Number(_startPrice[0]));
-                
+
 
                 const _contact = details[0].contact;
                 setContact(_contact);
-           
+
                 const _location = details[0].location;
                 setLocation(_location);
-              
+
                 const _isEth = await backendActor.get_sb_auction_is_eth(_id);
                 setIsEth(_isEth);
-              
+
 
             } catch (error) {
                 console.error("Error fetching sealed bid details:", error);
@@ -458,9 +458,9 @@ const AuctionDetails = ({ item }) => {
 
         const fetchOriginatorUsername = async () => {
             try {
-               
+
                 const originatorUsername = await backendActor.get_username_by_principal(item.originator);
-               
+
                 return originatorUsername;
             } catch (error) {
                 console.error("Error fetching username:", error);
@@ -469,21 +469,23 @@ const AuctionDetails = ({ item }) => {
         }
 
         if (item.auctionType === "sealed-bid") {
-            console.log("fetching sealed bid details");
+
             fetchDetailsSb();
         } else if (item.auctionType === "dutch") {
-            console.log("fetching dutch auction details");
+
             fetchDetailsDutch();
         } else {
-            console.log("fetching english auction details");
+
             fetchDetails();
         }
+
+        getQrCode(parseInt(item.id));
 
         // Call the async function
         fetchOriginatorUsername().then(username => {
 
             if (username) {
-              
+
                 setOriginatorUsername(username);
             }
 
@@ -509,12 +511,16 @@ const AuctionDetails = ({ item }) => {
 
     }, []);
 
+    useEffect(() => {
+        console.log("qrData state updated:", qrData);
+    }, [qrData]);
+
 
 
 
 
     const handleBidClick = useCallback(() => {
-        
+
         openBidModal(item.id, item.auctionType);
     }, [item.id, item.auctionType, openBidModal]);
 
@@ -535,25 +541,27 @@ const AuctionDetails = ({ item }) => {
 
         const date = new Date(unixTime / 1000000);
         const timeString = date.toLocaleString();
-    
+
         return timeString;
 
     }
 
     async function getQrCode(id) {
 
-        let input = "https://2umgr-waaaa-aaaal-artta-cai.icp0.io/#/auction/" + id;
+        try {
+            let input = "https://2umgr-waaaa-aaaal-artta-cai.icp0.io/#/auction/" + id;
+            console.log("Getting data url with input: ", input);
 
-        // console.log("Getting data url with input: ", input);
-        let qr_result;
-        qr_result = await backendActor.get_qr_code(input);
+            const qr_result = await backendActor.get_qr_code(input);
+            const blob = new Blob([qr_result], { type: 'image/png' });
+            const dataUrl = await convertToDataUrl(blob);
 
-
-        const blob = new Blob([qr_result], { type: 'image/png' });
-        let dataUrl = await convertToDataUrl(blob);
-        // console.log("Qr_Data_Url: ", dataUrl);
-
-        setQrData(dataUrl);
+            console.log("Qr_Data_Url before setState: ", dataUrl);
+            setQrData(dataUrl);
+            console.log("State updated with QR data");
+        } catch (error) {
+            console.error("Error generating QR code:", error);
+        }
     }
 
     // For converting blob to data url to get image
@@ -640,11 +648,11 @@ const AuctionDetails = ({ item }) => {
                     <div className={`${styles.block} border-10`}>
                         {/* <Avatar src={creator} alt="@thadraid" size="sm" isVerified /> */}
 
-                        {originatorUsername ? (
+                        {/* {originatorUsername ? (
                             <NewAvatar src={originatorUsername} alt="" size="20" isVerified />
                         ) : (
                             <></>
-                        )}
+                        )} */}
                         <div className={styles.block_details}>
                             <span className="text-xs">
                                 <span className="text-bold">Creator: </span>
@@ -693,7 +701,7 @@ const AuctionDetails = ({ item }) => {
                         </div>
                     </div>
                 )}
-                <QrCodeComponent />
+
             </div>
         </div>
     ), [remainingTime, highestBid, bids, isEnded, secretCode]);
@@ -712,32 +720,16 @@ const AuctionDetails = ({ item }) => {
                             <span className="h6">🔥 {remainingTime} seconds</span>
                         )}
 
-
                         <div>
-
 
                         </div>
                         <h2 className={styles.title}>{item.title}</h2>
                         <div className={styles.bid}>
 
 
-
-
-
                             <div className="d-flex g-10">
                                 Dutch Auction
                             </div>
-
-
-
-
-
-
-
-
-
-
-
 
                             {isEth ? (
                                 <div className="d-flex g-10">
@@ -786,8 +778,6 @@ const AuctionDetails = ({ item }) => {
                             ) : (
                                 <span className="text-sm text-bold text-light">{item.originator.toString()}</span>
                             )}
-
-
 
                         </div>
                     </div>
@@ -867,7 +857,7 @@ const AuctionDetails = ({ item }) => {
                         </div>
                     </div>
                 )}
-                <QrCodeComponent />
+
             </div>
         </div>
     ), [remainingTime, highestBid, bids, isEnded, secretCode]);
@@ -989,7 +979,7 @@ const AuctionDetails = ({ item }) => {
                             </div>
                         </div>
                     )}
-                    <QrCodeComponent />
+
                 </div>
             </div>
         </div>
@@ -1027,6 +1017,8 @@ const AuctionDetails = ({ item }) => {
                     </div>
 
                 </div>
+
+                <QrCodeComponent />
 
 
             </div>
