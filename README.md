@@ -1,11 +1,10 @@
-# Fairbid
-FairBid is a decentralized p2p auction marketplace offering transparent, fee-free & cross-chain transactions and multiple auction formats, leveraging the Internet Computer for a seamless, secure, and user-friendly experience.
+# FairBid 
 
-We provide sellers with the tools and resources they need to showcase their products and reach a global audience through various auction formats and buyers with a transparent, seamless, and secure auction environment. From discovering unique items to placing bids and asking questions to sellers, buyers can navigate the auction process with ease. 
+FairBid is a decentralized auction platform built on the Internet Computer Protocol (ICP) that enables users to create and participate in multiple auction formats with fee-free ETH transactions. The platform supports English, Dutch, and Sealed-Bid auctions while providing seamless integration with Internet Identity for secure authentication.
 
-FairBid utilizes Internet Computer blockchain to record every transaction securely, providing transparency and immutability.
+Live version: https://2umgr-waaaa-aaaal-artta-cai.icp0.io/
 
-
+We provide sellers with the tools and resources they need to showcase their products and reach a global audience through various auction formats and buyers with a transparent, seamless, and secure auction environment. From discovering unique items to placing bids and asking questions to sellers, buyers can navigate the auction process with ease.
 
 ## Key Features
 
@@ -26,70 +25,119 @@ FairBid caters to different auction preferences by offering various formats:
 - Visibility Control: Auctions can be made public or private, giving sellers control over their audience.
 - Custom Usernames: Users can create unique usernames, enhancing their identity and interaction on the platform.
 
-### Ask to Seller
+### Ask to Seller On-chain
 FairBid encourages transparent communication between buyers and sellers through the "Ask to Seller" feature. This feature allows buyers to directly communicate with sellers, facilitating inquiries, clarifications, or negotiations before placing bids.
 
 ### Internet Identity
 FairBid integrates Internet Identity, a decentralized identity management solution, to ensure secure and seamless user authentication.
 
 
+## Architecture
 
+The project consists of two main canisters:
 
+- Backend Canister (Rust): sultb-kyaaa-aaaal-arsfq-cai
 
+- Frontend Canister (React): 2umgr-waaaa-aaaal-artta-cai
 
-To get started, you might want to explore the project directory structure and the default configuration file. Working with this project in your development environment will not affect any production deployment or identity tokens.
+## Installation
 
-To learn more, see the following documentation available online:
+### Prerequisites
 
-- [Quick Start](https://internetcomputer.org/docs/current/developer-docs/setup/deploy-locally)
-- [SDK Developer Tools](https://internetcomputer.org/docs/current/developer-docs/setup/install)
-- [Rust Canister Development Guide](https://internetcomputer.org/docs/current/developer-docs/backend/rust/)
-- [ic-cdk](https://docs.rs/ic-cdk)
-- [ic-cdk-macros](https://docs.rs/ic-cdk-macros)
-- [Candid Introduction](https://internetcomputer.org/docs/current/developer-docs/backend/candid/)
+```
+- Node.js >= 16.0.0
+- npm >= 7.0.0
+- dfx (Internet Computer SDK)
+```
+### Install
 
-If you want to start working on your project right away, you might want to try the following commands:
+```
+# Clone the repository
+git clone <repository-url>
 
-```bash
-cd fairbid_v1/
-dfx help
-dfx canister --help
+cd fairbid_v2
+
+# Install dependencies
+npm install
+
+# Start local replica
+dfx start --background
+
+# Deploy the project
+dfx deploy
 ```
 
-## Running the project locally
+## Usage
 
-If you want to test your project locally, you can use the following commands:
+### Creating an Auction
 
-```bash
-# Starts the replica, running in the background
-dfx start --background
+- Sign in with Internet Identity
 
-# Deploys your canisters to the replica and generates your candid interface
-dfx deploy
+- Choose auction format (English, Dutch, or Sealed-Bid)
+
+- Set auction parameters (starting price, duration, etc.)
+
+- Upload item details and images
+
+- Share the generated QR code or link with potential buyers
+
+### Participating in Auctions
+
+- Browse available auctions
+
+- Place bids according to auction format:
+
+- English: Place incrementally higher bids
+
+- Dutch: Accept current decreasing price
+
+- Sealed-Bid: Submit private bid
+
+For more info you can check How to Fairbid page on website: https://2umgr-waaaa-aaaal-artta-cai.icp0.io/#/how-to-fairbid
+
+## Documentation
+
+The project structure follows a standard React application layout:
+```
+src/
+├── assets/         # Static assets
+├── components/     # Reusable components
+├── contexts/       # Context providers
+├── db/             # Mock database
+├── layout/         # Page layouts
+├── pages/          # Application pages
+├── styles/         # Global styles
+└── ui/             # UI components
+```
+## Testing
+
 ```
 
-Once the job completes, your application will be available at `http://localhost:4943?canisterId={asset_canister_id}`.
+# Run all tests
+npm test
 
-If you have made changes to your backend canister, you can generate a new candid interface with
-
-```bash
-npm run generate
+# Run frontend tests
+npm test --workspace fairbid_v2_frontend
 ```
+## Roadmap
 
-at any time. This is recommended before starting the frontend development server, and will be run automatically any time you run `dfx deploy`.
+- [ ] Integration with additional blockchain networks
+- [ ] Implement NFT marketplace integration
+- [ ] UX improvement
+- [ ] More detailed profile dashboard
+- [ ] Enable cross-chain NFTs
+- [ ] Expand cross-chain payment support
+- [ ] Social features and community tools
+- [ ] Multi-language support
+- [ ] Develop more comprehensive documentation
 
-If you are making frontend changes, you can start a development server with
+## License
 
-```bash
-npm start
-```
+This project is licensed under the GPU 3.0 License - see the LICENSE file for details.
 
-Which will start a server at `http://localhost:8080`, proxying API requests to the replica at port 4943.
+## Acknowledgements
 
-
-
-### Note on frontend environment variables
-- set`DFX_NETWORK` to `ic` if you are using Webpack
-- use your own preferred method to replace `process.env.DFX_NETWORK` in the autogenerated declarations
-  - Setting `canisters -> {asset_canister_id} -> declarations -> env_override to a string` in `dfx.json` will replace `process.env.DFX_NETWORK` with the string in the autogenerated declarations
-- Write your own `createActor` constructor
+- Internet Computer Protocol
+- Internet Identity
+- Ethereum Network
+- React Framework Community
