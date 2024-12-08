@@ -23,9 +23,14 @@ export const ExploreGridContextAPI = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [auctionType, setAuctionType] = useState("all");
     const [originator, setOriginator] = useState();
-
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
 
     const { backendActor } = useAuth();
+
+    // Function to trigger refresh
+    const refreshItems = () => {
+        setRefreshTrigger(prev => prev + 1);
+    };
 
     useEffect(() => {
 
@@ -164,7 +169,7 @@ export const ExploreGridContextAPI = ({ children }) => {
         };
 
         fetchAllAuctions();
-    }, []);
+    }, [refreshTrigger, backendActor]);
 
     //filter helpers
 
@@ -196,7 +201,7 @@ export const ExploreGridContextAPI = ({ children }) => {
 
         // console.log("Filtered items:", filtered); // Debug log
         return filtered;
-    }, [auctionType, allItems]);
+    }, [auctionType, allItems, refreshTrigger]);
 
 
 
@@ -206,7 +211,8 @@ export const ExploreGridContextAPI = ({ children }) => {
             loading,
             auctionType,
             setAuctionType,
-            endedItems
+            endedItems,
+            refreshItems
         }}>
             {children}
         </ExploreGridContext.Provider>

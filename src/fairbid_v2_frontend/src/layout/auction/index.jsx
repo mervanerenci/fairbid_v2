@@ -4,24 +4,18 @@ import styles from './style.module.scss';
 // components
 import ZoomViewer from '@components/ZoomViewer';
 import StyledTabs from '@ui/StyledTabs';
-import Avatar from '@ui/Avatar';
-import GradientBtn from '@ui/GradientBtn';
-import Like from '@ui/Like';
 import BidsHistory from '@components/BidsHistory';
-import AskForm from '@components/AskForm';
-import Countdown from 'react-countdown';
 import Sticky from 'react-stickynode';
 import { toast } from 'react-toastify';
 import NewAvatar from '@components/NewAvatar';
-
+import Questions from '@layout/auction/Questions';
 
 // hooks
 import { useBidModalContext } from '@contexts/bidModalContext';
 import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
-
+import { useAuth } from '@contexts/useAuthClient';
 import { useWindowSize } from 'react-use';
 import { useForm } from 'react-hook-form';
-
 
 // utils
 import dayjs from 'dayjs';
@@ -29,46 +23,19 @@ import dayjs from 'dayjs';
 // assets
 import product from '@assets/home/hero/art4.webp';
 import productZoom from '@assets/home/hero/art4_lg.webp';
-import creator from '@assets/item/creator.webp';
-import collection from '@assets/item/collection.webp';
 
 // data placeholder
 import itemz from '@db/itemz';
 
-import { useAuth } from '@contexts/useAuthClient';
 
-import Questions from '@layout/auction/Questions';
 
-const Table = () => {
-    return (
-        <table className={styles.table}>
-            <tbody>
-                <tr>
-                    <td className="text-bold text-accent">Owner</td>
-                    <td className="text-overflow">{itemz.details.owner}</td>
-                </tr>
-                <tr>
-                    <td className="text-bold text-accent">Background</td>
-                    <td className="text-overflow">{itemz.details.background}</td>
-                </tr>
-                <tr>
-                    <td className="text-bold text-accent">Blockchain</td>
-                    <td className="text-overflow">{itemz.details.blockchain}</td>
-                </tr>
-                <tr>
-                    <td className="text-bold text-accent">Category</td>
-                    <td className="text-overflow">{itemz.details.category}</td>
-                </tr>
-            </tbody>
-        </table>
-    )
-}
+
 
 const AuctionDetails = ({ item }) => {
 
 
     const { openBidModal } = useBidModalContext();
-    const { principal, backendActor } = useAuth();
+    const { principal, backendActor, isAuthenticated } = useAuth();
 
     const activeBids = itemz.bids.filter(itemz => itemz.active), prevBids = itemz.bids.filter(itemz => !itemz.active);
     const date = useRef(dayjs().add(7, 'days').toDate());
@@ -105,8 +72,6 @@ const AuctionDetails = ({ item }) => {
 
     const tabs = [
         { label: 'Bids', key: 'item-1', children: <BidsHistory data={item.bids} /> },
-        // {label: 'History', key: 'item-2', children: <BidsHistory data={prevBids}/>},
-        // {label: 'Details', key: 'item-3', children: <Table/>},
     ];
 
     const bidsStructure = {
@@ -116,7 +81,7 @@ const AuctionDetails = ({ item }) => {
     }
 
 
-
+    /////////// GETTERS AND SETTERS START ///////////
 
     const getBuyCode = async () => {
 
@@ -167,38 +132,6 @@ const AuctionDetails = ({ item }) => {
 
 
 
-    // const getBids = async () => {
-    //     const _id = parseInt(item.id);
-
-    //     try {
-    //         const _bids = await backendActor.get_all_bids(_id);
-
-    //         setBids(_bids);
-    //     } catch (error) {
-    //         console.error("Error fetching bids:", error);
-    //     }
-    // }
-
-    // const getBidsDutch = async () => {
-    //     const _id = parseInt(item.id);
-    //     try {
-    //         const _bids = await backendActor.get_all_bids_by_dutch_auction_id(_id);
-    //         setBids(_bids);
-    //     } catch (error) {
-    //         console.error("Error fetching bids:", error);
-    //     }
-    // }
-
-    // const getBidsSb = async () => {
-    //     const _id = parseInt(item.id);
-    //     try {
-    //         const _bids = await backendActor.get_all_sb_bids_by_auction_id(_id);
-    //         setBids(_bids);
-    //     } catch (error) {
-    //         console.error("Error fetching bids:", error);
-    //     }
-    // }
-
     const getHighestBid = async () => {
         const _id = parseInt(item.id);
         const _highestBid = await backendActor.get_highest_bid_details(_id);
@@ -238,6 +171,13 @@ const AuctionDetails = ({ item }) => {
         setWinnerPrincipal(_winner);
     }
 
+    /////////// GETTERS AND SETTERS END ///////////
+
+
+
+
+    /////////// FETCHERS START ///////////
+
     const fetchImage = async () => {
         const _id = parseInt(item.id);
         const image = await backendActor.get_item_image(_id);
@@ -252,8 +192,11 @@ const AuctionDetails = ({ item }) => {
     }
 
 
+    /////////// FETCHERS END ///////////
 
 
+
+    /////////// HANDLERS START ///////////
     const transferPrice = async () => {
         await backendActor.transfer_price(item.originator, highestBid);
     }
@@ -281,6 +224,20 @@ const AuctionDetails = ({ item }) => {
         }
     }
 
+    const handleBidClick = useCallback(() => {
+
+        openBidModal(item.id, item.auctionType);
+    }, [item.id, item.auctionType, openBidModal]);
+
+    const handleTransferClick = useCallback(() => {
+        console.log("AAA- Transferring price for auction:", item.id);
+    }, [item.id]);
+
+    /////////// HANDLERS END ///////////
+
+
+
+    /////////// USE EFFECTS START ///////////
 
     // Log remaining time
     useEffect(() => {
@@ -302,18 +259,10 @@ const AuctionDetails = ({ item }) => {
             }
         };
 
-        // const updateBids = () => {
-        //     if (item.auctionType === "english") {
-        //         getBids();
-        //     } else if (item.auctionType === "dutch") {
-        //         getBidsDutch();
-        //     } else {
-        //         getBidsSb();
-        //     }
-        // };
+       
 
         updateTime();
-        // updateBids();
+        
 
         timeInterval = setInterval(updateTime, 1000);
         // bidsInterval = setInterval(updateBids, 12000);
@@ -324,18 +273,6 @@ const AuctionDetails = ({ item }) => {
 
     }, [item.auctionType]);
 
-    // useEffect(() => {
-    //     if (item.auctionType === "english") {
-    //         getBids();
-    //         setInterval(getBids, 12000);
-    //     } else if (item.auctionType === "dutch") {
-    //         getBidsDutch();
-    //         setInterval(getBidsDutch, 12000);
-    //     } else {
-    //         getBidsSb();
-    //         setInterval(getBidsSb, 12000);
-    //     }
-    // }, [bids]);
 
 
     // Get highest bid and winner when auction is ended
@@ -357,11 +294,8 @@ const AuctionDetails = ({ item }) => {
     // Fetch all necessary details
     useEffect(() => {
 
-
         const stringPrincipal = principal.toString();
-
         setType(item.auctionType);
-
 
         const fetchDetails = async () => {
             const _id = parseInt(item.id);
@@ -379,9 +313,7 @@ const AuctionDetails = ({ item }) => {
                 setStartPrice(Number(_startPrice[0]));
 
 
-                // const remaining_time_nano = await backendActor.get_remaining_time(_id);
-                // const remaining_time = convertNanoToSeconds(remaining_time_nano);
-                // setRemainingTime(remaining_time);
+            
 
                 const _isEth = await backendActor.get_auction_is_eth(_id);
                 setIsEth(_isEth);
@@ -414,10 +346,6 @@ const AuctionDetails = ({ item }) => {
                 const _location = details[0].location;
                 setLocation(_location);
 
-
-                // const remaining_time_nano = await backendActor.get_remaining_time_dutch(_id);
-                // const remaining_time = convertNanoToSeconds(remaining_time_nano);
-                // setRemainingTime(remaining_time);
 
                 const _isEth = await backendActor.get_dutch_auction_is_eth(_id);
                 setIsEth(_isEth);
@@ -517,18 +445,11 @@ const AuctionDetails = ({ item }) => {
 
 
 
+    /////////// USE EFFECTS END ///////////
 
 
-    const handleBidClick = useCallback(() => {
 
-        openBidModal(item.id, item.auctionType);
-    }, [item.id, item.auctionType, openBidModal]);
-
-    const handleTransferClick = useCallback(() => {
-        console.log("AAA- Transferring price for auction:", item.id);
-    }, [item.id]);
-
-
+    /////////// HELPER FUNCTIONS START ///////////
 
     // For calculating remaining time
     function convertNanoToSeconds(nanoSeconds) {
@@ -575,6 +496,9 @@ const AuctionDetails = ({ item }) => {
         });
     }
 
+    /////////// HELPER FUNCTIONS END ///////////
+
+
     const QrCodeComponent = () => {
         return (
             <div className={styles.qr_container}>
@@ -602,7 +526,7 @@ const AuctionDetails = ({ item }) => {
 
                         <div>
 
-                            {/* {remainingTime ? convertUnixToDateTime(Number(remainingTime)) : "Loading..."} */}
+                            
                         </div>
                         <h2 className={styles.title}>{item.title}</h2>
                         <div className={styles.bid}>
@@ -625,10 +549,7 @@ const AuctionDetails = ({ item }) => {
                         </div>
                     </div>
                     <div className={styles.actions}>
-                        {/* <Like className={`${styles.btn} ${styles.like} btn btn--icon`} count={item.likes}/> */}
-                        {/* <button className={`${styles.btn} btn btn--icon`} aria-label="Menu">
-                                <i className="icon icon-ellipsis"/>
-                            </button> */}
+                        
                     </div>
                 </div>
                 <p className={`${styles.main_text} text-sm`}>
@@ -646,13 +567,7 @@ const AuctionDetails = ({ item }) => {
 
                 <div className={styles.main_creator}>
                     <div className={`${styles.block} border-10`}>
-                        {/* <Avatar src={creator} alt="@thadraid" size="sm" isVerified /> */}
-
-                        {/* {originatorUsername ? (
-                            <NewAvatar src={originatorUsername} alt="" size="20" isVerified />
-                        ) : (
-                            <></>
-                        )} */}
+                        
                         <div className={styles.block_details}>
                             <span className="text-xs">
                                 <span className="text-bold">Creator: </span>
@@ -688,7 +603,7 @@ const AuctionDetails = ({ item }) => {
                     )
                 )}
 
-                {isOriginator ? (
+                {isOriginator || isAuthenticated == false ? (
                     <div className="main_tabs">
                         <StyledTabs tabs={tabs} />
                     </div>
@@ -696,7 +611,7 @@ const AuctionDetails = ({ item }) => {
                     <div className="main_tabs">
                         <StyledTabs tabs={tabs} />
                         <div className={styles.buttons}>
-                            {/* <GradientBtn tag="button" onClick={openBidModal}>Buy for 20 ETH</GradientBtn> */}
+                           
                             <button className="btn btn--outline" onClick={handleBidClick}>Place a bid</button>
                         </div>
                     </div>
@@ -761,7 +676,7 @@ const AuctionDetails = ({ item }) => {
 
                 <div className={styles.main_creator}>
                     <div className={`${styles.block} border-10`}>
-                        {/* <Avatar src={creator} alt="@thadraid" size="sm" isVerified /> */}
+                       
                         {originatorUsername ? (
                             <NewAvatar src={originatorUsername} alt="" size="sm" isVerified />
                         ) : (
@@ -847,7 +762,7 @@ const AuctionDetails = ({ item }) => {
                     <div className="main_tabs">
                         <StyledTabs tabs={tabs} />
                         <div className={styles.buttons}>
-                            {/* <GradientBtn tag="button" onClick={openBidModal}>Buy for 20 ETH</GradientBtn> */}
+                            
                             <button
                                 className="btn btn--gradient"
                                 onClick={handleAcceptPrice}
@@ -878,7 +793,7 @@ const AuctionDetails = ({ item }) => {
 
                             <div>
 
-                                {/* {remainingTime ? convertUnixToDateTime(Number(remainingTime)) : "Loading..."} */}
+                                
                             </div>
                             <h2 className={styles.title}>{item.title}</h2>
                             <div className={styles.bid}>
@@ -919,7 +834,7 @@ const AuctionDetails = ({ item }) => {
 
                     <div className={styles.main_creator}>
                         <div className={`${styles.block} border-10`}>
-                            {/* <Avatar src={creator} alt="@thadraid" size="sm" isVerified /> */}
+                           
                             {originatorUsername ? (
                                 <NewAvatar src={originatorUsername} alt="" size="sm" isVerified />
                             ) : (
@@ -966,15 +881,15 @@ const AuctionDetails = ({ item }) => {
                         )
                     )}
 
-                    {isOriginator ? (
+                    {isOriginator || isAuthenticated == false ? (
                         <div className="main_tabs">
                             <StyledTabs tabs={tabs} />
                         </div>
                     ) : (
                         <div className="main_tabs">
-                            {/* <StyledTabs tabs={tabs} /> */}
+                            
                             <div className={styles.buttons}>
-                                {/* <GradientBtn tag="button" onClick={openBidModal}>Buy for 20 ETH</GradientBtn> */}
+                                
                                 <button className="btn btn--outline" onClick={handleBidClick}>Place a bid</button>
                             </div>
                         </div>

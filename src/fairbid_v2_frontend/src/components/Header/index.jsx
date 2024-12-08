@@ -42,34 +42,7 @@ const placeholder = 'Search items, collection or user';
 
 const canisterId = 'bw4dl-smaaa-aaaaa-qaacq-cai';
 
-const createActor = (canisterId, options = {}) => {
-    const agent = options.agent || new HttpAgent({ ...options.agentOptions });
-
-    if (options.agent && options.agentOptions) {
-        console.warn(
-            "Detected both agent and agentOptions passed to createActor. Ignoring agentOptions and proceeding with the provided agent."
-        );
-    }
-
-    // Fetch root key for certificate validation during development
-    if (process.env.DFX_NETWORK !== "ic") {
-        agent.fetchRootKey().catch((err) => {
-            console.warn(
-                "Unable to fetch root key. Check to ensure that your local replica is running"
-            );
-            console.error(err);
-        });
-    }
-
-    // Creates an actor with using the candid interface and the HttpAgent
-    return Actor.createActor(idlFactory, {
-        agent,
-        canisterId,
-        ...options.actorOptions,
-    });
-};
-
-const backend = canisterId ? createActor(canisterId) : undefined;
+// 
 
 function ConnectWallet() {
     const { isConnected } = useAccount()
@@ -130,10 +103,7 @@ const CompactHeaderContent = ({ sidebarHandler, modal, modalHandler }) => {
     const { isAuthenticated } = useAuth();
     return (
         <div className="d-flex g-10">
-            {/* <button className="btn btn--icon" onClick={() => modalHandler(true)} aria-label="Search">
-                <i className="icon icon-search-regular"/>
-            </button> */}
-            {/* <SignInButton /> */}
+            
             
             {isAuthenticated ? 
                 <>
@@ -142,16 +112,12 @@ const CompactHeaderContent = ({ sidebarHandler, modal, modalHandler }) => {
                 </>
                 : <SignInButton />}
 
-
-
-            {/* <NavLink className="btn btn--icon" to="/connect-wallet" aria-label="Connect wallet">
-                <FaWallet />
-            </NavLink> */}
+            
             <MenuTrigger handler={sidebarHandler} />
             <StyledModal open={modal} onClose={() => modalHandler(false)}>
                 <SearchForm className="field--outline" placeholder={placeholder} />
             </StyledModal>
-            {/* <ConnectWallet /> */}
+            
 
         </div>
     )
@@ -161,12 +127,7 @@ const TabletHeaderContent = ({ width, handler }) => {
     const { isAuthenticated } = useAuth();
     return (
         <div className="main-wrapper d-flex align-items-center justify-content-end">
-            {/* <div className="form-wrapper">
-                <SearchForm className="search" placeholder={placeholder}/>
-            </div> */}
-            {/* <GradientBtn >
-                Sign In
-            </GradientBtn> */}
+           
             {isAuthenticated ? 
                 <>
                     <CreditsBalance />
@@ -176,7 +137,7 @@ const TabletHeaderContent = ({ width, handler }) => {
             <div className="d-flex g-20">
                 {width < 1440 && <MenuTrigger handler={handler} />}
                 {/* <ConnectWallet /> */}
-                {/* <LogoutButton/> */}
+                
             </div>
         </div>
     )
@@ -240,3 +201,32 @@ const Header = () => {
 }
 
 export default memo(Header);
+
+// const createActor = (canisterId, options = {}) => {
+    //     const agent = options.agent || new HttpAgent({ ...options.agentOptions });
+    
+    //     if (options.agent && options.agentOptions) {
+    //         console.warn(
+    //             "Detected both agent and agentOptions passed to createActor. Ignoring agentOptions and proceeding with the provided agent."
+    //         );
+    //     }
+    
+    //     // Fetch root key for certificate validation during development
+    //     if (process.env.DFX_NETWORK !== "ic") {
+    //         agent.fetchRootKey().catch((err) => {
+    //             console.warn(
+    //                 "Unable to fetch root key. Check to ensure that your local replica is running"
+    //             );
+    //             console.error(err);
+    //         });
+    //     }
+    
+    //     // Creates an actor with using the candid interface and the HttpAgent
+    //     return Actor.createActor(idlFactory, {
+    //         agent,
+    //         canisterId,
+    //         ...options.actorOptions,
+    //     });
+    // };
+    
+    // const backend = canisterId ? createActor(canisterId) : undefined;

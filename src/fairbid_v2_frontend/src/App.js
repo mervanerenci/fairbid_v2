@@ -21,7 +21,7 @@ import { BidModalContextAPI } from '@contexts/bidModalContext';
 import { SidebarContextAPI } from '@contexts/sidebarContext';
 import { AuthAPI } from '@contexts/authContext';
 import { QuestionContextAPI } from '@contexts/questionContext';
-
+import { ExploreGridContextAPI } from '@contexts/exploreGridContext';
 // components
 import LoadingScreen from '@components/LoadingScreen';
 import AppLayout from '@components/AppLayout';
@@ -51,22 +51,14 @@ export const config = createConfig({
 // pages
 const Home = lazy(() => import('@pages/Home'));
 const ExplorePage = lazy(() => import('@pages/ExplorePage'));
-// const Explore = lazy(() => import('@pages/Explore'));
-// const ExploreGrid = lazy(() => import('@pages/ExploreGrid'));
+
 const Auction = lazy(() => import('@pages/Auction'));
 const AuctionPage = lazy(() => import('@pages/AuctionPage'));
-// const Author = lazy(() => import('@pages/Author'));
+
 const Profile = lazy(() => import('@pages/Profile'));
-// const FAQ = lazy(() => import('@pages/FAQ'));
-// const Ranking = lazy(() => import('@pages/Ranking'));
-// const Activity = lazy(() => import('@pages/Activity'));
-// const ConnectWallet = lazy(() => import('@pages/ConnectWallet'));
-// const Login = lazy(() => import('@pages/Login'));
-// const About = lazy(() => import('@pages/About'));
-// const Team = lazy(() => import('@pages/Team'));
-// const BlogSidebar = lazy(() => import('@pages/BlogSidebar'));
-// const BlogGrid = lazy(() => import('@pages/BlogGrid'));
-// const Post = lazy(() => import('@pages/Post'));
+
+
+
 
 const PageNotFound = lazy(() => import('@pages/PageNotFound'));
 const LiveAuctions = lazy(() => import('@pages/LiveAuctions'));
@@ -93,8 +85,9 @@ const App = () => {
         <WagmiConfig config={config}>
             <QueryClientProvider client={queryClient}>
                 <AuthAPI>
-                    <BidModalContextAPI>
-                        <QuestionContextAPI>
+                    <ExploreGridContextAPI>
+                        <BidModalContextAPI>
+                            <QuestionContextAPI>
                             <SidebarContextAPI>
                                 <ScrollToTop />
                                 <AppLayout>
@@ -122,8 +115,9 @@ const App = () => {
                                     </Suspense>
                                 </AppLayout>
                             </SidebarContextAPI>
-                        </QuestionContextAPI>
-                    </BidModalContextAPI>
+                            </QuestionContextAPI>
+                        </BidModalContextAPI>
+                    </ExploreGridContextAPI>
                 </AuthAPI>
             </QueryClientProvider>
         </WagmiConfig>

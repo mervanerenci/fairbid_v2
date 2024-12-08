@@ -13,6 +13,9 @@ import {useBidModalContext} from '@contexts/bidModalContext';
 import {useState} from 'react';
 import {useForm, Controller} from 'react-hook-form';
 import {useEffect} from 'react';
+import {useExploreGridContext} from '@contexts/exploreGridContext';
+
+import { useNavigate } from 'react-router-dom';
 
 // utils
 import classNames from 'classnames';
@@ -47,6 +50,7 @@ const StyledBidModal = styled(StyledModal)`
 `;
 
 const BidModal = () => {
+    const navigate = useNavigate();
     const minBid = 0, fee = 0.10;
     const {isBidModalOpen, closeBidModal, currentAuctionId, currentAuctionType} = useBidModalContext();
     const [bid, setBid] = useState(0);
@@ -54,6 +58,8 @@ const BidModal = () => {
 
     const { backendActor } = useAuth();
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const { refreshItems } = useExploreGridContext();
 
     
     const handleClose = () => {
@@ -77,9 +83,18 @@ const BidModal = () => {
                
                 const bidAmount = bidValue;
                 const auction_id = parseInt(currentAuctionId);
-                await backendActor.make_bid(auction_id, bidAmount);
+                await backendActor.make_bid(auction_id, bidAmount); 
+                refreshItems();
                 toast.success('Bid placed successfully');
+                
+                setTimeout(() => {
+                    window.location.href = window.location.href;
+                }, 1000); // Small delay to ensure the toast is visible
                 handleClose();
+                
+                
+
+
             } catch (error) {
                 console.error("Error placing bid:", error);
                 toast.error(error.message || 'Failed to place bid');
@@ -95,8 +110,11 @@ const BidModal = () => {
                 const bidAmount = bidValue;
                 const auction_id = parseInt(currentAuctionId);
                 await backendActor.make_bid_sb(auction_id, bidAmount);
+                refreshItems();
                 toast.success('Bid placed successfully');
                 handleClose();
+
+                window.location.reload();
             } catch (error) {
                 console.error("Error placing bid:", error);
                 toast.error(error.message || 'Failed to place bid');
@@ -104,6 +122,13 @@ const BidModal = () => {
                 setIsSubmitting(false);
             }
         }
+
+        setTimeout(() => {
+            window.location.href = window.location.href;
+        }, 1000); // Small delay to ensure the toast is visible
+        setTimeout(() => {
+            window.location.reload(true);
+        }, 1100);
 
         
     }

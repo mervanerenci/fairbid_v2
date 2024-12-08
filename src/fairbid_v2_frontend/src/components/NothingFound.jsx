@@ -24,7 +24,7 @@ const NothingFound = () => {
         <Fade in={true} timeout={1000}>
             <Wrapper className="d-flex flex-column align-items-center">
                 <Lottie className="lottie" animationData={animation}/>
-                <h4 className="title">Sorry, nothing found</h4>
+                <h4 className="title">Searching...</h4>
             </Wrapper>
         </Fade>
     );

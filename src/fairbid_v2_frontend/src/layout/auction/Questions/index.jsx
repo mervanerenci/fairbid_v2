@@ -25,7 +25,7 @@ import { useAuth } from '@contexts/useAuthClient';
 import { useQuestionContext } from '@contexts/questionContext';
 
 const Questions = ({ id, isOriginator }) => {
-    const { backendActor, principal } = useAuth();
+    const { backendActor, principal, isAuthenticated } = useAuth();
     const { auctionId } = useQuestionContext();
     const name = 'Barbara';
     const [usernames, setUsernames] = useState({});
@@ -80,8 +80,7 @@ const Questions = ({ id, isOriginator }) => {
 
             // Fetch usernames for all new originators
             questions.forEach(question => {
-                // console.log("Question originator:", question.originator);
-                // console.log("Question originator string:", question.originator.toString());
+                
 
                 const principal = question.originator
                 const stringOriginator = question.originator.toString();
@@ -93,14 +92,13 @@ const Questions = ({ id, isOriginator }) => {
 
 
         fetchQuestions();
-        // setInterval(fetchQuestions, 10000);
+        setInterval(fetchQuestions, 6000);
     }, []);
 
     const formatDisplayName = (originator) => {
         if (usernames[originator]) return usernames[originator].toString();
 
-        // If it's a long address, truncate it
-        // console.log("Originator:", originator);
+        
         const originatorString = originator.toString();
         if (originatorString?.length > 10) {
             return `${originatorString.slice(0, 6)}...${originatorString.slice(-4)}`;
@@ -112,11 +110,7 @@ const Questions = ({ id, isOriginator }) => {
     const canSeeQuestion = (question) => {
         const userPrincipal = principal?.toString();
         const isQuestionAsker = question.originator?.toString() === userPrincipal;
-        // console.log("QQQ Question originator:", question.originator);
-        // console.log("QQQ User principal:", userPrincipal);
-        // console.log("QQQ Is question asker:", isQuestionAsker);
-        // console.log("QQQ Question answer:", question.answer);
-        // console.log("QQQ Question is private:", question.is_private);
+
 
         // If question is not private or has no answer, check visibility rules
         if (!question.answer || !question.is_private) {
@@ -270,20 +264,28 @@ const Questions = ({ id, isOriginator }) => {
                     }
                 </div>
             </section>
-            {isOriginator ? (
-                <></>
+            {isAuthenticated ? (
+                <>
+                    {isOriginator ? (
+                        <></>
+                    ) : (
+                        <>
+                            <section className={styles.section}>
+                                <h3>Ask a question</h3>
+                                <form className="d-flex flex-column g-20" onSubmit={handleSubmit(onSubmit)}>
+
+                                    <textarea className={classNames('field field--outline', { 'field--error': errors.message })}
+                                        placeholder="Enter your question"
+                                        {...register('message', { required: true })} />
+                                    <GradientBtn className={styles.btn} tag="button" type="submit">Send</GradientBtn>
+                                </form>
+                            </section>
+                        </>
+                    )}
+                </>
             ) : (
                 <>
-                    <section className={styles.section}>
-                        <h3>Ask a question</h3>
-                        <form className="d-flex flex-column g-20" onSubmit={handleSubmit(onSubmit)}>
 
-                            <textarea className={classNames('field field--outline', { 'field--error': errors.message })}
-                                placeholder="Enter your question"
-                                {...register('message', { required: true })} />
-                            <GradientBtn className={styles.btn} tag="button" type="submit">Send</GradientBtn>
-                        </form>
-                    </section>
                 </>
             )}
         </div>
