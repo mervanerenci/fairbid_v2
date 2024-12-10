@@ -14,12 +14,12 @@ FairBid caters to different auction preferences by offering various formats:
 - Dutch Auctions: Start with a high price that decreases over time until a bid is made.
 - Sealed-Bid Auctions: Participants submit private bids, with the highest bidder winning the auction.
 
-### Seamless ETH Integration
+### ETH Integration
 - ETH Deposits and Credits: Deposit ETH into FairBid and use it as FairBid Credits with zero fees.
 - Withdrawals: Withdraw funds to Ethereum as ETH or to the Internet Computer as ckETH, ensuring flexible asset management.
 - Credit System: Our innovative credit system supports fee-free transactions, enhancing the user experience.
 
-### Advanced Auction Customization
+### Auction Customization
 - Scheduled Auctions: Users can schedule auctions in advance, providing better planning and participation.
 - Whitelist Management: Sellers can restrict participation to a select group of bidders using customizable whitelists.
 - Visibility Control: Auctions can be made public or private, giving sellers control over their audience.
