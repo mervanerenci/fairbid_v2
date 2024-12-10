@@ -122,6 +122,7 @@ npm test --workspace fairbid_v2_frontend
 ## Roadmap
 
 - [ ] Integration with additional blockchain networks
+- [ ] Streaming feature
 - [ ] Implement NFT marketplace integration
 - [ ] UX improvement
 - [ ] More detailed profile dashboard
